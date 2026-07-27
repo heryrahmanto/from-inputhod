@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Lasahan</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 15px;
+            color: #1e293b;
+        }
+        
+        .top-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-home {
+            background-color: #475569;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .header-title {
+            text-align: center;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-title h2 { margin: 0; font-size: 20px; }
+
+        .table-section {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .section-header h3 { margin: 0; color: #1e3a8a; font-size: 16px; }
+
+        .btn-control {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-add, .btn-remove {
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-add { background-color: #10b981; }
+        .btn-remove { background-color: #ef4444; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            text-align: center;
+        }
+        th { background-color: #f8fafc; color: #334155; }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .bg-readonly { background-color: #f1f5f9; font-weight: bold; }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn-save, .btn-reset {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+        .btn-save { background-color: #2563eb; }
+        .btn-reset { background-color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Home -->
+    <div class="top-nav">
+        <a href="index.html" class="btn-home">🏠 Home / Menu</a>
+    </div>
+
+    <!-- Header Judul -->
+    <div class="header-title">
+        <h2>FORM INPUT LASAHAN</h2>
+    </div>
+
+    <form id="formLasahan" onsubmit="simpanDataLasahan(event)">
+        
+        <!-- ================= TABEL A: LASAHAN PET ================= -->
+        <div class="table-section">
+            <div class="section-header">
+                <h3>a. Lasahan PET</h3>
+                <div class="btn-control">
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pet')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pet')">-</button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">No</th>
+                        <th style="width: 30%;">Botol</th>
+                        <th style="width: 28%;">Isi</th>
+                        <th style="width: 30%;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pet">
+                    <tr>
+                        <td class="no">1</td>
+                        <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
+                        <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
+                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ================= TABEL B: LASAHAN PC ================= -->
+        <div class="table-section">
+            <div class="section-header">
+                <h3>b. Lasahan PC</h3>
+                <div class="btn-control">
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pc')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pc')">-</button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">No</th>
+                        <th style="width: 30%;">Botol</th>
+                        <th style="width: 28%;">Isi</th>
+                        <th style="width: 30%;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pc">
+                    <tr>
+                        <td class="no">1</td>
+                        <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
+                        <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
+                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tombol Save & Reset -->
+        <div class="action-buttons">
+            <button type="submit" class="btn-save">💾 Save</button>
+            <button type="reset" class="btn-reset" onclick="setTimeout(resetForm, 50)">🔄 Reset</button>
+        </div>
+
+    </form>
+
+    <!-- SCRIPT JAVASCRIPT LENGKAP & FIX LOGIC -->
+    <script>
+        // Hitung Otomatis: Jumlah = Botol * Isi
+        function hitungJumlah(elem) {
+            let tr = elem.closest('tr');
+            let valBotol = parseFloat(tr.querySelector('.val-botol').value);
+            let valIsi = parseFloat(tr.querySelector('.val-isi').value);
+            
+            let total = 0;
+            if (!isNaN(valBotol) && !isNaN(valIsi)) {
+                total = valBotol * valIsi;
+            } else if (!isNaN(valBotol)) {
+                total = valBotol;
+            } else if (!isNaN(valIsi)) {
+                total = valIsi;
+            }
+
+            tr.querySelector('.val-jumlah').value = total;
+        }
+
+        // Tambah Baris (+)
+        function tambahBaris(tableId) {
+            let tbody = document.getElementById(tableId);
+            let rowCount = tbody.rows.length + 1;
+            
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="no">${rowCount}</td>
+                <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
+                <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
+                <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // Hapus Baris (-)
+        function hapusBaris(tableId) {
+            let tbody = document.getElementById(tableId);
+            if (tbody.rows.length > 1) {
+                tbody.deleteRow(-1);
+            }
+        }
+
+        // SIMPAN DATA KE LOCALSTORAGE BIAR TERBACA DI REPORT-SHIFT / UPDATE HOD
+        function simpanDataLasahan(e) {
+            e.preventDefault();
+
+            // Hitung Total Lasahan PET
+            let totalPET = 0;
+            document.querySelectorAll('#tabel-pet .val-jumlah').forEach(input => {
+                totalPET += parseFloat(input.value) || 0;
+            });
+
+            // Hitung Total Lasahan PC
+            let totalPC = 0;
+            document.querySelectorAll('#tabel-pc .val-jumlah').forEach(input => {
+                totalPC += parseFloat(input.value) || 0;
+            });
+
+            // Simpan ke storage yang dibaca oleh report-shift.html
+            localStorage.setItem('lasahan_pet', totalPET);
+            localStorage.setItem('lasahan_pc', totalPC);
+
+            alert(`Data Lasahan Berhasil Disimpan!\nTotal PET: ${totalPET}\nTotal PC: ${totalPC}`);
+        }
+
+        // Reset Form
+        function resetForm() {
+            let jumlahInputs = document.querySelectorAll('.val-jumlah');
+            jumlahInputs.forEach(input => input.value = 0);
+            localStorage.setItem('lasahan_pet', 0);
+            localStorage.setItem('lasahan_pc', 0);
+        }
+    </script>
+</body>
+</html>
