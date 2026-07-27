@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Finish Good</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 15px;
+            color: #1e293b;
+        }
+        
+        .top-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-home {
+            background-color: #475569;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .header-title {
+            text-align: center;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-title h2 { margin: 0; font-size: 20px; }
+
+        .table-section {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .section-header h3 { margin: 0; color: #064e3b; font-size: 15px; }
+
+        .btn-control {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-add, .btn-remove {
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-add { background-color: #10b981; }
+        .btn-remove { background-color: #ef4444; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 2px;
+            text-align: center;
+        }
+        th { background-color: #f8fafc; color: #334155; }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 6px 2px;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 11px;
+        }
+        .bg-readonly { background-color: #f1f5f9; font-weight: bold; }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn-save, .btn-reset {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+        .btn-save { background-color: #2563eb; }
+        .btn-reset { background-color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Home Navigasi -->
+    <div class="top-nav">
+        <a href="index.html" class="btn-home">🏠 Home / Menu</a>
+    </div>
+
+    <!-- Header Judul -->
+    <div class="header-title">
+        <h2>FORM FINISH GOOD</h2>
+    </div>
+
+    <form id="formFinishGood" onsubmit="event.preventDefault(); alert('Data Finish Good Berhasil Disimpan!');">
+        
+        <!-- ================= TABEL A: FG-PC ================= -->
+        <div class="table-section">
+            <div class="section-header">
+                <h3>a. FG-PC</h3>
+                <div class="btn-control">
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pc', 48)">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pc')">-</button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">No</th>
+                        <th style="width: 15%;">P</th>
+                        <th style="width: 15%;">L</th>
+                        <th style="width: 15%;">T</th>
+                        <th style="width: 16%;">Jgr</th>
+                        <th style="width: 16%;">Eceran</th>
+                        <th style="width: 16%;">Jmlh</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pc">
+                    <tr>
+                        <td class="no">1</td>
+                        <td><input type="number" class="val-p" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-l" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-t" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-jgr bg-readonly" readonly value="0"></td>
+                        <td><input type="number" class="val-eceran" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-jmlh bg-readonly" readonly value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ================= TABEL B: FG-PET ================= -->
+        <div class="table-section">
+            <div class="section-header">
+                <h3>b. FG-PET</h3>
+                <div class="btn-control">
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pet', 48)">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pet')">-</button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">No</th>
+                        <th style="width: 15%;">P</th>
+                        <th style="width: 15%;">L</th>
+                        <th style="width: 15%;">T</th>
+                        <th style="width: 16%;">Jgr</th>
+                        <th style="width: 16%;">Eceran</th>
+                        <th style="width: 16%;">Jmlh</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-pet">
+                    <tr>
+                        <td class="no">1</td>
+                        <td><input type="number" class="val-p" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-l" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-t" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-jgr bg-readonly" readonly value="0"></td>
+                        <td><input type="number" class="val-eceran" oninput="hitungOtomatis(this, 48)" placeholder="..."></td>
+                        <td><input type="number" class="val-jmlh bg-readonly" readonly value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ================= TABEL C: FG-10 L ================= -->
+        <div class="table-section">
+            <div class="section-header">
+                <h3>c. FG-10 L</h3>
+                <div class="btn-control">
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-10l', 90)">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-10l')">-</button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">No</th>
+                        <th style="width: 15%;">P</th>
+                        <th style="width: 15%;">L</th>
+                        <th style="width: 15%;">T</th>
+                        <th style="width: 16%;">Jgr</th>
+                        <th style="width: 16%;">Eceran</th>
+                        <th style="width: 16%;">Jmlh</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-10l">
+                    <tr>
+                        <td class="no">1</td>
+                        <td><input type="number" class="val-p" oninput="hitungOtomatis(this, 90)" placeholder="..."></td>
+                        <td><input type="number" class="val-l" oninput="hitungOtomatis(this, 90)" placeholder="..."></td>
+                        <td><input type="number" class="val-t" oninput="hitungOtomatis(this, 90)" placeholder="..."></td>
+                        <td><input type="number" class="val-jgr bg-readonly" readonly value="0"></td>
+                        <td><input type="number" class="val-eceran" oninput="hitungOtomatis(this, 90)" placeholder="..."></td>
+                        <td><input type="number" class="val-jmlh bg-readonly" readonly value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tombol Save & Reset -->
+        <div class="action-buttons">
+            <button type="submit" class="btn-save">💾 Save</button>
+            <button type="reset" class="btn-reset" onclick="setTimeout(resetForm, 50)">🔄 Reset</button>
+        </div>
+
+    </form>
+
+    <!-- SCRIPT LOGIKA PERHITUNGAN -->
+    <script>
+        // Rumus: Jgr = (P * L) + T | Jmlh = (Jgr * Pengali) + Eceran
+        function hitungOtomatis(elem, pengali) {
+            let tr = elem.closest('tr');
+            let p = parseFloat(tr.querySelector('.val-p').value) || 0;
+            let l = parseFloat(tr.querySelector('.val-l').value) || 0;
+            let t = parseFloat(tr.querySelector('.val-t').value) || 0;
+            let eceran = parseFloat(tr.querySelector('.val-eceran').value) || 0;
+            
+            let totalJgr = (p * l) + t;
+            let totalJmlh = (totalJgr * pengali) + eceran;
+
+            tr.querySelector('.val-jgr').value = totalJgr;
+            tr.querySelector('.val-jmlh').value = totalJmlh;
+        }
+
+        // Tambah Baris (+)
+        function tambahBaris(tableId, pengali) {
+            let tbody = document.getElementById(tableId);
+            let rowCount = tbody.rows.length + 1;
+            
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="no">${rowCount}</td>
+                <td><input type="number" class="val-p" oninput="hitungOtomatis(this, ${pengali})" placeholder="..."></td>
+                <td><input type="number" class="val-l" oninput="hitungOtomatis(this, ${pengali})" placeholder="..."></td>
+                <td><input type="number" class="val-t" oninput="hitungOtomatis(this, ${pengali})" placeholder="..."></td>
+                <td><input type="number" class="val-jgr bg-readonly" readonly value="0"></td>
+                <td><input type="number" class="val-eceran" oninput="hitungOtomatis(this, ${pengali})" placeholder="..."></td>
+                <td><input type="number" class="val-jmlh bg-readonly" readonly value="0"></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // Hapus Baris (-)
+        function hapusBaris(tableId) {
+            let tbody = document.getElementById(tableId);
+            if (tbody.rows.length > 1) {
+                tbody.deleteRow(-1);
+            }
+        }
+
+        // Reset Form
+        function resetForm() {
+            let jgrInputs = document.querySelectorAll('.val-jgr');
+            let jmlhInputs = document.querySelectorAll('.val-jmlh');
+            jgrInputs.forEach(input => input.value = 0);
+            jmlhInputs.forEach(input => input.value = 0);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Botol & Jugrack HOD</title>
+    <!-- Library untuk Mengubah HTML ke Gambar JPG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 12px;
+            color: #0f172a;
+        }
+
+        /* Container Kartu Utama */
+        .report-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Header Informasi Waktu */
+        .report-header {
+            text-align: left;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0284c7;
+        }
+        .report-header h2 {
+            margin: 0 0 4px 0;
+            font-size: 19px;
+            color: #0369a1;
+            font-weight: 800;
+        }
+        .datetime-info {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.3;
+        }
+
+        /* Tabel Utama dengan Border Tegas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+
+        th, td {
+            border: 2px solid #94a3b8; /* Border kolom & baris lebih jelas */
+            padding: 9px 10px;
+            vertical-align: middle;
+        }
+
+        /* Judul Section (Jugrack, Botol Kosong) */
+        .section-title {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 800;
+            text-align: center;
+            font-size: 16px;
+            border-top: 2px solid #0284c7;
+            border-bottom: 2px solid #0284c7;
+        }
+
+        /* Gaya Baris Biasa */
+        .row-even { background-color: #ffffff; }
+        .row-odd { background-color: #f8fafc; }
+
+        .label-col {
+            width: 70%;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .val-col {
+            width: 30%;
+            text-align: right;
+            font-weight: 800;
+            font-size: 15px;
+            color: #000000;
+        }
+
+        /* Teks Warna Khusus PET */
+        .text-pet { color: #b45309; } /* Cokelat Oranye khas PET */
+
+        /* Baris Total Jugrack */
+        .row-total-jgr {
+            background-color: #f1f5f9;
+        }
+        .row-total-jgr .label-col, .row-total-jgr .val-col {
+            color: #1e3a8a;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        /* Baris Jugrack Rusak */
+        .row-rusak .label-col, .row-rusak .val-col {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        /* Highlight Kotak Tebal "Total Botol Siap Pakai" */
+        .row-highlight {
+            background-color: #ffffff;
+            border: 3px solid #000000 !important; /* Border Hitam Tebal */
+        }
+        .row-highlight td {
+            border-top: 3px solid #000000 !important;
+            border-bottom: 3px solid #000000 !important;
+            font-weight: 800;
+            font-size: 15px;
+            color: #000000;
+        }
+
+        /* Baris Finish Good (Biru Terang + Teks Putih) */
+        .row-fg {
+            background-color: #0284c7;
+        }
+        .row-fg td {
+            border-color: #0284c7;
+            color: #ffffff !important;
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        /* Tombol Navigasi Bawah */
+        .action-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-menu, .btn-wa {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .btn-menu { background-color: #475569; }
+        .btn-wa { background-color: #16a34a; }
+    </style>
+</head>
+<body>
+
+    <div class="report-card" id="reportArea">
+        <!-- Header Waktu & Judul -->
+        <div class="report-header">
+            <h2>Update Botol & Jugrack " HOD "</h2>
+            <div class="datetime-info" id="liveDateTime">27-Jul-2026<br>20.56 WIB</div>
+        </div>
+
+        <!-- Tabel Utama -->
+        <table>
+            <!-- 1. JUGRACK -->
+            <tr><td colspan="2" class="section-title">Jugrack</td></tr>
+            <tr class="row-even">
+                <td class="label-col">Jugrack Kosong</td>
+                <td class="val-col" id="val-jgr-kosong">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col">Jugrack Botol Kosong "PC"</td>
+                <td class="val-col" id="val-jgr-pc">0</td>
+            </tr>
+            <tr class="row-even">
+                <td class="label-col text-pet">Jugrack Botol Kosong "PET"</td>
+                <td class="val-col text-pet" id="val-jgr-pet">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col">Jugrack kosong 10 L</td>
+                <td class="val-col" id="val-jgr-10l">0</td>
+            </tr>
+            <tr class="row-total-jgr">
+                <td class="label-col">Total Jugrack</td>
+                <td class="val-col" id="val-total-jugrack">0</td>
+            </tr>
+            <tr class="row-rusak">
+                <td class="label-col">~Jugrack Rusak</td>
+                <td class="val-col" id="val-jugrack-rusak">0</td>
+            </tr>
+
+            <!-- 2. BOTOL KOSONG -->
+            <tr><td colspan="2" class="section-title">Botol Kosong</td></tr>
+            <tr class="row-even">
+                <td class="label-col">Botol Jugrack "PC"</td>
+                <td class="val-col" id="val-botol-jgr-pc">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col text-pet">Botol Jugrack "PET"</td>
+                <td class="val-col text-pet" id="val-botol-jgr-pet">0</td>
+            </tr>
+            <tr class="row-even">
+                <td class="label-col">Botol Lasahan ~ "PC"</td>
+                <td class="val-col" id="val-botol-lasahan-pc">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col text-pet">Botol Lasahan ~ "PET"</td>
+                <td class="val-col text-pet" id="val-botol-lasahan-pet">0</td>
+            </tr>
+            
+            <!-- Kotak Highlight Siap Pakai -->
+            <tr class="row-highlight">
+                <td class="label-col">Total Botol Siap pakai "PC"</td>
+                <td class="val-col" id="val-siap-pc">0</td>
+            </tr>
+            <tr class="row-highlight">
+                <td class="label-col">Total Botol Siap pakai "PET"</td>
+                <td class="val-col" id="val-siap-pet">0</td>
+            </tr>
+
+            <!-- 3. FINISH GOOD -->
+            <tr class="row-fg">
+                <td class="label-col">Finish Good PC ( 0002 )</td>
+                <td class="val-col" id="val-fg-pc">0</td>
+            </tr>
+            <tr class="row-fg">
+                <td class="label-col">Finish Good PET ( 0012 )</td>
+                <td class="val-col" id="val-fg-pet">0</td>
+            </tr>
+            <tr class="row-fg" style="background-color: #0369a1;">
+                <td class="label-col">Finish Good 10 L</td>
+                <td class="val-col" id="val-fg-10l">0</td>
+            </tr>
+        </table>
+
+        <!-- Tombol Bawah -->
+        <div class="action-container" id="actionButtons">
+            <a href="index.html" class="btn-menu">🏠 Menu</a>
+            <button class="btn-wa" onclick="shareWhatsApp()">💬 Share WA (JPG)</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT UTAMA -->
+    <script>
+        function updateWaktu() {
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', '.') + ' WIB';
+            
+            document.getElementById('liveDateTime').innerHTML = tglStr + '<br>' + jamStr;
+        }
+        updateWaktu();
+
+        function loadReportData() {
+            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || '0');
+            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
+            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
+            let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
+            let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
+
+            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
+            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
+            let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
+            let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
+
+            let fgPC = parseInt(localStorage.getItem('fg_pc') || '0');
+            let fgPET = parseInt(localStorage.getItem('fg_pet') || '0');
+            let fg10L = parseInt(localStorage.getItem('fg_10l') || '0');
+
+            let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
+            let siapPC = botolJgrPC + lasahanPC;
+            let siapPET = botolJgrPET + lasahanPET;
+
+            document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
+            document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
+            document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
+            document.getElementById('val-jgr-10l').innerText = jgr10L.toLocaleString('id-ID');
+            document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
+            document.getElementById('val-jugrack-rusak').innerText = jgrRusak.toLocaleString('id-ID');
+
+            document.getElementById('val-botol-jgr-pc').innerText = botolJgrPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pet').innerText = botolJgrPET.toLocaleString('id-ID');
+            document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
+
+            document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
+            document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
+
+            document.getElementById('val-fg-pc').innerText = fgPC.toLocaleString('id-ID');
+            document.getElementById('val-fg-pet').innerText = fgPET.toLocaleString('id-ID');
+            document.getElementById('val-fg-10l').innerText = fg10L.toLocaleString('id-ID');
+        }
+
+        loadReportData();
+
+        function shareWhatsApp() {
+            const reportArea = document.getElementById('reportArea');
+            const actionButtons = document.getElementById('actionButtons');
+
+            // Sembunyikan tombol sementara saat mau bikin gambar
+            actionButtons.style.display = 'none';
+
+            html2canvas(reportArea, { scale: 2 }).then(canvas => {
+                // Tampilkan kembali tombolnya
+                actionButtons.style.display = 'flex';
+
+                // Konversi HTML ke Gambar JPG
+                const imageJPG = canvas.toDataURL("image/jpeg", 0.95);
+
+                // Download Gambar Otomatis
+                const link = document.createElement('a');
+                link.download = 'Update-Botol-Jugrack-HOD.jpg';
+                link.href = imageJPG;
+                link.click();
+
+                // Teks pesan pengantar WA
+                let timeText = document.getElementById('liveDateTime').innerText.replace('\n', ' ');
+                let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan/attach gambar di chat ini)*`;
+
+function shareWhatsApp() {
+    const reportArea = document.getElementById('reportArea');
+    const actionButtons = document.getElementById('actionButtons');
+
+    // Sembunyikan tombol saat screenshot
+    actionButtons.style.display = 'none';
+
+    html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
+        // Tampilkan lagi tombolnya
+        actionButtons.style.display = 'flex';
+
+        // Simpan gambar dengan nama yang benar
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'Update-Botol-Jugrack-HOD.jpg';
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Pesan teks
+            let timeText = document.getElementById('liveDateTime').innerText.replace('\n', ' ');
+            let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan gambar di chat ini)*`;
+
+            // Buka WA tanpa error
+            setTimeout(() => {
+                window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
+            }, 1200);
+
+        }, 'image/jpeg', 0.95);
+
+    }).catch(err => {
+        actionButtons.style.display = 'flex';
+        alert("Gagal memproses gambar: " + err);
+    });
+}
+
+        }
+    </script>
+</body>
+</html>
