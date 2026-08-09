@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Utama - Operational Control</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 15px;
+            color: #1e293b;
+        }
+
+        .header-title {
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-title h1 { margin: 0; font-size: 22px; }
+        .header-title p { margin: 5px 0 0 0; font-size: 13px; color: #94a3b8; }
+
+        /* Kartu Ringkasan Stok */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid #2563eb;
+        }
+        .card.card-green { border-left-color: #10b981; }
+        .card.card-orange { border-left-color: #f59e0b; }
+        .card.card-red { border-left-color: #ef4444; }
+
+        .card h4 { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .card .value { font-size: 22px; font-weight: bold; margin: 8px 0 0 0; color: #0f172a; }
+        .card .sub-value { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+        /* Menu Navigasi Form */
+        .menu-section {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .menu-section h3 { margin: 0 0 15px 0; font-size: 16px; color: #0f172a; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 10px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        .menu-btn:hover { background-color: #e2e8f0; }
+        .menu-btn span { font-size: 24px; margin-bottom: 6px; }
+
+        /* Tabel Rekapitulasi */
+        .rekap-section {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .rekap-section h3 { margin: 0 0 12px 0; font-size: 16px; color: #0f172a; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 6px;
+            text-align: center;
+        }
+        th { background-color: #f8fafc; color: #334155; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Judul Dashboard -->
+    <div class="header-title">
+        <h1>DASHBOARD OPERASIONAL</h1>
+        <p>Ringkasan Stok & Akses Form Real-time</p>
+    </div>
+
+    <!-- Ringkasan Kartu Stok -->
+    <div class="cards-grid">
+        <div class="card card-green">
+            <h4>Total Finish Good</h4>
+            <div class="value" id="card-fg-pcs">0</div>
+            <div class="sub-value" id="card-fg-jgr">0 Jgr</div>
+        </div>
+        <div class="card">
+            <h4>Botol Jugrack</h4>
+            <div class="value" id="card-bj-pcs">0</div>
+            <div class="sub-value" id="card-bj-jgr">0 Jgr</div>
+        </div>
+        <div class="card card-orange">
+            <h4>Jugrack Kosong</h4>
+            <div class="value" id="card-jk-jgr">0</div>
+            <div class="sub-value">Jugrack</div>
+        </div>
+        <div class="card card-red">
+            <h4>Lasahan Rusak</h4>
+            <div class="value" id="card-lasahan-rusak">0</div>
+            <div class="sub-value">Pcs</div>
+        </div>
+    </div>
+
+    <!-- Tombol Navigasi Cepat -->
+    <div class="menu-section">
+        <h3>📋 Menu Form Input</h3>
+        <div class="menu-grid">
+            <a href="lasahan.html" class="menu-btn">
+                <span>📦</span> Lasahan
+            </a>
+            <a href="jugrack-kosong.html" class="menu-btn">
+                <span>📥</span> Jugrack Kosong
+            </a>
+            <a href="botol-jugrack.html" class="menu-btn">
+                <span>🍾</span> Botol Jugrack
+            </a>
+            <a href="finish-good.html" class="menu-btn">
+                <span>✅</span> Finish Good
+            </a>
+            <a href="report-shift.html" class="menu-btn">
+                <span>📊</span> Report Shift
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabel Rekapitulasi Rincian -->
+    <div class="rekap-section">
+        <h3>📊 Rincian Stok Per Kategori</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Jgr (Jugrack)</th>
+                    <th>Pcs (Jumlah)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;"><strong>Finish Good - PC</strong></td>
+                    <td id="table-fg-pc-jgr">0</td>
+                    <td id="table-fg-pc-pcs">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Finish Good - PET</strong></td>
+                    <td id="table-fg-pet-jgr">0</td>
+                    <td id="table-fg-pet-pcs">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Finish Good - 10 L</strong></td>
+                    <td id="table-fg-10l-jgr">0</td>
+                    <td id="table-fg-10l-pcs">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Botol Jugrack - PC</strong></td>
+                    <td id="table-bj-pc-jgr">0</td>
+                    <td id="table-bj-pc-pcs">0</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Botol Jugrack - PET</strong></td>
+                    <td id="table-bj-pet-jgr">0</td>
+                    <td id="table-bj-pet-pcs">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load data otomatis saat dashboard dibuka
+        window.addEventListener('DOMContentLoaded', function() {
+            // Finish Good
+            let fgPcJgr = parseFloat(localStorage.getItem('fg_jgr_pc')) || 0;
+            let fgPcPcs = parseFloat(localStorage.getItem('fg_jmlh_pc')) || 0;
+            let fgPetJgr = parseFloat(localStorage.getItem('fg_jgr_pet')) || 0;
+            let fgPetPcs = parseFloat(localStorage.getItem('fg_jmlh_pet')) || 0;
+            let fg10lJgr = parseFloat(localStorage.getItem('fg_jgr_10l')) || 0;
+            let fg10lPcs = parseFloat(localStorage.getItem('fg_jmlh_10l')) || 0;
+
+            let totalFgJgr = fgPcJgr + fgPetJgr + fg10lJgr;
+            let totalFgPcs = fgPcPcs + fgPetPcs + fg10lPcs;
+
+            // Botol Jugrack
+            let bjPcJgr = parseFloat(localStorage.getItem('bj_jgr_pc')) || 0;
+            let bjPcPcs = parseFloat(localStorage.getItem('bj_jmlh_pc')) || 0;
+            let bjPetJgr = parseFloat(localStorage.getItem('bj_jgr_pet')) || 0;
+            let bjPetPcs = parseFloat(localStorage.getItem('bj_jmlh_pet')) || 0;
+
+            let totalBjJgr = bjPcJgr + bjPetJgr;
+            let totalBjPcs = bjPcPcs + bjPetPcs;
+
+            // Jugrack Kosong
+            let jkTotalJgr = (parseFloat(localStorage.getItem('jk_brd_cs')) || 0) + (parseFloat(localStorage.getItem('jk_10l')) || 0);
+
+            // Lasahan Rusak
+            let lasahanRusak = parseFloat(localStorage.getItem('lasahan_rusak')) || 0;
+
+            // Update Cards
+            document.getElementById('card-fg-pcs').innerText = totalFgPcs.toLocaleString('id-ID');
+            document.getElementById('card-fg-jgr').innerText = totalFgJgr + ' Jgr';
+
+            document.getElementById('card-bj-pcs').innerText = totalBjPcs.toLocaleString('id-ID');
+            document.getElementById('card-bj-jgr').innerText = totalBjJgr + ' Jgr';
+
+            document.getElementById('card-jk-jgr').innerText = jkTotalJgr.toLocaleString('id-ID');
+            document.getElementById('card-lasahan-rusak').innerText = lasahanRusak.toLocaleString('id-ID');
+
+            // Update Tabel Rekap
+            document.getElementById('table-fg-pc-jgr').innerText = fgPcJgr;
+            document.getElementById('table-fg-pc-pcs').innerText = fgPcPcs;
+
+            document.getElementById('table-fg-pet-jgr').innerText = fgPetJgr;
+            document.getElementById('table-fg-pet-pcs').innerText = fgPetPcs;
+
+            document.getElementById('table-fg-10l-jgr').innerText = fg10lJgr;
+            document.getElementById('table-fg-10l-pcs').innerText = fg10lPcs;
+
+            document.getElementById('table-bj-pc-jgr').innerText = bjPcJgr;
+            document.getElementById('table-bj-pc-pcs').innerText = bjPcPcs;
+
+            document.getElementById('table-bj-pet-jgr').innerText = bjPetJgr;
+            document.getElementById('table-bj-pet-pcs').innerText = bjPetPcs;
+        });
+    </script>
+</body>
+</html>
