@@ -125,7 +125,7 @@
         <h2>FORM JUGRACK KOSONG</h2>
     </div>
 
-    <form id="formJugrack" onsubmit="event.preventDefault(); alert('Data Jugrack Kosong Berhasil Disimpan!');">
+    <form id="formJugrack" onsubmit="simpanData(event)">
         
         <!-- ================= TABEL A: JUGRACK KOSONG BRD-CS ================= -->
         <div class="table-section">
@@ -231,7 +231,7 @@
 
     </form>
 
-    <!-- SCRIPT JAVASCRIPT LOGIKA JUMLAH = (P * L) + T -->
+    <!-- SCRIPT JAVASCRIPT LOGIKA & PENYIMPANAN DATA -->
     <script>
         function hitungJumlah(elem) {
             let tr = elem.closest('tr');
@@ -269,10 +269,39 @@
             }
         }
 
+        // Hitung Total Seluruh Baris Dalam Suatu Tabel
+        function hitungTotalTabel(tableId) {
+            let total = 0;
+            let inputs = document.querySelectorAll(`#${tableId} .val-jumlah`);
+            inputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            return total;
+        }
+
+        // FUNGSI UTAMA: SIMPAN KE LOCALSTORAGE
+        function simpanData(event) {
+            event.preventDefault();
+
+            let totalBrd = hitungTotalTabel('tabel-brd');
+            let total10l = hitungTotalTabel('tabel-10l');
+            let totalRusak = hitungTotalTabel('tabel-rusak');
+
+            // Simpan ke localStorage sesuai kunci yang dibaca oleh report-shift.html
+            localStorage.setItem('jgr_kosong_brd', totalBrd);
+            localStorage.setItem('jgr_kosong_10l', total10l);
+            localStorage.setItem('jgr_rusak', totalRusak);
+
+            alert('Data Jugrack Kosong Berhasil Disimpan!');
+        }
+
         // Reset Form
         function resetForm() {
             let jumlahInputs = document.querySelectorAll('.val-jumlah');
             jumlahInputs.forEach(input => input.value = 0);
+            localStorage.removeItem('jgr_kosong_brd');
+            localStorage.removeItem('jgr_kosong_10l');
+            localStorage.removeItem('jgr_rusak');
         }
     </script>
 </body>

@@ -54,7 +54,7 @@
         }
 
         th, td {
-            border: 2px solid #94a3b8; /* Border kolom & baris lebih jelas */
+            border: 2px solid #94a3b8;
             padding: 9px 10px;
             vertical-align: middle;
         }
@@ -88,7 +88,7 @@
         }
 
         /* Teks Warna Khusus PET */
-        .text-pet { color: #b45309; } /* Cokelat Oranye khas PET */
+        .text-pet { color: #b45309; }
 
         /* Baris Total Jugrack */
         .row-total-jgr {
@@ -109,7 +109,7 @@
         /* Highlight Kotak Tebal "Total Botol Siap Pakai" */
         .row-highlight {
             background-color: #ffffff;
-            border: 3px solid #000000 !important; /* Border Hitam Tebal */
+            border: 3px solid #000000 !important;
         }
         .row-highlight td {
             border-top: 3px solid #000000 !important;
@@ -119,7 +119,7 @@
             color: #000000;
         }
 
-        /* Baris Finish Good (Biru Terang + Teks Putih) */
+        /* Baris Finish Good */
         .row-fg {
             background-color: #0284c7;
         }
@@ -159,7 +159,7 @@
         <!-- Header Waktu & Judul -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
-            <div class="datetime-info" id="liveDateTime">27-Jul-2026<br>20.56 WIB</div>
+            <div class="datetime-info" id="liveDateTime">-</div>
         </div>
 
         <!-- Tabel Utama -->
@@ -242,7 +242,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA -->
+    <!-- SCRIPT UTAMA PERBAIKAN TOTAL -->
     <script>
         function updateWaktu() {
             const now = new Date();
@@ -255,25 +255,30 @@
         updateWaktu();
 
         function loadReportData() {
-            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || '0');
+            // Ambil Jugrack
+            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
             let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
             let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
             let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
             let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
 
+            // Ambil Botol
             let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
             let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
             let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
             let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
 
+            // Ambil Finish Good
             let fgPC = parseInt(localStorage.getItem('fg_pc') || '0');
             let fgPET = parseInt(localStorage.getItem('fg_pet') || '0');
             let fg10L = parseInt(localStorage.getItem('fg_10l') || '0');
 
+            // RUMUS PERHITUNGAN
             let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
             let siapPC = botolJgrPC + lasahanPC;
             let siapPET = botolJgrPET + lasahanPET;
 
+            // Cetak ke layar
             document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -300,64 +305,38 @@
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');
 
-            // Sembunyikan tombol sementara saat mau bikin gambar
+            // Sembunyikan tombol saat screenshot
             actionButtons.style.display = 'none';
 
-            html2canvas(reportArea, { scale: 2 }).then(canvas => {
-                // Tampilkan kembali tombolnya
+            html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
+                // Tampilkan lagi tombolnya
                 actionButtons.style.display = 'flex';
 
-                // Konversi HTML ke Gambar JPG
-                const imageJPG = canvas.toDataURL("image/jpeg", 0.95);
+                // Simpan gambar dengan nama yang benar
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'Update-Botol-Jugrack-HOD.jpg';
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
 
-                // Download Gambar Otomatis
-                const link = document.createElement('a');
-                link.download = 'Update-Botol-Jugrack-HOD.jpg';
-                link.href = imageJPG;
-                link.click();
+                    // Pesan teks
+                    let timeText = document.getElementById('liveDateTime').innerText.replace('<br>', ' ');
+                    let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan gambar di chat ini)*`;
 
-                // Teks pesan pengantar WA
-                let timeText = document.getElementById('liveDateTime').innerText.replace('\n', ' ');
-                let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan/attach gambar di chat ini)*`;
+                    // Buka WA tanpa error
+                    setTimeout(() => {
+                        window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
+                    }, 1200);
 
-function shareWhatsApp() {
-    const reportArea = document.getElementById('reportArea');
-    const actionButtons = document.getElementById('actionButtons');
+                }, 'image/jpeg', 0.95);
 
-    // Sembunyikan tombol saat screenshot
-    actionButtons.style.display = 'none';
-
-    html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
-        // Tampilkan lagi tombolnya
-        actionButtons.style.display = 'flex';
-
-        // Simpan gambar dengan nama yang benar
-        canvas.toBlob(function(blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = 'Update-Botol-Jugrack-HOD.jpg';
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Pesan teks
-            let timeText = document.getElementById('liveDateTime').innerText.replace('\n', ' ');
-            let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan gambar di chat ini)*`;
-
-            // Buka WA tanpa error
-            setTimeout(() => {
-                window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
-            }, 1200);
-
-        }, 'image/jpeg', 0.95);
-
-    }).catch(err => {
-        actionButtons.style.display = 'flex';
-        alert("Gagal memproses gambar: " + err);
-    });
-}
-
+            }).catch(err => {
+                actionButtons.style.display = 'flex';
+                alert("Gagal memproses gambar: " + err);
+            });
         }
     </script>
 </body>
