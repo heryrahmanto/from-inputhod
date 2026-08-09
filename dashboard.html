@@ -3,255 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Utama - Operational Control</title>
+    <title>Dashboard Monitoring Logistik</title>
     <style>
         * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f1f5f9;
             margin: 0;
             padding: 15px;
-            color: #1e293b;
+            color: #0f172a;
         }
 
-        .header-title {
-            text-align: center;
+        .dashboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
-            padding: 20px;
+            padding: 16px;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .header-title h1 { margin: 0; font-size: 22px; }
-        .header-title p { margin: 5px 0 0 0; font-size: 13px; color: #94a3b8; }
+        .header h2 { margin: 0 0 5px 0; font-size: 20px; }
+        .header p { margin: 0; font-size: 13px; opacity: 0.8; }
 
-        /* Kartu Ringkasan Stok */
-        .cards-grid {
+        /* Grid Ringkasan Kartu */
+        .grid-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
+
         .card {
             background: white;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid #2563eb;
+            border-left: 5px solid #3b82f6;
         }
+
         .card.card-green { border-left-color: #10b981; }
-        .card.card-orange { border-left-color: #f59e0b; }
+        .card.card-amber { border-left-color: #f59e0b; }
         .card.card-red { border-left-color: #ef4444; }
 
-        .card h4 { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
-        .card .value { font-size: 22px; font-weight: bold; margin: 8px 0 0 0; color: #0f172a; }
-        .card .sub-value { font-size: 11px; color: #64748b; margin-top: 2px; }
-
-        /* Menu Navigasi Form */
-        .menu-section {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .menu-section h3 { margin: 0 0 15px 0; font-size: 16px; color: #0f172a; }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-        }
-        .menu-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-        .menu-btn:hover { background-color: #e2e8f0; }
-        .menu-btn span { font-size: 24px; margin-bottom: 6px; }
-
-        /* Tabel Rekapitulasi */
-        .rekap-section {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .rekap-section h3 { margin: 0 0 12px 0; font-size: 16px; color: #0f172a; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .card-title {
             font-size: 12px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 8px 6px;
+
+        .card-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+
+        /* Detail Section */
+        .section-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #475569; font-weight: 600; }
+        .detail-value { font-weight: 700; color: #0f172a; }
+
+        /* Tombol Navigasi */
+        .btn-home {
+            display: block;
+            width: 100%;
+            background-color: #475569;
+            color: white;
             text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        th { background-color: #f8fafc; color: #334155; }
-        tr:nth-child(even) { background-color: #f8fafc; }
     </style>
 </head>
 <body>
 
-    <!-- Header Judul Dashboard -->
-    <div class="header-title">
-        <h1>DASHBOARD OPERASIONAL</h1>
-        <p>Ringkasan Stok & Akses Form Real-time</p>
-    </div>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <h2>📈 DASHBOARD LOGISTIK</h2>
+            <p id="timeInfo">-</p>
+        </div>
 
-    <!-- Ringkasan Kartu Stok -->
-    <div class="cards-grid">
-        <div class="card card-green">
-            <h4>Total Finish Good</h4>
-            <div class="value" id="card-fg-pcs">0</div>
-            <div class="sub-value" id="card-fg-jgr">0 Jgr</div>
+        <!-- Cards Ringkasan Utamakan Stok -->
+        <div class="grid-cards">
+            <div class="card card-green">
+                <div class="card-title">Siap Pakai PC</div>
+                <div class="card-value" id="dash-siap-pc">0</div>
+            </div>
+            <div class="card card-amber">
+                <div class="card-title">Siap Pakai PET</div>
+                <div class="card-value" id="dash-siap-pet">0</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Jugrack</div>
+                <div class="card-value" id="dash-total-jgr">0</div>
+            </div>
+            <div class="card card-red">
+                <div class="card-title">Total Afkir</div>
+                <div class="card-value" id="dash-total-afkir">0 Pcs</div>
+            </div>
         </div>
-        <div class="card">
-            <h4>Botol Jugrack</h4>
-            <div class="value" id="card-bj-pcs">0</div>
-            <div class="sub-value" id="card-bj-jgr">0 Jgr</div>
-        </div>
-        <div class="card card-orange">
-            <h4>Jugrack Kosong</h4>
-            <div class="value" id="card-jk-jgr">0</div>
-            <div class="sub-value">Jugrack</div>
-        </div>
-        <div class="card card-red">
-            <h4>Lasahan Rusak</h4>
-            <div class="value" id="card-lasahan-rusak">0</div>
-            <div class="sub-value">Pcs</div>
-        </div>
-    </div>
 
-    <!-- Tombol Navigasi Cepat -->
-    <div class="menu-section">
-        <h3>📋 Menu Form Input</h3>
-        <div class="menu-grid">
-            <a href="lasahan.html" class="menu-btn">
-                <span>📦</span> Lasahan
-            </a>
-            <a href="jugrack-kosong.html" class="menu-btn">
-                <span>📥</span> Jugrack Kosong
-            </a>
-            <a href="botol-jugrack.html" class="menu-btn">
-                <span>🍾</span> Botol Jugrack
-            </a>
-            <a href="finish-good.html" class="menu-btn">
-                <span>✅</span> Finish Good
-            </a>
-            <a href="report-shift.html" class="menu-btn">
-                <span>📊</span> Report Shift
-            </a>
+        <!-- Detail Breakdown Jugrack -->
+        <div class="section-box">
+            <h3>🔲 Summary Jugrack</h3>
+            <div class="detail-row">
+                <span class="detail-label">Jugrack Kosong</span>
+                <span class="detail-value" id="dash-jgr-kosong">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Jugrack Botol PC</span>
+                <span class="detail-value" id="dash-jgr-pc">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Jugrack Botol PET</span>
+                <span class="detail-value" id="dash-jgr-pet">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Jugrack 10 L</span>
+                <span class="detail-value" id="dash-jgr-10l">0</span>
+            </div>
+            <div class="detail-row" style="color: #dc2626;">
+                <span class="detail-label" style="color: #dc2626;">Jugrack Rusak</span>
+                <span class="detail-value" id="dash-jgr-rusak">0</span>
+            </div>
         </div>
-    </div>
 
-    <!-- Tabel Rekapitulasi Rincian -->
-    <div class="rekap-section">
-        <h3>📊 Rincian Stok Per Kategori</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategori</th>
-                    <th>Jgr (Jugrack)</th>
-                    <th>Pcs (Jumlah)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="text-align: left;"><strong>Finish Good - PC</strong></td>
-                    <td id="table-fg-pc-jgr">0</td>
-                    <td id="table-fg-pc-pcs">0</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;"><strong>Finish Good - PET</strong></td>
-                    <td id="table-fg-pet-jgr">0</td>
-                    <td id="table-fg-pet-pcs">0</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;"><strong>Finish Good - 10 L</strong></td>
-                    <td id="table-fg-10l-jgr">0</td>
-                    <td id="table-fg-10l-pcs">0</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;"><strong>Botol Jugrack - PC</strong></td>
-                    <td id="table-bj-pc-jgr">0</td>
-                    <td id="table-bj-pc-pcs">0</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;"><strong>Botol Jugrack - PET</strong></td>
-                    <td id="table-bj-pet-jgr">0</td>
-                    <td id="table-bj-pet-pcs">0</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Detail Breakdown Botol Kosong -->
+        <div class="section-box">
+            <h3>🍾 Summary Botol Kosong</h3>
+            <div class="detail-row">
+                <span class="detail-label">Botol Jugrack PC</span>
+                <span class="detail-value" id="dash-botol-jgr-pc">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Botol Jugrack PET</span>
+                <span class="detail-value" id="dash-botol-jgr-pet">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Lasahan PC</span>
+                <span class="detail-value" id="dash-lasahan-pc">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Lasahan PET</span>
+                <span class="detail-value" id="dash-lasahan-pet">0</span>
+            </div>
+        </div>
+
+        <!-- Tombol Kembali -->
+        <a href="index.html" class="btn-home">🏠 Kembali ke Menu Utama</a>
     </div>
 
     <script>
-        // Load data otomatis saat dashboard dibuka
-        window.addEventListener('DOMContentLoaded', function() {
-            // Finish Good
-            let fgPcJgr = parseFloat(localStorage.getItem('fg_jgr_pc')) || 0;
-            let fgPcPcs = parseFloat(localStorage.getItem('fg_jmlh_pc')) || 0;
-            let fgPetJgr = parseFloat(localStorage.getItem('fg_jgr_pet')) || 0;
-            let fgPetPcs = parseFloat(localStorage.getItem('fg_jmlh_pet')) || 0;
-            let fg10lJgr = parseFloat(localStorage.getItem('fg_jgr_10l')) || 0;
-            let fg10lPcs = parseFloat(localStorage.getItem('fg_jmlh_10l')) || 0;
+        function updateDashboard() {
+            // Live Waktu
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/\./g, ':');
+            document.getElementById('timeInfo').innerText = `${tglStr} | ${jamStr} WIB`;
 
-            let totalFgJgr = fgPcJgr + fgPetJgr + fg10lJgr;
-            let totalFgPcs = fgPcPcs + fgPetPcs + fg10lPcs;
+            // Pull Data dari LocalStorage
+            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
+            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
+            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
+            let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
+            let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
 
-            // Botol Jugrack
-            let bjPcJgr = parseFloat(localStorage.getItem('bj_jgr_pc')) || 0;
-            let bjPcPcs = parseFloat(localStorage.getItem('bj_jmlh_pc')) || 0;
-            let bjPetJgr = parseFloat(localStorage.getItem('bj_jgr_pet')) || 0;
-            let bjPetPcs = parseFloat(localStorage.getItem('bj_jmlh_pet')) || 0;
+            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
+            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
+            let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
+            let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
 
-            let totalBjJgr = bjPcJgr + bjPetJgr;
-            let totalBjPcs = bjPcPcs + bjPetPcs;
+            let totalAfkir = 0;
+            const savedAfkir = localStorage.getItem('afkir_0011_data');
+            if (savedAfkir) {
+                try {
+                    const parsed = JSON.parse(savedAfkir);
+                    parsed.forEach(item => {
+                        totalAfkir += (parseInt(item.pc) || 0) + (parseInt(item.pet) || 0) + (parseInt(item.luar) || 0);
+                    });
+                } catch(e) {}
+            }
 
-            // Jugrack Kosong
-            let jkTotalJgr = (parseFloat(localStorage.getItem('jk_brd_cs')) || 0) + (parseFloat(localStorage.getItem('jk_10l')) || 0);
+            let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
+            let siapPC = botolJgrPC + lasahanPC;
+            let siapPET = botolJgrPET + lasahanPET;
 
-            // Lasahan Rusak
-            let lasahanRusak = parseFloat(localStorage.getItem('lasahan_rusak')) || 0;
+            // Render ke UI
+            document.getElementById('dash-siap-pc').innerText = siapPC.toLocaleString('id-ID');
+            document.getElementById('dash-siap-pet').innerText = siapPET.toLocaleString('id-ID');
+            document.getElementById('dash-total-jgr').innerText = totalJgr.toLocaleString('id-ID');
+            document.getElementById('dash-total-afkir').innerText = `${totalAfkir.toLocaleString('id-ID')} Pcs`;
 
-            // Update Cards
-            document.getElementById('card-fg-pcs').innerText = totalFgPcs.toLocaleString('id-ID');
-            document.getElementById('card-fg-jgr').innerText = totalFgJgr + ' Jgr';
+            document.getElementById('dash-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
+            document.getElementById('dash-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
+            document.getElementById('dash-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
+            document.getElementById('dash-jgr-10l').innerText = jgr10L.toLocaleString('id-ID');
+            document.getElementById('dash-jgr-rusak').innerText = jgrRusak.toLocaleString('id-ID');
 
-            document.getElementById('card-bj-pcs').innerText = totalBjPcs.toLocaleString('id-ID');
-            document.getElementById('card-bj-jgr').innerText = totalBjJgr + ' Jgr';
+            document.getElementById('dash-botol-jgr-pc').innerText = botolJgrPC.toLocaleString('id-ID');
+            document.getElementById('dash-botol-jgr-pet').innerText = botolJgrPET.toLocaleString('id-ID');
+            document.getElementById('dash-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
+            document.getElementById('dash-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
+        }
 
-            document.getElementById('card-jk-jgr').innerText = jkTotalJgr.toLocaleString('id-ID');
-            document.getElementById('card-lasahan-rusak').innerText = lasahanRusak.toLocaleString('id-ID');
-
-            // Update Tabel Rekap
-            document.getElementById('table-fg-pc-jgr').innerText = fgPcJgr;
-            document.getElementById('table-fg-pc-pcs').innerText = fgPcPcs;
-
-            document.getElementById('table-fg-pet-jgr').innerText = fgPetJgr;
-            document.getElementById('table-fg-pet-pcs').innerText = fgPetPcs;
-
-            document.getElementById('table-fg-10l-jgr').innerText = fg10lJgr;
-            document.getElementById('table-fg-10l-pcs').innerText = fg10lPcs;
-
-            document.getElementById('table-bj-pc-jgr').innerText = bjPcJgr;
-            document.getElementById('table-bj-pc-pcs').innerText = bjPcPcs;
-
-            document.getElementById('table-bj-pet-jgr').innerText = bjPetJgr;
-            document.getElementById('table-bj-pet-pcs').innerText = bjPetPcs;
-        });
+        updateDashboard();
     </script>
 </body>
 </html>

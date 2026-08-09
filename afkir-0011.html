@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Afkir 0011</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Top Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-menu { background-color: #6c757d; }
+        .btn-save { background-color: #28a745; }
+        .btn-reset { background-color: #dc3545; }
+
+        .btn:hover { opacity: 0.9; }
+
+        /* Status Auto Save Indicator */
+        .status-badge {
+            text-align: right;
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        /* Table Design */
+        .table-container {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 5px;
+            font-size: 14px;
+            border: 1px solid #454d55;
+        }
+
+        td {
+            padding: 6px 4px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 4px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        input[type="number"]:focus {
+            border-color: #28a745;
+            outline: none;
+            background-color: #f8fff9;
+        }
+
+        /* Plus & Minus Buttons */
+        .btn-del {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* Total Row Styling */
+        .total-row {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        .total-row td {
+            padding: 8px 4px;
+            font-size: 15px;
+        }
+
+        .total-val {
+            font-weight: bold;
+            color: #28a745;
+            background-color: #eef9f1;
+            border: 1px solid #28a745;
+            padding: 6px;
+            border-radius: 4px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Form Input Afkir 0011</h2>
+
+    <!-- Tombol Aksi Utama -->
+    <div class="action-bar">
+        <a href="index.html" class="btn btn-menu">Menu</a>
+        <button type="button" class="btn btn-reset" onclick="resetForm()">Reset</button>
+        <button type="button" class="btn btn-save" onclick="saveData(true)">Save</button>
+    </div>
+
+    <div class="status-badge" id="saveStatus">Data tersimpan otomatis</div>
+
+    <div class="table-container">
+        <form id="afkirForm">
+            <table id="afkirTable">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Afkir PC</th>
+                        <th style="width: 28%;">Afkir PET</th>
+                        <th style="width: 28%;">Afkir luar</th>
+                        <th style="width: 16%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data diisi oleh Auto Load -->
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td><span id="totalPC" class="total-val">0</span></td>
+                        <td><span id="totalPET" class="total-val">0</span></td>
+                        <td><span id="totalLuar" class="total-val">0</span></td>
+                        <td>Total</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Tombol Tambah Row -->
+            <button type="button" class="btn-add" onclick="addRow()">+ Tambah Baris</button>
+        </form>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'afkir_0011_data';
+
+        // Auto Load saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
+
+        // Fungsi Tambah Baris Baru
+        function addRow(valPC = '', valPET = '', valLuar = '') {
+            const tbody = document.getElementById('tableBody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="number" class="pc-input" min="0" value="${valPC}" oninput="handleInputChange()"></td>
+                <td><input type="number" class="pet-input" min="0" value="${valPET}" oninput="handleInputChange()"></td>
+                <td><input type="number" class="luar-input" min="0" value="${valLuar}" oninput="handleInputChange()"></td>
+                <td><button type="button" class="btn-del" onclick="removeRow(this)">-</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // Handler saat ada perubahan angka di input
+        function handleInputChange() {
+            calculateTotal();
+            autoSave();
+        }
+
+        // Fungsi Hapus Baris
+        function removeRow(button) {
+            const tbody = document.getElementById('tableBody');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                calculateTotal();
+                autoSave();
+            } else {
+                alert("Minimal harus ada 1 baris input!");
+            }
+        }
+
+        // Fungsi Hitung Total Otomatis
+        function calculateTotal() {
+            let sumPC = 0;
+            let sumPET = 0;
+            let sumLuar = 0;
+
+            document.querySelectorAll('.pc-input').forEach(input => {
+                sumPC += Number(input.value) || 0;
+            });
+            document.querySelectorAll('.pet-input').forEach(input => {
+                sumPET += Number(input.value) || 0;
+            });
+            document.querySelectorAll('.luar-input').forEach(input => {
+                sumLuar += Number(input.value) || 0;
+            });
+
+            document.getElementById('totalPC').textContent = sumPC;
+            document.getElementById('totalPET').textContent = sumPET;
+            document.getElementById('totalLuar').textContent = sumLuar;
+        }
+
+        // Fungsi Auto Save
+        function autoSave() {
+            saveData(false);
+            const statusEl = document.getElementById('saveStatus');
+            statusEl.textContent = 'Menyimpan...';
+            setTimeout(() => {
+                statusEl.textContent = 'Semua perubahan tersimpan';
+            }, 500);
+        }
+
+        // Fungsi Save Data ke LocalStorage
+        function saveData(showAlert = false) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const rowData = [];
+
+            rows.forEach(row => {
+                const pc = row.querySelector('.pc-input').value;
+                const pet = row.querySelector('.pet-input').value;
+                const luar = row.querySelector('.luar-input').value;
+
+                rowData.push({
+                    pc: pc,
+                    pet: pet,
+                    luar: luar
+                });
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rowData));
+
+            if (showAlert) {
+                alert("Data berhasil disimpan secara manual!");
+            }
+        }
+
+        // Fungsi Load Data dari LocalStorage
+        function loadData() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = ''; // Kosongkan tabel dulu
+
+            const savedData = localStorage.getItem(STORAGE_KEY);
+
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                if (parsedData.length > 0) {
+                    parsedData.forEach(item => {
+                        addRow(item.pc, item.pet, item.luar);
+                    });
+                } else {
+                    addRow(); // Default 1 row jika data kosong
+                }
+            } else {
+                addRow(); // Default 1 row jika belum pernah simpan
+            }
+
+            calculateTotal();
+        }
+
+        // Fungsi Reset Form & Clear Memory
+        function resetForm() {
+            if (confirm("Apakah Anda yakin ingin mengosongkan semua data?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadData();
+                document.getElementById('saveStatus').textContent = 'Data telah direset';
+            }
+        }
+    </script>
+</body>
+</html>
