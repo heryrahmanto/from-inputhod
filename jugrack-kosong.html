@@ -84,6 +84,15 @@
         }
         th { background-color: #f8fafc; color: #334155; }
         
+        /* Style Baris Total Footer */
+        tfoot tr {
+            background-color: #ffe4e6;
+            font-weight: bold;
+        }
+        tfoot td {
+            color: #78350f;
+        }
+
         input[type="number"] {
             width: 100%;
             padding: 6px;
@@ -132,8 +141,8 @@
             <div class="section-header">
                 <h3>a. Jgrk kosong brd-cs</h3>
                 <div class="btn-control">
-                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-brd')">+</button>
-                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-brd')">-</button>
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-brd', 'brd')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-brd', 'brd')">-</button>
                 </div>
             </div>
             
@@ -148,14 +157,18 @@
                     </tr>
                 </thead>
                 <tbody id="tabel-brd">
-                    <tr>
-                        <td class="no">1</td>
-                        <td><input type="number" class="val-p" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-l" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-t" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
-                    </tr>
+                    <!-- Loaded via JS -->
                 </tbody>
+                <!-- BARIS TOTAL TABEL BRD-CS -->
+                <tfoot>
+                    <tr>
+                        <td style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td id="total-p-brd">0</td>
+                        <td id="total-l-brd">0</td>
+                        <td id="total-t-brd">0</td>
+                        <td id="total-jumlah-brd" style="color: #b45309; font-size: 14px;">0</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
@@ -164,8 +177,8 @@
             <div class="section-header">
                 <h3>b. Jgr kosong 10 L</h3>
                 <div class="btn-control">
-                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-10l')">+</button>
-                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-10l')">-</button>
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-10l', '10l')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-10l', '10l')">-</button>
                 </div>
             </div>
             
@@ -180,14 +193,18 @@
                     </tr>
                 </thead>
                 <tbody id="tabel-10l">
-                    <tr>
-                        <td class="no">1</td>
-                        <td><input type="number" class="val-p" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-l" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-t" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
-                    </tr>
+                    <!-- Loaded via JS -->
                 </tbody>
+                <!-- BARIS TOTAL TABEL 10L -->
+                <tfoot>
+                    <tr>
+                        <td style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td id="total-p-10l">0</td>
+                        <td id="total-l-10l">0</td>
+                        <td id="total-t-10l">0</td>
+                        <td id="total-jumlah-10l" style="color: #b45309; font-size: 14px;">0</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
@@ -196,8 +213,8 @@
             <div class="section-header">
                 <h3>c. Jgr rusak</h3>
                 <div class="btn-control">
-                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-rusak')">+</button>
-                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-rusak')">-</button>
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-rusak', 'rusak')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-rusak', 'rusak')">-</button>
                 </div>
             </div>
             
@@ -212,14 +229,18 @@
                     </tr>
                 </thead>
                 <tbody id="tabel-rusak">
-                    <tr>
-                        <td class="no">1</td>
-                        <td><input type="number" class="val-p" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-l" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-t" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
-                    </tr>
+                    <!-- Loaded via JS -->
                 </tbody>
+                <!-- BARIS TOTAL TABEL RUSAK -->
+                <tfoot>
+                    <tr>
+                        <td style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td id="total-p-rusak">0</td>
+                        <td id="total-l-rusak">0</td>
+                        <td id="total-t-rusak">0</td>
+                        <td id="total-jumlah-rusak" style="color: #dc2626; font-size: 14px;">0</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
@@ -231,77 +252,161 @@
 
     </form>
 
-    <!-- SCRIPT JAVASCRIPT LOGIKA & PENYIMPANAN DATA -->
+    <!-- SCRIPT JAVASCRIPT LOGIKA & PENYIMPANAN DATA (WITH AUTO-SAVE & AUTO-LOAD) -->
     <script>
-        function hitungJumlah(elem) {
+        // Load data otomatis saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', function() {
+            loadFormState('brd');
+            loadFormState('10l');
+            loadFormState('rusak');
+        });
+
+        // Hitung Otomatis Jumlah Per Baris: (P * L) + T
+        function hitungJumlah(elem, jenis) {
             let tr = elem.closest('tr');
             let p = parseFloat(tr.querySelector('.val-p').value) || 0;
             let l = parseFloat(tr.querySelector('.val-l').value) || 0;
             let t = parseFloat(tr.querySelector('.val-t').value) || 0;
             
-            // Rumus sesuai instruksi: (P * L) + T
             let total = (p * l) + t;
-
             tr.querySelector('.val-jumlah').value = total;
+
+            // Update Total Footer & Simpan Otomatis State Form
+            hitungTotalTabel(jenis);
+            saveFormState(jenis);
+        }
+
+        // Hitung Akumulasi Total P, L, T, dan Jumlah per Jenis Tabel
+        function hitungTotalTabel(jenis) {
+            let tableId = 'tabel-' + jenis;
+            let totalP = 0, totalL = 0, totalT = 0, totalJumlah = 0;
+
+            document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+                let p = parseFloat(row.querySelector('.val-p')?.value) || 0;
+                let l = parseFloat(row.querySelector('.val-l')?.value) || 0;
+                let t = parseFloat(row.querySelector('.val-t')?.value) || 0;
+                let jumlah = parseFloat(row.querySelector('.val-jumlah')?.value) || 0;
+
+                totalP += p;
+                totalL += l;
+                totalT += t;
+                totalJumlah += jumlah;
+            });
+
+            // Tampilkan ke Footer Tabel
+            document.getElementById(`total-p-${jenis}`).innerText = totalP;
+            document.getElementById(`total-l-${jenis}`).innerText = totalL;
+            document.getElementById(`total-t-${jenis}`).innerText = totalT;
+            document.getElementById(`total-jumlah-${jenis}`).innerText = totalJumlah;
+
+            // Simpan otomatis nilai total akhir per kategori untuk Laporan
+            if (jenis === 'brd') localStorage.setItem('jgr_kosong_brd', totalJumlah);
+            if (jenis === '10l') localStorage.setItem('jgr_kosong_10l', totalJumlah);
+            if (jenis === 'rusak') localStorage.setItem('jgr_rusak', totalJumlah);
+
+            return totalJumlah;
         }
 
         // Tambah Baris (+)
-        function tambahBaris(tableId) {
+        function tambahBaris(tableId, jenis, pVal = '', lVal = '', tVal = '', jumlahVal = 0) {
             let tbody = document.getElementById(tableId);
             let rowCount = tbody.rows.length + 1;
             
             let tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="no">${rowCount}</td>
-                <td><input type="number" class="val-p" oninput="hitungJumlah(this)" placeholder="..."></td>
-                <td><input type="number" class="val-l" oninput="hitungJumlah(this)" placeholder="..."></td>
-                <td><input type="number" class="val-t" oninput="hitungJumlah(this)" placeholder="..."></td>
-                <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
+                <td><input type="number" class="val-p" value="${pVal}" oninput="hitungJumlah(this, '${jenis}')" placeholder="..."></td>
+                <td><input type="number" class="val-l" value="${lVal}" oninput="hitungJumlah(this, '${jenis}')" placeholder="..."></td>
+                <td><input type="number" class="val-t" value="${tVal}" oninput="hitungJumlah(this, '${jenis}')" placeholder="..."></td>
+                <td><input type="number" class="val-jumlah bg-readonly" readonly value="${jumlahVal}"></td>
             `;
             tbody.appendChild(tr);
+
+            saveFormState(jenis);
         }
 
         // Hapus Baris (-)
-        function hapusBaris(tableId) {
+        function hapusBaris(tableId, jenis) {
             let tbody = document.getElementById(tableId);
             if (tbody.rows.length > 1) {
                 tbody.deleteRow(-1);
+                hitungTotalTabel(jenis);
+                saveFormState(jenis);
             }
         }
 
-        // Hitung Total Seluruh Baris Dalam Suatu Tabel
-        function hitungTotalTabel(tableId) {
-            let total = 0;
-            let inputs = document.querySelectorAll(`#${tableId} .val-jumlah`);
-            inputs.forEach(input => {
-                total += parseFloat(input.value) || 0;
+        // Simpan Struktur Baris dan Input ke LocalStorage (Auto-Save Real-Time)
+        function saveFormState(jenis) {
+            let tableId = 'tabel-' + jenis;
+            let rowsData = [];
+
+            document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+                let p = row.querySelector('.val-p')?.value || '';
+                let l = row.querySelector('.val-l')?.value || '';
+                let t = row.querySelector('.val-t')?.value || '';
+                let jumlah = row.querySelector('.val-jumlah')?.value || 0;
+                rowsData.push({ p, l, t, jumlah });
             });
-            return total;
+
+            localStorage.setItem(`jgr_rows_${jenis}`, JSON.stringify(rowsData));
         }
 
-        // FUNGSI UTAMA: SIMPAN KE LOCALSTORAGE
+        // Memuat Kembali Data Inputan & Baris Saat Halaman Dibuka (Auto-Load)
+        function loadFormState(jenis) {
+            let tableId = 'tabel-' + jenis;
+            let tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            let savedRows = JSON.parse(localStorage.getItem(`jgr_rows_${jenis}`) || '[]');
+
+            if (savedRows.length > 0) {
+                savedRows.forEach(data => {
+                    tambahBaris(tableId, jenis, data.p, data.l, data.t, data.jumlah);
+                });
+            } else {
+                // Baris default jika belum ada data tersimpan
+                tambahBaris(tableId, jenis);
+            }
+
+            hitungTotalTabel(jenis);
+        }
+
+        // SIMPAN DATA UTAMA (SAAT KLIK TUMBOL SAVE)
         function simpanData(event) {
             event.preventDefault();
 
-            let totalBrd = hitungTotalTabel('tabel-brd');
-            let total10l = hitungTotalTabel('tabel-10l');
-            let totalRusak = hitungTotalTabel('tabel-rusak');
+            let totalBrd = parseFloat(document.getElementById('total-jumlah-brd').innerText) || 0;
+            let total10l = parseFloat(document.getElementById('total-jumlah-10l').innerText) || 0;
+            let totalRusak = parseFloat(document.getElementById('total-jumlah-rusak').innerText) || 0;
 
-            // Simpan ke localStorage sesuai kunci yang dibaca oleh report-shift.html
             localStorage.setItem('jgr_kosong_brd', totalBrd);
             localStorage.setItem('jgr_kosong_10l', total10l);
             localStorage.setItem('jgr_rusak', totalRusak);
 
-            alert('Data Jugrack Kosong Berhasil Disimpan!');
+            alert(`Data Jugrack Kosong Berhasil Disimpan!\n- BRD-CS: ${totalBrd}\n- 10 L: ${total10l}\n- Rusak: ${totalRusak}`);
         }
 
-        // Reset Form
+        // Reset Form & Clear LocalStorage
         function resetForm() {
-            let jumlahInputs = document.querySelectorAll('.val-jumlah');
-            jumlahInputs.forEach(input => input.value = 0);
-            localStorage.removeItem('jgr_kosong_brd');
-            localStorage.removeItem('jgr_kosong_10l');
-            localStorage.removeItem('jgr_rusak');
+            ['brd', '10l', 'rusak'].forEach(jenis => {
+                let tableId = 'tabel-' + jenis;
+                let tbody = document.getElementById(tableId);
+                tbody.innerHTML = '';
+                
+                // Kembalikan ke 1 baris kosong awal
+                tambahBaris(tableId, jenis);
+
+                document.getElementById(`total-p-${jenis}`).innerText = '0';
+                document.getElementById(`total-l-${jenis}`).innerText = '0';
+                document.getElementById(`total-t-${jenis}`).innerText = '0';
+                document.getElementById(`total-jumlah-${jenis}`).innerText = '0';
+
+                localStorage.removeItem(`jgr_rows_${jenis}`);
+            });
+
+            localStorage.setItem('jgr_kosong_brd', 0);
+            localStorage.setItem('jgr_kosong_10l', 0);
+            localStorage.setItem('jgr_rusak', 0);
         }
     </script>
 </body>

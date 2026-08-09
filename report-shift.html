@@ -75,15 +75,15 @@
         .row-odd { background-color: #f8fafc; }
 
         .label-col {
-            width: 70%;
+            width: 65%;
             font-weight: 700;
             color: #1e293b;
         }
         .val-col {
-            width: 30%;
+            width: 35%;
             text-align: right;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
             color: #000000;
         }
 
@@ -96,7 +96,7 @@
         }
         .row-total-jgr .label-col, .row-total-jgr .val-col {
             color: #1e3a8a;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
         }
 
@@ -115,7 +115,7 @@
             border-top: 3px solid #000000 !important;
             border-bottom: 3px solid #000000 !important;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
             color: #000000;
         }
 
@@ -127,7 +127,7 @@
             border-color: #0284c7;
             color: #ffffff !important;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         /* Tombol Navigasi Bawah */
@@ -220,18 +220,14 @@
                 <td class="val-col" id="val-siap-pet">0</td>
             </tr>
 
-            <!-- 3. FINISH GOOD -->
+            <!-- 3. FINISH GOOD (Hanya PC & PET) -->
             <tr class="row-fg">
                 <td class="label-col">Finish Good PC ( 0002 )</td>
-                <td class="val-col" id="val-fg-pc">0</td>
-            </tr>
-            <tr class="row-fg">
-                <td class="label-col">Finish Good PET ( 0012 )</td>
-                <td class="val-col" id="val-fg-pet">0</td>
+                <td class="val-col" id="val-fg-pc">0 Jgr (0 Pcs)</td>
             </tr>
             <tr class="row-fg" style="background-color: #0369a1;">
-                <td class="label-col">Finish Good 10 L</td>
-                <td class="val-col" id="val-fg-10l">0</td>
+                <td class="label-col">Finish Good PET ( 0012 )</td>
+                <td class="val-col" id="val-fg-pet">0 Jgr (0 Pcs)</td>
             </tr>
         </table>
 
@@ -242,43 +238,50 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA PERBAIKAN TOTAL -->
+    <!-- SCRIPT UTAMA LOGIKA WAKTU & DATA -->
     <script>
+        // 1. UPDATE WAKTU DENGAN JAM BERJALAN OTO DETIK
         function updateWaktu() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
-            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', '.') + ' WIB';
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
             
-            document.getElementById('liveDateTime').innerHTML = tglStr + '<br>' + jamStr;
+            document.getElementById('liveDateTime').innerHTML = tglStr + ' | ' + jamStr;
         }
+        
+        // Jalankan updateWaktu tiap 1 detik
         updateWaktu();
+        setInterval(updateWaktu, 1000);
 
+        // 2. MENGHUBUNGKAN DATA DARI LOCALSTORAGE
         function loadReportData() {
-            // Ambil Jugrack
+            // Data Jugrack
             let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
             let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
             let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
             let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
             let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
 
-            // Ambil Botol
+            // Data Botol Kosong
             let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
             let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
             let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
             let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
 
-            // Ambil Finish Good
-            let fgPC = parseInt(localStorage.getItem('fg_pc') || '0');
-            let fgPET = parseInt(localStorage.getItem('fg_pet') || '0');
-            let fg10L = parseInt(localStorage.getItem('fg_10l') || '0');
+            // Data Finish Good dari form Finish Good (Jgr & Pcs)
+            let fgJgrPC = parseInt(localStorage.getItem('fg_jgr_pc') || localStorage.getItem('fg_pc') || '0');
+            let fgJmlhPC = parseInt(localStorage.getItem('fg_jmlh_pc') || '0');
 
-            // RUMUS PERHITUNGAN
+            let fgJgrPET = parseInt(localStorage.getItem('fg_jgr_pet') || localStorage.getItem('fg_pet') || '0');
+            let fgJmlhPET = parseInt(localStorage.getItem('fg_jmlh_pet') || '0');
+
+            // Rumus Total
             let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
             let siapPC = botolJgrPC + lasahanPC;
             let siapPET = botolJgrPET + lasahanPET;
 
-            // Cetak ke layar
+            // Tampilkan ke Elemen HTML
             document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -294,25 +297,24 @@
             document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
             document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
 
-            document.getElementById('val-fg-pc').innerText = fgPC.toLocaleString('id-ID');
-            document.getElementById('val-fg-pet').innerText = fgPET.toLocaleString('id-ID');
-            document.getElementById('val-fg-10l').innerText = fg10L.toLocaleString('id-ID');
+            // Format Tampilan FG: X Jgr (Y Pcs)
+            document.getElementById('val-fg-pc').innerText = `${fgJgrPC.toLocaleString('id-ID')} Jgr (${fgJmlhPC.toLocaleString('id-ID')} Pcs)`;
+            document.getElementById('val-fg-pet').innerText = `${fgJgrPET.toLocaleString('id-ID')} Jgr (${fgJmlhPET.toLocaleString('id-ID')} Pcs)`;
         }
 
+        // Jalankan Pemuatan Data
         loadReportData();
 
+        // 3. FUNGSI SHARE DENGAN SPESIFIKASI SCREENSHOT
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');
 
-            // Sembunyikan tombol saat screenshot
             actionButtons.style.display = 'none';
 
             html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
-                // Tampilkan lagi tombolnya
                 actionButtons.style.display = 'flex';
 
-                // Simpan gambar dengan nama yang benar
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -322,11 +324,9 @@
                     link.click();
                     document.body.removeChild(link);
 
-                    // Pesan teks
-                    let timeText = document.getElementById('liveDateTime').innerText.replace('<br>', ' ');
-                    let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG sudah otomatis terunduh, tinggal lampirkan gambar di chat ini)*`;
+                    let timeText = document.getElementById('liveDateTime').innerText;
+                    let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG otomatis terunduh, silakan lampirkan gambar di chat ini)*`;
 
-                    // Buka WA tanpa error
                     setTimeout(() => {
                         window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
                     }, 1200);

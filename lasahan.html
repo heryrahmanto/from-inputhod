@@ -84,6 +84,15 @@
         }
         th { background-color: #f8fafc; color: #334155; }
         
+        /* Style Tambahan untuk Footer Total */
+        tfoot tr {
+            background-color: #e2e8f0;
+            font-weight: bold;
+        }
+        tfoot td {
+            color: #0f172a;
+        }
+        
         input[type="number"] {
             width: 100%;
             padding: 6px;
@@ -132,8 +141,8 @@
             <div class="section-header">
                 <h3>a. Lasahan PET</h3>
                 <div class="btn-control">
-                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pet')">+</button>
-                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pet')">-</button>
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pet', 'pet')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pet', 'pet')">-</button>
                 </div>
             </div>
             
@@ -147,13 +156,17 @@
                     </tr>
                 </thead>
                 <tbody id="tabel-pet">
-                    <tr>
-                        <td class="no">1</td>
-                        <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
-                    </tr>
+                    <!-- Isian akan dimuat otomatis via Javascript -->
                 </tbody>
+                <!-- BARIS TOTAL TABEL PET -->
+                <tfoot>
+                    <tr>
+                        <td colspan="1" style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td id="total-botol-pet">0</td>
+                        <td id="total-isi-pet">0</td>
+                        <td id="total-jumlah-pet" style="color: #1d4ed8; font-size: 14px;">0</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
@@ -162,8 +175,8 @@
             <div class="section-header">
                 <h3>b. Lasahan PC</h3>
                 <div class="btn-control">
-                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pc')">+</button>
-                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pc')">-</button>
+                    <button type="button" class="btn-add" onclick="tambahBaris('tabel-pc', 'pc')">+</button>
+                    <button type="button" class="btn-remove" onclick="hapusBaris('tabel-pc', 'pc')">-</button>
                 </div>
             </div>
             
@@ -177,13 +190,17 @@
                     </tr>
                 </thead>
                 <tbody id="tabel-pc">
-                    <tr>
-                        <td class="no">1</td>
-                        <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
-                        <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
-                    </tr>
+                    <!-- Isian akan dimuat otomatis via Javascript -->
                 </tbody>
+                <!-- BARIS TOTAL TABEL PC -->
+                <tfoot>
+                    <tr>
+                        <td colspan="1" style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td id="total-botol-pc">0</td>
+                        <td id="total-isi-pc">0</td>
+                        <td id="total-jumlah-pc" style="color: #1d4ed8; font-size: 14px;">0</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
@@ -195,10 +212,16 @@
 
     </form>
 
-    <!-- SCRIPT JAVASCRIPT LENGKAP & FIX LOGIC -->
+    <!-- SCRIPT JAVASCRIPT LENGKAP -->
     <script>
-        // Hitung Otomatis: Jumlah = Botol * Isi
-        function hitungJumlah(elem) {
+        // 1. DIBUKA KEMBALI -> LOAD DATA TERSIMPAN
+        window.addEventListener('DOMContentLoaded', function() {
+            loadFormState('pet');
+            loadFormState('pc');
+        });
+
+        // Hitung Otomatis: Per baris (Jumlah = Botol * Isi) & Panggil Akumulasi Total
+        function hitungJumlah(elem, jenis) {
             let tr = elem.closest('tr');
             let valBotol = parseFloat(tr.querySelector('.val-botol').value);
             let valIsi = parseFloat(tr.querySelector('.val-isi').value);
@@ -213,60 +236,138 @@
             }
 
             tr.querySelector('.val-jumlah').value = total;
+
+            // Update Total di Footer & Simpan Data Otomatis
+            hitungTotalTabel(jenis);
+            saveFormState(jenis);
+        }
+
+        // Hitung Akumulasi Total per Tabel (Botol, Isi, dan Jumlah)
+        function hitungTotalTabel(jenis) {
+            let tableId = jenis === 'pet' ? 'tabel-pet' : 'tabel-pc';
+            
+            let totalBotol = 0;
+            let totalIsi = 0;
+            let totalJumlah = 0;
+
+            document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+                let botol = parseFloat(row.querySelector('.val-botol')?.value) || 0;
+                let isi = parseFloat(row.querySelector('.val-isi')?.value) || 0;
+                let jumlah = parseFloat(row.querySelector('.val-jumlah')?.value) || 0;
+
+                totalBotol += botol;
+                totalIsi += isi;
+                totalJumlah += jumlah;
+            });
+
+            // Tampilkan ke Footer
+            document.getElementById(`total-botol-${jenis}`).innerText = totalBotol;
+            document.getElementById(`total-isi-${jenis}`).innerText = totalIsi;
+            document.getElementById(`total-jumlah-${jenis}`).innerText = totalJumlah;
+
+            // Simpan Total langsung ke LocalStorage untuk Report
+            localStorage.setItem(`lasahan_${jenis}`, totalJumlah);
+            let totalPET = parseFloat(localStorage.getItem('lasahan_pet')) || 0;
+            let totalPC = parseFloat(localStorage.getItem('lasahan_pc')) || 0;
+            localStorage.setItem('total_lasahan', totalPET + totalPC);
         }
 
         // Tambah Baris (+)
-        function tambahBaris(tableId) {
+        function tambahBaris(tableId, jenis, botolVal = '', isiVal = '', jumlahVal = 0) {
             let tbody = document.getElementById(tableId);
             let rowCount = tbody.rows.length + 1;
             
             let tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="no">${rowCount}</td>
-                <td><input type="number" class="val-botol" oninput="hitungJumlah(this)" placeholder="..."></td>
-                <td><input type="number" class="val-isi" oninput="hitungJumlah(this)" placeholder="..."></td>
-                <td><input type="number" class="val-jumlah bg-readonly" readonly value="0"></td>
+                <td><input type="number" class="val-botol" value="${botolVal}" oninput="hitungJumlah(this, '${jenis}')" placeholder="..."></td>
+                <td><input type="number" class="val-isi" value="${isiVal}" oninput="hitungJumlah(this, '${jenis}')" placeholder="..."></td>
+                <td><input type="number" class="val-jumlah bg-readonly" readonly value="${jumlahVal}"></td>
             `;
             tbody.appendChild(tr);
+
+            saveFormState(jenis);
         }
 
         // Hapus Baris (-)
-        function hapusBaris(tableId) {
+        function hapusBaris(tableId, jenis) {
             let tbody = document.getElementById(tableId);
             if (tbody.rows.length > 1) {
                 tbody.deleteRow(-1);
+                hitungTotalTabel(jenis);
+                saveFormState(jenis);
             }
         }
 
-        // SIMPAN DATA KE LOCALSTORAGE BIAR TERBACA DI REPORT-SHIFT / UPDATE HOD
+        // Simpan Struktur & Isi Input Baris
+        function saveFormState(jenis) {
+            let tableId = jenis === 'pet' ? 'tabel-pet' : 'tabel-pc';
+            let rowsData = [];
+
+            document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+                let botol = row.querySelector('.val-botol')?.value || '';
+                let isi = row.querySelector('.val-isi')?.value || '';
+                let jumlah = row.querySelector('.val-jumlah')?.value || 0;
+                rowsData.push({ botol, isi, jumlah });
+            });
+
+            localStorage.setItem(`lasahan_rows_${jenis}`, JSON.stringify(rowsData));
+        }
+
+        // Memuat Kembali Struktur & Isi Input Baris
+        function loadFormState(jenis) {
+            let tableId = jenis === 'pet' ? 'tabel-pet' : 'tabel-pc';
+            let tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            let savedRows = JSON.parse(localStorage.getItem(`lasahan_rows_${jenis}`) || '[]');
+
+            if (savedRows.length > 0) {
+                savedRows.forEach(data => {
+                    tambahBaris(tableId, jenis, data.botol, data.isi, data.jumlah);
+                });
+            } else {
+                // Baris default jika pertama kali dibuka
+                tambahBaris(tableId, jenis);
+            }
+
+            hitungTotalTabel(jenis);
+        }
+
+        // SIMPAN DATA KE LOCALSTORAGE DENGAN NOTIFIKASI
         function simpanDataLasahan(e) {
             e.preventDefault();
 
-            // Hitung Total Lasahan PET
-            let totalPET = 0;
-            document.querySelectorAll('#tabel-pet .val-jumlah').forEach(input => {
-                totalPET += parseFloat(input.value) || 0;
-            });
+            let totalJumlahPET = parseFloat(document.getElementById('total-jumlah-pet').innerText) || 0;
+            let totalJumlahPC = parseFloat(document.getElementById('total-jumlah-pc').innerText) || 0;
+            let grandTotalLasahan = totalJumlahPET + totalJumlahPC;
 
-            // Hitung Total Lasahan PC
-            let totalPC = 0;
-            document.querySelectorAll('#tabel-pc .val-jumlah').forEach(input => {
-                totalPC += parseFloat(input.value) || 0;
-            });
+            localStorage.setItem('lasahan_pet', totalJumlahPET);
+            localStorage.setItem('lasahan_pc', totalJumlahPC);
+            localStorage.setItem('total_lasahan', grandTotalLasahan);
 
-            // Simpan ke storage yang dibaca oleh report-shift.html
-            localStorage.setItem('lasahan_pet', totalPET);
-            localStorage.setItem('lasahan_pc', totalPC);
-
-            alert(`Data Lasahan Berhasil Disimpan!\nTotal PET: ${totalPET}\nTotal PC: ${totalPC}`);
+            alert(`Data Lasahan Berhasil Disimpan!\n- Total PET: ${totalJumlahPET}\n- Total PC: ${totalJumlahPC}\n- Grand Total: ${grandTotalLasahan}`);
         }
 
-        // Reset Form
+        // Reset Form & Total
         function resetForm() {
-            let jumlahInputs = document.querySelectorAll('.val-jumlah');
-            jumlahInputs.forEach(input => input.value = 0);
-            localStorage.setItem('lasahan_pet', 0);
-            localStorage.setItem('lasahan_pc', 0);
+            ['pet', 'pc'].forEach(jenis => {
+                let tableId = jenis === 'pet' ? 'tabel-pet' : 'tabel-pc';
+                let tbody = document.getElementById(tableId);
+                tbody.innerHTML = '';
+                
+                // Kembalikan 1 baris kosong
+                tambahBaris(tableId, jenis);
+
+                document.getElementById(`total-botol-${jenis}`).innerText = '0';
+                document.getElementById(`total-isi-${jenis}`).innerText = '0';
+                document.getElementById(`total-jumlah-${jenis}`).innerText = '0';
+
+                localStorage.removeItem(`lasahan_rows_${jenis}`);
+                localStorage.setItem(`lasahan_${jenis}`, 0);
+            });
+
+            localStorage.setItem('total_lasahan', 0);
         }
     </script>
 </body>
