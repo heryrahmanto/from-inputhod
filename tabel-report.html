@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabel Riwayat Report HOD</title>
+    <!-- Library SheetJS untuk Export Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 12px;
+            color: #0f172a;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 { margin-top: 0; color: #0369a1; font-size: 18px; }
+        
+        /* Area Filter & Search */
+        .filter-box {
+            background-color: #e0f2fe;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-group { display: flex; flex-direction: column; flex: 1; min-width: 120px; }
+        .filter-group label { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #0369a1; }
+        .filter-group input { padding: 6px 8px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 12px; }
+
+        .btn-group-action {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-excel { background-color: #16a34a; }
+        .btn-back { background-color: #475569; }
+        
+        .btn-edit { background-color: #f59e0b; padding: 4px 8px; font-size: 11px; margin-right: 2px; }
+        .btn-delete { background-color: #dc2626; padding: 4px 8px; font-size: 11px; }
+        .btn-save { background-color: #16a34a; padding: 4px 8px; font-size: 11px; }
+
+        /* Tabel Responsive */
+        .table-responsive { overflow-x: auto; max-height: 70vh; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        th { background-color: #0284c7; color: white; position: sticky; top: 0; z-index: 10; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        
+        /* Highlight Header Kategori */
+        th.cat-jgr { background-color: #0369a1; }
+        th.cat-btl { background-color: #0d9488; }
+        th.cat-fg { background-color: #15803d; }
+        th.cat-afkir { background-color: #b91c1c; }
+
+        input.editable-cell {
+            width: 50px;
+            text-align: center;
+            font-size: 11px;
+            padding: 2px;
+            border: 1px solid #0284c7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📊 Rekap Tabel Laporan HOD</h2>
+
+    <div class="filter-box">
+        <!-- Search Bar -->
+        <div class="filter-group" style="flex: 2; min-width: 180px;">
+            <label>🔍 Cari Data (ID / Tanggal / Waktu):</label>
+            <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Ketik kata kunci...">
+        </div>
+        <div class="filter-group">
+            <label>Tanggal Mulai:</label>
+            <input type="date" id="startDate" onchange="renderTable()">
+        </div>
+        <div class="filter-group">
+            <label>Tanggal Selesai:</label>
+            <input type="date" id="endDate" onchange="renderTable()">
+        </div>
+        <div class="btn-group-action">
+            <button class="btn btn-excel" onclick="exportToExcel()">📥 Export Excel</button>
+            <a href="report-shift2.html" class="btn btn-back">⬅️ Kembali ke Form</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">Aksi</th>
+                    <th rowspan="2">ID</th>
+                    <th rowspan="2">Tanggal</th>
+                    <th rowspan="2">Waktu</th>
+                    <!-- Group Jugrack -->
+                    <th colspan="6" class="cat-jgr">JUGRACK</th>
+                    <!-- Group Botol -->
+                    <th colspan="6" class="cat-btl">BOTOL KOSONG & SIAP PAKAI</th>
+                    <!-- Group FG -->
+                    <th colspan="3" class="cat-fg">FINISH GOOD</th>
+                    <!-- Group Afkir -->
+                    <th colspan="3" class="cat-afkir">AFKIR 0011</th>
+                </tr>
+                <tr>
+                    <!-- Sub-header Jugrack -->
+                    <th class="cat-jgr">Jgr Kosong</th>
+                    <th class="cat-jgr">Jgr PC</th>
+                    <th class="cat-jgr">Jgr PET</th>
+                    <th class="cat-jgr">Jgr 10L</th>
+                    <th class="cat-jgr">Total Jgr</th>
+                    <th class="cat-jgr">Jgr Rusak</th>
+                    <!-- Sub-header Botol -->
+                    <th class="cat-btl">Btl Jgr PC</th>
+                    <th class="cat-btl">Btl Jgr PET</th>
+                    <th class="cat-btl">Lasahan PC</th>
+                    <th class="cat-btl">Lasahan PET</th>
+                    <th class="cat-btl">Siap PC</th>
+                    <th class="cat-btl">Siap PET</th>
+                    <!-- Sub-header FG -->
+                    <th class="cat-fg">FG PC</th>
+                    <th class="cat-fg">FG PET</th>
+                    <th class="cat-fg">FG 10L</th>
+                    <!-- Sub-header Afkir -->
+                    <th class="cat-afkir">Afkir PC</th>
+                    <th class="cat-afkir">Afkir PET</th>
+                    <th class="cat-afkir">Afkir 10L</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function renderTable() {
+        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        let tbody = document.getElementById('tableBody');
+        let searchVal = document.getElementById('searchInput').value.toLowerCase();
+        let startVal = document.getElementById('startDate').value;
+        let endVal = document.getElementById('endDate').value;
+
+        tbody.innerHTML = '';
+
+        let filtered = history.filter(item => {
+            let matchSearch = (item.id || '').toLowerCase().includes(searchVal) || 
+                              (item.tanggal || '').toLowerCase().includes(searchVal) || 
+                              (item.waktu || '').toLowerCase().includes(searchVal);
+
+            let matchDate = true;
+            if (startVal && item.tanggal < startVal) matchDate = false;
+            if (endVal && item.tanggal > endVal) matchDate = false;
+
+            return matchSearch && matchDate;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="21" style="text-align:center; padding:20px; color:#64748b;">Data tidak ditemukan.</td></tr>';
+            return;
+        }
+
+        filtered.forEach((row) => {
+            let tr = document.createElement('tr');
+            tr.id = `row-${row.id}`;
+            tr.innerHTML = `
+                <td>
+                    <button class="btn btn-edit" onclick="enableEdit('${row.id}')">✏️</button>
+                    <button class="btn btn-delete" onclick="deleteRow('${row.id}')">🗑️</button>
+                </td>
+                <td><strong>${row.id}</strong></td>
+                <td>${row.tanggal}</td>
+                <td>${row.waktu}</td>
+                
+                <!-- Jugrack -->
+                <td><span class="view-mode">${row.jgrKosong ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrKosong ?? 0}" data-col="jgrKosong"></td>
+                <td><span class="view-mode">${row.jgrPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrPC ?? 0}" data-col="jgrPC"></td>
+                <td><span class="view-mode">${row.jgrPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrPET ?? 0}" data-col="jgrPET"></td>
+                <td><span class="view-mode">${row.jgr10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgr10L ?? 0}" data-col="jgr10L"></td>
+                <td><strong>${row.totalJugrack ?? 0}</strong></td>
+                <td><span class="view-mode">${row.jgrRusak ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrRusak ?? 0}" data-col="jgrRusak"></td>
+                
+                <!-- Botol Kosong -->
+                <td><span class="view-mode">${row.botolJgrPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.botolJgrPC ?? 0}" data-col="botolJgrPC"></td>
+                <td><span class="view-mode">${row.botolJgrPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.botolJgrPET ?? 0}" data-col="botolJgrPET"></td>
+                <td><span class="view-mode">${row.lasahanPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.lasahanPC ?? 0}" data-col="lasahanPC"></td>
+                <td><span class="view-mode">${row.lasahanPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.lasahanPET ?? 0}" data-col="lasahanPET"></td>
+                <td><strong>${row.siapPC ?? 0}</strong></td>
+                <td><strong>${row.siapPET ?? 0}</strong></td>
+
+                <!-- FG -->
+                <td><span class="view-mode">${row.fgJmlhPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlhPC ?? 0}" data-col="fgJmlhPC"></td>
+                <td><span class="view-mode">${row.fgJmlhPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlhPET ?? 0}" data-col="fgJmlhPET"></td>
+                <td><span class="view-mode">${row.fgJmlh10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlh10L ?? 0}" data-col="fgJmlh10L"></td>
+
+                <!-- Afkir -->
+                <td><span class="view-mode">${row.afkirPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkirPC ?? 0}" data-col="afkirPC"></td>
+                <td><span class="view-mode">${row.afkirPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkirPET ?? 0}" data-col="afkirPET"></td>
+                <td><span class="view-mode">${row.afkir10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkir10L ?? 0}" data-col="afkir10L"></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    renderTable();
+
+    // FITUR EDIT DATA PER BARIS
+    function enableEdit(id) {
+        let tr = document.getElementById(`row-${id}`);
+        let viewModes = tr.querySelectorAll('.view-mode');
+        let editModes = tr.querySelectorAll('.edit-mode');
+
+        viewModes.forEach(el => el.style.display = 'none');
+        editModes.forEach(el => el.style.display = 'inline-block');
+
+        let actionTd = tr.children[0];
+        actionTd.innerHTML = `<button class="btn btn-save" onclick="saveEdit('${id}')">💾 Simpan</button>`;
+    }
+
+    function saveEdit(id) {
+        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        let index = history.findIndex(item => item.id === id);
+
+        if (index !== -1) {
+            let tr = document.getElementById(`row-${id}`);
+            let inputs = tr.querySelectorAll('.edit-mode');
+
+            inputs.forEach(input => {
+                let col = input.getAttribute('data-col');
+                history[index][col] = parseInt(input.value) || 0;
+            });
+
+            // Hitung Ulang Total Otomatis
+            history[index].totalJugrack = (history[index].jgrKosong || 0) + (history[index].jgrPC || 0) + (history[index].jgrPET || 0) + (history[index].jgr10L || 0);
+            history[index].siapPC = (history[index].botolJgrPC || 0) + (history[index].lasahanPC || 0);
+            history[index].siapPET = (history[index].botolJgrPET || 0) + (history[index].lasahanPET || 0);
+
+            localStorage.setItem('report_history_db', JSON.stringify(history));
+            alert("Data berhasil diperbarui!");
+            renderTable();
+        }
+    }
+
+    // FITUR HAPUS DATA PER BARIS
+    function deleteRow(id) {
+        if (confirm(`Yakin ingin menghapus data ID: ${id}?`)) {
+            let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem('report_history_db', JSON.stringify(history));
+            renderTable();
+        }
+    }
+
+    // FITUR EXPORT EXCEL
+    function exportToExcel() {
+        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        if (history.length === 0) {
+            alert("Tidak ada data untuk di-export!");
+            return;
+        }
+
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.json_to_sheet(history);
+        XLSX.utils.book_append_sheet(wb, ws, "Rekap_Report");
+        XLSX.writeFile(wb, `Rekap_Report_HOD.xlsx`);
+    }
+</script>
+
+</body>
+</html>
