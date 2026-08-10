@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard Monitoring Logistik">
     <title>Dashboard Monitoring Logistik</title>
     <style>
         * { box-sizing: border-box; }
@@ -110,12 +111,12 @@
 </head>
 <body>
 
-    <div class="dashboard-container">
+    <main class="dashboard-container">
         <!-- Header -->
-        <div class="header">
+        <header class="header">
             <h2>📈 DASHBOARD LOGISTIK</h2>
             <p id="timeInfo">-</p>
-        </div>
+        </header>
 
         <!-- Cards Ringkasan Utamakan Stok -->
         <div class="grid-cards">
@@ -138,7 +139,7 @@
         </div>
 
         <!-- Detail Breakdown Jugrack -->
-        <div class="section-box">
+        <section class="section-box">
             <h3>🔲 Summary Jugrack</h3>
             <div class="detail-row">
                 <span class="detail-label">Jugrack Kosong</span>
@@ -160,10 +161,10 @@
                 <span class="detail-label" style="color: #dc2626;">Jugrack Rusak</span>
                 <span class="detail-value" id="dash-jgr-rusak">0</span>
             </div>
-        </div>
+        </section>
 
         <!-- Detail Breakdown Botol Kosong -->
-        <div class="section-box">
+        <section class="section-box">
             <h3>🍾 Summary Botol Kosong</h3>
             <div class="detail-row">
                 <span class="detail-label">Botol Jugrack PC</span>
@@ -181,67 +182,96 @@
                 <span class="detail-label">Lasahan PET</span>
                 <span class="detail-value" id="dash-lasahan-pet">0</span>
             </div>
-        </div>
+        </section>
 
         <!-- Tombol Kembali -->
         <a href="index.html" class="btn-home">🏠 Kembali ke Menu Utama</a>
-    </div>
+    </main>
 
     <script>
+        function safeParseInt(val) {
+            const parsed = parseInt(val, 10);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
         function updateDashboard() {
             // Live Waktu
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
             let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/\./g, ':');
-            document.getElementById('timeInfo').innerText = `${tglStr} | ${jamStr} WIB`;
+            
+            const timeElement = document.getElementById('timeInfo');
+            if (timeElement) {
+                timeElement.innerText = `${tglStr} | ${jamStr} WIB`;
+            }
 
-            // Pull Data dari LocalStorage
-            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
-            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
-            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
-            let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
-            let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
+            // 1. Ambil jumlah RAK JUGRACK dari localStorage
+            let jgrKosong = safeParseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong'));
+            
+            // Mengambil angka input (Misal PC = 6, PET = 4)
+            let jgrPC = safeParseInt(localStorage.getItem('jgr_botol_pc') || localStorage.getItem('botol_jgr_pc'));
+            let jgrPET = safeParseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet'));
+            
+            let jgr10L = safeParseInt(localStorage.getItem('jgr_kosong_10l'));
+            let jgrRusak = safeParseInt(localStorage.getItem('jgr_rusak'));
 
-            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
-            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
-            let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
-            let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
+            // 2. Ambil Lasahan
+            let lasahanPC = safeParseInt(localStorage.getItem('lasahan_pc'));
+            let lasahanPET = safeParseInt(localStorage.getItem('lasahan_pet'));
 
+            // 3. HITUNG JUMLAH BOTOL (Jumlah Jugrack x 48)
+            let botolJgrPC = jgrPC * 48;
+            let botolJgrPET = jgrPET * 48;
+
+            // 4. HITUNG SIAP PAKAI (Botol Jugrack + Botol Lasahan)
+            let siapPC = botolJgrPC + lasahanPC;
+            let siapPET = botolJgrPET + lasahanPET;
+
+            // 5. HITUNG TOTAL JUGRACK
+            let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
+
+            // 6. HITUNG AFKIR
             let totalAfkir = 0;
             const savedAfkir = localStorage.getItem('afkir_0011_data');
             if (savedAfkir) {
                 try {
                     const parsed = JSON.parse(savedAfkir);
-                    parsed.forEach(item => {
-                        totalAfkir += (parseInt(item.pc) || 0) + (parseInt(item.pet) || 0) + (parseInt(item.luar) || 0);
-                    });
+                    if (Array.isArray(parsed)) {
+                        parsed.forEach(item => {
+                            totalAfkir += safeParseInt(item.pc) + safeParseInt(item.pet) + safeParseInt(item.luar);
+                        });
+                    } else if (typeof parsed === 'object' && parsed !== null) {
+                        totalAfkir = safeParseInt(parsed.pc) + safeParseInt(parsed.pet) + safeParseInt(parsed.luar);
+                    }
                 } catch(e) {}
             }
 
-            let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
-            let siapPC = botolJgrPC + lasahanPC;
-            let siapPET = botolJgrPET + lasahanPET;
+            // Helper DOM
+            function setText(id, value) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = value;
+            }
 
             // Render ke UI
-            document.getElementById('dash-siap-pc').innerText = siapPC.toLocaleString('id-ID');
-            document.getElementById('dash-siap-pet').innerText = siapPET.toLocaleString('id-ID');
-            document.getElementById('dash-total-jgr').innerText = totalJgr.toLocaleString('id-ID');
-            document.getElementById('dash-total-afkir').innerText = `${totalAfkir.toLocaleString('id-ID')} Pcs`;
+            setText('dash-siap-pc', siapPC.toLocaleString('id-ID'));       // (6 * 48) = 288
+            setText('dash-siap-pet', siapPET.toLocaleString('id-ID'));     // (4 * 48) = 192
+            setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));   // 6 + 4 = 10
+            setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} Pcs`);
 
-            document.getElementById('dash-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
-            document.getElementById('dash-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
-            document.getElementById('dash-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
-            document.getElementById('dash-jgr-10l').innerText = jgr10L.toLocaleString('id-ID');
-            document.getElementById('dash-jgr-rusak').innerText = jgrRusak.toLocaleString('id-ID');
+            setText('dash-jgr-kosong', jgrKosong.toLocaleString('id-ID'));
+            setText('dash-jgr-pc', jgrPC.toLocaleString('id-ID'));         // Menampilkan 6
+            setText('dash-jgr-pet', jgrPET.toLocaleString('id-ID'));       // Menampilkan 4
+            setText('dash-jgr-10l', jgr10L.toLocaleString('id-ID'));
+            setText('dash-jgr-rusak', jgrRusak.toLocaleString('id-ID'));
 
-            document.getElementById('dash-botol-jgr-pc').innerText = botolJgrPC.toLocaleString('id-ID');
-            document.getElementById('dash-botol-jgr-pet').innerText = botolJgrPET.toLocaleString('id-ID');
-            document.getElementById('dash-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
-            document.getElementById('dash-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
+            setText('dash-botol-jgr-pc', botolJgrPC.toLocaleString('id-ID')); // Menampilkan 288
+            setText('dash-botol-jgr-pet', botolJgrPET.toLocaleString('id-ID')); // Menampilkan 192
+            setText('dash-lasahan-pc', lasahanPC.toLocaleString('id-ID'));
+            setText('dash-lasahan-pet', lasahanPET.toLocaleString('id-ID'));
         }
 
-        updateDashboard();
+        document.addEventListener('DOMContentLoaded', updateDashboard);
     </script>
 </body>
 </html>
