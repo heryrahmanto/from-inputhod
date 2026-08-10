@@ -306,39 +306,39 @@
             let btlJgrPC = 0;
             if (rawJgrPC !== null && rawJgrPC > 0) {
                 jgrPC = rawJgrPC;
-                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 28) ? rawBtlJgrPC : (jgrPC * 28);
+                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
             } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
-                if (rawBtlJgrPC < 28) {
+                if (rawBtlJgrPC < 48) {
                     jgrPC = rawBtlJgrPC;
-                    btlJgrPC = jgrPC * 28;
+                    btlJgrPC = jgrPC * 48;
                 } else {
                     btlJgrPC = rawBtlJgrPC;
-                    jgrPC = Math.floor(rawBtlJgrPC / 28);
+                    jgrPC = Math.floor(rawBtlJgrPC / 48);
                 }
             }
 
-            // Logika Penyesuaian Otomatis Jugrack & Botol PET (1 Jugrack = 28 Botol)
+            // Logika Penyesuaian Otomatis Jugrack & Botol PET (1 Jugrack = 48 Botol)
             let jgrPET = 0;
             let btlJgrPET = 0;
             if (rawJgrPET !== null && rawJgrPET > 0) {
                 jgrPET = rawJgrPET;
-                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 28) ? rawBtlJgrPET : (jgrPET * 28);
+                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
             } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
-                if (rawBtlJgrPET < 28) {
+                if (rawBtlJgrPET < 48) {
                     jgrPET = rawBtlJgrPET;
-                    btlJgrPET = jgrPET * 28;
+                    btlJgrPET = jgrPET * 48;
                 } else {
                     btlJgrPET = rawBtlJgrPET;
-                    jgrPET = Math.floor(rawBtlJgrPET / 28);
+                    jgrPET = Math.floor(rawBtlJgrPET / 48);
                 }
             }
 
             // 3. Data Finish Good Shift 2
             let fgJgrPC  = getRaw(['s2_fg_jgr_pc', 'fg_jgr_pc', 'fg_pc']) || 0;
-            let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 28);
+            let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 48);
 
             let fgJgrPET  = getRaw(['s2_fg_jgr_pet', 'fg_jgr_pet', 'fg_pet']) || 0;
-            let fgJmlhPET = getRaw(['s2_fg_jmlh_pet', 'fg_jmlh_pet']) || (fgJgrPET * 28);
+            let fgJmlhPET = getRaw(['s2_fg_jmlh_pet', 'fg_jmlh_pet']) || (fgJgrPET * 48);
 
             let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
             let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;

@@ -267,7 +267,7 @@
             let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet') || localStorage.getItem('botol_jgr_pet_jgr') || '0');
 
             // C. Data Botol Jugrack (Mengambil JUMLAH BOTOL / PCS)
-            // Mengambil dari key khusus pcs/botol, jika tidak ada maka otomatis Jugrack x 24 pcs
+            // Mengambil dari key khusus pcs/botol, jika tidak ada maka otomatis Jugrack x 48 pcs
             let botolJgrPC = parseInt(
                 localStorage.getItem('botol_jgr_pc_pcs') || 
                 localStorage.getItem('botol_jgr_pcs_pc') || 
@@ -276,7 +276,7 @@
                 localStorage.getItem('botol_jgr_btl_pc') || '0'
             );
             if (botolJgrPC === 0 && jgrPC > 0) {
-                botolJgrPC = jgrPC * 24; // Auto-kalkulasi jika hanya menyimpan angka jugrack
+                botolJgrPC = jgrPC * 48; // Auto-kalkulasi jika hanya menyimpan angka jugrack
             }
 
             let botolJgrPET = parseInt(
@@ -287,7 +287,7 @@
                 localStorage.getItem('botol_jgr_btl_pet') || '0'
             );
             if (botolJgrPET === 0 && jgrPET > 0) {
-                botolJgrPET = jgrPET * 24; // Auto-kalkulasi jika hanya menyimpan angka jugrack
+                botolJgrPET = jgrPET * 48; // Auto-kalkulasi jika hanya menyimpan angka jugrack
             }
 
             // D. Data Lasahan (Botol Kosong)

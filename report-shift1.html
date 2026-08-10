@@ -275,15 +275,15 @@
 
             if (rawJgrPC !== null && rawJgrPC > 0) {
                 jgrPC = rawJgrPC;
-                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 28) ? rawBtlJgrPC : (jgrPC * 28);
+                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
             } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
-                if (rawBtlJgrPC < 28) {
+                if (rawBtlJgrPC < 48) {
                     // Nilai yang diinput sebenarnya adalah jumlah Jugrack
                     jgrPC = rawBtlJgrPC;
-                    btlJgrPC = jgrPC * 28;
+                    btlJgrPC = jgrPC * 48;
                 } else {
                     btlJgrPC = rawBtlJgrPC;
-                    jgrPC = Math.floor(rawBtlJgrPC / 28);
+                    jgrPC = Math.floor(rawBtlJgrPC / 48);
                 }
             }
 
@@ -292,15 +292,15 @@
 
             if (rawJgrPET !== null && rawJgrPET > 0) {
                 jgrPET = rawJgrPET;
-                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 28) ? rawBtlJgrPET : (jgrPET * 28);
+                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
             } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
-                if (rawBtlJgrPET < 28) {
+                if (rawBtlJgrPET < 48) {
                     // Nilai yang diinput sebenarnya adalah jumlah Jugrack
                     jgrPET = rawBtlJgrPET;
-                    btlJgrPET = jgrPET * 28;
+                    btlJgrPET = jgrPET * 48;
                 } else {
                     btlJgrPET = rawBtlJgrPET;
-                    jgrPET = Math.floor(rawBtlJgrPET / 28);
+                    jgrPET = Math.floor(rawBtlJgrPET / 48);
                 }
             }
 
