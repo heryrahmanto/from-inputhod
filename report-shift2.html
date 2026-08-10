@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Botol & Jugrack HOD</title>
+    <title>Update Botol & Jugrack HOD - Shift 2</title>
     <!-- Library untuk Capture Gambar JPG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -155,13 +155,13 @@
 <body>
 
     <div class="report-card" id="reportArea">
-        <!-- Header Atas (Tanpa Shift 2) -->
+        <!-- Header Atas -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
             <div class="datetime-info" id="liveDateTime">-</div>
         </div>
 
-        <!-- Tabel Utama -->
+        <!-- Tabel Utama Komplit -->
         <table id="reportTable">
             <!-- 1. JUGRACK -->
             <tr><td colspan="2" class="section-title">Jugrack</td></tr>
@@ -271,49 +271,97 @@
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
+        // Helper Pembaca LocalStorage Fleksibel
+        function getRaw(keys) {
+            for (let k of keys) {
+                let v = localStorage.getItem(k);
+                if (v !== null && v !== undefined && v !== '') {
+                    let num = parseInt(v, 10);
+                    if (!isNaN(num)) return num;
+                }
+            }
+            return null;
+        }
+
         function loadReportData() {
             const now = new Date();
             let dateISO = now.toISOString().split('T')[0];
             let timeStr = now.toLocaleTimeString('id-ID');
 
-            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
-            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
-            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
-            let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
-            let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
+            // 1. Data Jugrack Mentah Shift 2
+            let rawJgrKosong = getRaw(['s2_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
+            let rawJgrPC     = getRaw(['s2_jgr_pc', 's2_jgr_botol_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
+            let rawJgrPET    = getRaw(['s2_jgr_pet', 's2_jgr_botol_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
+            let rawJgr10L    = getRaw(['s2_jgr_10l', 'jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
+            let rawJgrRusak  = getRaw(['s2_jgr_rusak', 'jgr_rusak', 'jugrack_rusak']) || 0;
 
-            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
-            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
-            let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
-            let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
+            // 2. Data Botol Kosong Mentah Shift 2
+            let rawBtlJgrPC  = getRaw(['s2_botol_jgr_pc', 'botol_jgr_pc', 'btl_jgr_pc']);
+            let rawBtlJgrPET = getRaw(['s2_botol_jgr_pet', 'botol_jgr_pet', 'btl_jgr_pet']);
+            let lasahanPC    = getRaw(['s2_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
+            let lasahanPET   = getRaw(['s2_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            let fgJgrPC = parseInt(localStorage.getItem('fg_jgr_pc') || localStorage.getItem('fg_pc') || '0');
-            let fgJmlhPC = parseInt(localStorage.getItem('fg_jmlh_pc') || '0');
+            // Logika Penyesuaian Otomatis Jugrack & Botol PC (1 Jugrack = 28 Botol)
+            let jgrPC = 0;
+            let btlJgrPC = 0;
+            if (rawJgrPC !== null && rawJgrPC > 0) {
+                jgrPC = rawJgrPC;
+                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 28) ? rawBtlJgrPC : (jgrPC * 28);
+            } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
+                if (rawBtlJgrPC < 28) {
+                    jgrPC = rawBtlJgrPC;
+                    btlJgrPC = jgrPC * 28;
+                } else {
+                    btlJgrPC = rawBtlJgrPC;
+                    jgrPC = Math.floor(rawBtlJgrPC / 28);
+                }
+            }
 
-            let fgJgrPET = parseInt(localStorage.getItem('fg_jgr_pet') || localStorage.getItem('fg_pet') || '0');
-            let fgJmlhPET = parseInt(localStorage.getItem('fg_jmlh_pet') || '0');
+            // Logika Penyesuaian Otomatis Jugrack & Botol PET (1 Jugrack = 28 Botol)
+            let jgrPET = 0;
+            let btlJgrPET = 0;
+            if (rawJgrPET !== null && rawJgrPET > 0) {
+                jgrPET = rawJgrPET;
+                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 28) ? rawBtlJgrPET : (jgrPET * 28);
+            } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
+                if (rawBtlJgrPET < 28) {
+                    jgrPET = rawBtlJgrPET;
+                    btlJgrPET = jgrPET * 28;
+                } else {
+                    btlJgrPET = rawBtlJgrPET;
+                    jgrPET = Math.floor(rawBtlJgrPET / 28);
+                }
+            }
 
-            let fgJgr10L = parseInt(localStorage.getItem('fg_jgr_10l') || '0');
-            let fgJmlh10L = parseInt(localStorage.getItem('fg_jmlh_10l') || '0');
+            // 3. Data Finish Good Shift 2
+            let fgJgrPC  = getRaw(['s2_fg_jgr_pc', 'fg_jgr_pc', 'fg_pc']) || 0;
+            let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 28);
 
-            let afkirPC = parseInt(localStorage.getItem('afkir_pc') || '0');
-            let afkirPET = parseInt(localStorage.getItem('afkir_pet') || '0');
-            let afkir10L = parseInt(localStorage.getItem('afkir_10l') || '0');
+            let fgJgrPET  = getRaw(['s2_fg_jgr_pet', 'fg_jgr_pet', 'fg_pet']) || 0;
+            let fgJmlhPET = getRaw(['s2_fg_jmlh_pet', 'fg_jmlh_pet']) || (fgJgrPET * 28);
 
-            let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
-            let siapPC = botolJgrPC + lasahanPC;
-            let siapPET = botolJgrPET + lasahanPET;
+            let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
+            let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;
 
-            // Render ke Layar
-            document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
+            // 4. Data Afkir 0011 Shift 2
+            let afkirPC  = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc']) || 0;
+            let afkirPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet']) || 0;
+            let afkir10L = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar']) || 0;
+
+            let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
+            let siapPC = btlJgrPC + lasahanPC;
+            let siapPET = btlJgrPET + lasahanPET;
+
+            // Render Hasil ke Layar
+            document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
-            document.getElementById('val-jgr-10l').innerText = jgr10L.toLocaleString('id-ID');
+            document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
             document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
-            document.getElementById('val-jugrack-rusak').innerText = jgrRusak.toLocaleString('id-ID');
+            document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
 
-            document.getElementById('val-botol-jgr-pc').innerText = botolJgrPC.toLocaleString('id-ID');
-            document.getElementById('val-botol-jgr-pet').innerText = botolJgrPET.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
             document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
             document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
 
@@ -328,9 +376,10 @@
             document.getElementById('val-afkir-pet').innerText = `${afkirPET.toLocaleString('id-ID')} Btl`;
             document.getElementById('val-afkir-10l').innerText = `${afkir10L.toLocaleString('id-ID')} Btl`;
 
-            // Simpan Snapshot
+            // Simpan Snapshot Laporan
             currentSnapshot = {
                 id: 'REC-' + Date.now(),
+                shift: 'Shift 2',
                 tanggal: dateISO,
                 waktu: timeStr,
                 totalJugrack: totalJugrack,
@@ -347,13 +396,12 @@
 
         loadReportData();
 
-        // SIMPAN KE SUBMIT HISTORY & PINDAH KE TABEL REPORT
         function submitAndGoToTable() {
             let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
             history.push(currentSnapshot);
             localStorage.setItem('report_history_db', JSON.stringify(history));
 
-            alert("Data berhasil di-Submit ke Riwayat Tabel!");
+            alert("Data Shift 2 berhasil di-Submit ke Riwayat Tabel!");
             window.location.href = "tabel-report.html";
         }
 
@@ -369,7 +417,7 @@
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    link.download = 'Update-Botol-Jugrack-HOD.jpg';
+                    link.download = 'Update-Botol-Jugrack-HOD-Shift2.jpg';
                     link.href = url;
                     document.body.appendChild(link);
                     link.click();

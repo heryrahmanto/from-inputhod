@@ -45,7 +45,7 @@
             line-height: 1.3;
         }
 
-        /* Tabel Utama dengan Border Tegas */
+        /* Tabel Utama */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -59,7 +59,7 @@
             vertical-align: middle;
         }
 
-        /* Judul Section (Jugrack, Botol Kosong, Afkir) */
+        /* Judul Section */
         .section-title {
             background-color: #e0f2fe;
             color: #0369a1;
@@ -70,7 +70,6 @@
             border-bottom: 2px solid #0284c7;
         }
 
-        /* Gaya Baris Biasa */
         .row-even { background-color: #ffffff; }
         .row-odd { background-color: #f8fafc; }
 
@@ -87,10 +86,8 @@
             color: #000000;
         }
 
-        /* Teks Warna Khusus PET */
         .text-pet { color: #b45309; }
 
-        /* Baris Total Jugrack */
         .row-total-jgr {
             background-color: #f1f5f9;
         }
@@ -100,13 +97,11 @@
             font-weight: 800;
         }
 
-        /* Baris Jugrack Rusak */
         .row-rusak .label-col, .row-rusak .val-col {
             color: #dc2626;
             font-weight: 700;
         }
 
-        /* Highlight Kotak Tebal "Total Botol Siap Pakai" */
         .row-highlight {
             background-color: #ffffff;
             border: 3px solid #000000 !important;
@@ -119,19 +114,12 @@
             color: #000000;
         }
 
-        /* Styling Section Afkir 0011 */
         .row-afkir {
             background-color: #fef2f2;
         }
-        .row-afkir .label-col {
-            color: #991b1b;
-        }
-        .row-afkir .val-col {
-            color: #dc2626;
-            font-weight: 800;
-        }
+        .row-afkir .label-col { color: #991b1b; }
+        .row-afkir .val-col { color: #dc2626; font-weight: 800; }
 
-        /* Tombol Navigasi Bawah */
         .action-container {
             display: flex;
             gap: 10px;
@@ -157,7 +145,7 @@
 <body>
 
     <div class="report-card" id="reportArea">
-        <!-- Header Waktu & Judul (Tanpa Shift 1) -->
+        <!-- Header Waktu & Judul -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
             <div class="datetime-info" id="liveDateTime">-</div>
@@ -225,15 +213,15 @@
             <tr><td colspan="2" class="section-title" style="background-color: #fee2e2; color: #991b1b; border-color: #ef4444;">Afkir 0011</td></tr>
             <tr class="row-afkir">
                 <td class="label-col">Afkir PC</td>
-                <td class="val-col" id="val-afkir-pc">0 Pcs</td>
+                <td class="val-col" id="val-afkir-pc">0 Btl</td>
             </tr>
             <tr class="row-afkir">
                 <td class="label-col">Afkir PET</td>
-                <td class="val-col" id="val-afkir-pet">0 Pcs</td>
+                <td class="val-col" id="val-afkir-pet">0 Btl</td>
             </tr>
             <tr class="row-afkir">
                 <td class="label-col">Afkir Luar</td>
-                <td class="val-col" id="val-afkir-luar">0 Pcs</td>
+                <td class="val-col" id="val-afkir-luar">0 Btl</td>
             </tr>
         </table>
 
@@ -244,9 +232,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA LOGIKA WAKTU & DATA -->
     <script>
-        // 1. UPDATE WAKTU DENGAN JAM BERJALAN OTO DETIK
         function updateWaktu() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -255,76 +241,116 @@
             
             document.getElementById('liveDateTime').innerHTML = tglStr + ' | ' + jamStr;
         }
-        
-        // Jalankan updateWaktu tiap 1 detik
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // 2. MENGHUBUNGKAN DATA DARI LOCALSTORAGE
+        function getRaw(keys) {
+            for (let k of keys) {
+                let v = localStorage.getItem(k);
+                if (v !== null && v !== undefined && v !== '') {
+                    let num = parseInt(v, 10);
+                    if (!isNaN(num)) return num;
+                }
+            }
+            return null;
+        }
+
         function loadReportData() {
-            // Data Jugrack
-            let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
-            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
-            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
-            let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
-            let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
+            // 1. Ambil Nilai Mentah dari LocalStorage
+            let rawJgrKosong = getRaw(['s1_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
+            let rawJgrPC     = getRaw(['s1_jgr_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
+            let rawJgrPET    = getRaw(['s1_jgr_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
+            let rawJgr10L    = getRaw(['s1_jgr_10l', 'jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
+            let rawJgrRusak  = getRaw(['s1_jgr_rusak', 'jgr_rusak', 'jugrack_rusak']) || 0;
 
-            // Data Botol Kosong
-            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
-            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
-            let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
-            let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
+            let rawBtlJgrPC  = getRaw(['s1_botol_jgr_pc', 'botol_jgr_pc', 'btl_jgr_pc']);
+            let rawBtlJgrPET = getRaw(['s1_botol_jgr_pet', 'botol_jgr_pet', 'btl_jgr_pet']);
 
-            // Data Afkir 0011 (Dihitung dari localStorage afkir_0011_data)
-            let totalAfkirPC = 0;
-            let totalAfkirPET = 0;
-            let totalAfkirLuar = 0;
+            let lasahanPC    = getRaw(['s1_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
+            let lasahanPET   = getRaw(['s1_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            const savedAfkir = localStorage.getItem('afkir_0011_data');
-            if (savedAfkir) {
-                try {
-                    const parsedAfkir = JSON.parse(savedAfkir);
-                    parsedAfkir.forEach(item => {
-                        totalAfkirPC += parseInt(item.pc) || 0;
-                        totalAfkirPET += parseInt(item.pet) || 0;
-                        totalAfkirLuar += parseInt(item.luar) || 0;
-                    });
-                } catch(e) {
-                    console.error("Error parsing afkir data:", e);
+            // 2. Logika Penyesuaian Otomatis (Jugrack <-> Botol)
+            let jgrPC = 0;
+            let btlJgrPC = 0;
+
+            if (rawJgrPC !== null && rawJgrPC > 0) {
+                jgrPC = rawJgrPC;
+                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 28) ? rawBtlJgrPC : (jgrPC * 28);
+            } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
+                if (rawBtlJgrPC < 28) {
+                    // Nilai yang diinput sebenarnya adalah jumlah Jugrack
+                    jgrPC = rawBtlJgrPC;
+                    btlJgrPC = jgrPC * 28;
+                } else {
+                    btlJgrPC = rawBtlJgrPC;
+                    jgrPC = Math.floor(rawBtlJgrPC / 28);
                 }
             }
 
-            // Rumus Total Jugrack & Siap Pakai
-            let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
-            let siapPC = botolJgrPC + lasahanPC;
-            let siapPET = botolJgrPET + lasahanPET;
+            let jgrPET = 0;
+            let btlJgrPET = 0;
 
-            // Tampilkan ke Elemen HTML
-            document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
+            if (rawJgrPET !== null && rawJgrPET > 0) {
+                jgrPET = rawJgrPET;
+                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 28) ? rawBtlJgrPET : (jgrPET * 28);
+            } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
+                if (rawBtlJgrPET < 28) {
+                    // Nilai yang diinput sebenarnya adalah jumlah Jugrack
+                    jgrPET = rawBtlJgrPET;
+                    btlJgrPET = jgrPET * 28;
+                } else {
+                    btlJgrPET = rawBtlJgrPET;
+                    jgrPET = Math.floor(rawBtlJgrPET / 28);
+                }
+            }
+
+            // 3. Afkir 0011
+            let totalAfkirPC = getRaw(['s1_afkir_pc', 'afkir_pc', 'afkir_0011_pc']) || 0;
+            let totalAfkirPET = getRaw(['s1_afkir_pet', 'afkir_pet', 'afkir_0011_pet']) || 0;
+            let totalAfkirLuar = getRaw(['s1_afkir_luar', 'afkir_luar', 'afkir_0011_luar']) || 0;
+
+            const savedAfkir = localStorage.getItem('s1_afkir_0011_data') || localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
+            if (savedAfkir) {
+                try {
+                    const parsed = JSON.parse(savedAfkir);
+                    if (Array.isArray(parsed)) {
+                        totalAfkirPC = 0; totalAfkirPET = 0; totalAfkirLuar = 0;
+                        parsed.forEach(item => {
+                            totalAfkirPC += parseInt(item.pc || item.afkir_pc || 0) || 0;
+                            totalAfkirPET += parseInt(item.pet || item.afkir_pet || 0) || 0;
+                            totalAfkirLuar += parseInt(item.luar || item.afkir_luar || 0) || 0;
+                        });
+                    }
+                } catch(e) {}
+            }
+
+            let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
+            let siapPC = btlJgrPC + lasahanPC;
+            let siapPET = btlJgrPET + lasahanPET;
+
+            // Render Nilai ke Tabel
+            document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
-            document.getElementById('val-jgr-10l').innerText = jgr10L.toLocaleString('id-ID');
+            document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
             document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
-            document.getElementById('val-jugrack-rusak').innerText = jgrRusak.toLocaleString('id-ID');
+            document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
 
-            document.getElementById('val-botol-jgr-pc').innerText = botolJgrPC.toLocaleString('id-ID');
-            document.getElementById('val-botol-jgr-pet').innerText = botolJgrPET.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
             document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
             document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
 
             document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
             document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
 
-            // Tampilkan Hasil Total Afkir
             document.getElementById('val-afkir-pc').innerText = `${totalAfkirPC.toLocaleString('id-ID')} Btl`;
             document.getElementById('val-afkir-pet').innerText = `${totalAfkirPET.toLocaleString('id-ID')} Btl`;
             document.getElementById('val-afkir-luar').innerText = `${totalAfkirLuar.toLocaleString('id-ID')} Btl`;
         }
 
-        // Jalankan Pemuatan Data
         loadReportData();
 
-        // 3. FUNGSI SHARE DENGAN SPESIFIKASI SCREENSHOT
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');

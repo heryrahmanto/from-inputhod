@@ -223,11 +223,11 @@
             <!-- 3. FINISH GOOD (Hanya PC & PET) -->
             <tr class="row-fg">
                 <td class="label-col">Finish Good PC ( 0002 )</td>
-                <td class="val-col" id="val-fg-pc">0 Jgr (0 Pcs)</td>
+                <td class="val-col" id="val-fg-pc">0 Jgr (0 Btl)</td>
             </tr>
             <tr class="row-fg" style="background-color: #0369a1;">
                 <td class="label-col">Finish Good PET ( 0012 )</td>
-                <td class="val-col" id="val-fg-pet">0 Jgr (0 Pcs)</td>
+                <td class="val-col" id="val-fg-pet">0 Jgr (0 Btl)</td>
             </tr>
         </table>
 
@@ -254,22 +254,47 @@
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // 2. MENGHUBUNGKAN DATA DARI LOCALSTORAGE
+        // 2. MENGHUBUNGKAN DATA DARI LOCALSTORAGE (REVISI PERBAIKAN SOURCE KEY)
         function loadReportData() {
-            // Data Jugrack
+            // A. Data Jugrack Kosong & Rusak
             let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
-            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || '0');
-            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || '0');
             let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
             let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
 
-            // Data Botol Kosong
-            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc') || '0');
-            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet') || '0');
+            // B. Data Jugrack Botol Kosong (Mengambil JUMLAH JUGRACK)
+            // Membaca key 'botol_jgr_pc' & 'botol_jgr_pet' (yang bernilai 10 dan 5)
+            let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || localStorage.getItem('botol_jgr_pc') || localStorage.getItem('botol_jgr_pc_jgr') || '0');
+            let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet') || localStorage.getItem('botol_jgr_pet_jgr') || '0');
+
+            // C. Data Botol Jugrack (Mengambil JUMLAH BOTOL / PCS)
+            // Mengambil dari key khusus pcs/botol, jika tidak ada maka otomatis Jugrack x 24 pcs
+            let botolJgrPC = parseInt(
+                localStorage.getItem('botol_jgr_pc_pcs') || 
+                localStorage.getItem('botol_jgr_pcs_pc') || 
+                localStorage.getItem('jmlh_botol_pc') || 
+                localStorage.getItem('botol_pc') || 
+                localStorage.getItem('botol_jgr_btl_pc') || '0'
+            );
+            if (botolJgrPC === 0 && jgrPC > 0) {
+                botolJgrPC = jgrPC * 24; // Auto-kalkulasi jika hanya menyimpan angka jugrack
+            }
+
+            let botolJgrPET = parseInt(
+                localStorage.getItem('botol_jgr_pet_pcs') || 
+                localStorage.getItem('botol_jgr_pcs_pet') || 
+                localStorage.getItem('jmlh_botol_pet') || 
+                localStorage.getItem('botol_pet') || 
+                localStorage.getItem('botol_jgr_btl_pet') || '0'
+            );
+            if (botolJgrPET === 0 && jgrPET > 0) {
+                botolJgrPET = jgrPET * 24; // Auto-kalkulasi jika hanya menyimpan angka jugrack
+            }
+
+            // D. Data Lasahan (Botol Kosong)
             let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
             let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
 
-            // Data Finish Good dari form Finish Good (Jgr & Pcs)
+            // E. Data Finish Good dari form Finish Good (Jgr & Pcs)
             let fgJgrPC = parseInt(localStorage.getItem('fg_jgr_pc') || localStorage.getItem('fg_pc') || '0');
             let fgJmlhPC = parseInt(localStorage.getItem('fg_jmlh_pc') || '0');
 
@@ -297,7 +322,7 @@
             document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
             document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
 
-            // Format Tampilan FG: X Jgr (Y Pcs)
+            // Format Tampilan FG: X Jgr (Y Btl)
             document.getElementById('val-fg-pc').innerText = `${fgJgrPC.toLocaleString('id-ID')} Jgr (${fgJmlhPC.toLocaleString('id-ID')} Btl)`;
             document.getElementById('val-fg-pet').innerText = `${fgJgrPET.toLocaleString('id-ID')} Jgr (${fgJmlhPET.toLocaleString('id-ID')} Btl)`;
         }
