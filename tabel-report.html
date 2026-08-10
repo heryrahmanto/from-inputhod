@@ -12,50 +12,78 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f1f5f9;
             margin: 0;
-            padding: 12px;
+            padding: 8px;
             color: #0f172a;
         }
         .container {
             max-width: 100%;
             margin: 0 auto;
             background: #ffffff;
-            padding: 16px;
+            padding: 12px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        h2 { margin-top: 0; color: #0369a1; font-size: 18px; }
+        h2 { margin-top: 0; color: #0369a1; font-size: 16px; margin-bottom: 12px; }
         
-        /* Area Filter & Search */
+        /* Area Filter & Search Rapi & Responsif */
         .filter-box {
             background-color: #e0f2fe;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             display: flex;
-            gap: 10px;
-            align-items: flex-end;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #bae6fd;
         }
-        .filter-group { display: flex; flex-direction: column; flex: 1; min-width: 120px; }
-        .filter-group label { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #0369a1; }
-        .filter-group input { padding: 6px 8px; border: 1px solid #94a3b8; border-radius: 4px; font-size: 12px; }
+        
+        .filter-row-dates {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .filter-group { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%;
+        }
+        .filter-group.half {
+            width: 50%;
+        }
+        
+        .filter-group label { 
+            font-size: 11px; 
+            font-weight: bold; 
+            margin-bottom: 3px; 
+            color: #0369a1; 
+        }
+        .filter-group input { 
+            padding: 7px 8px; 
+            border: 1px solid #94a3b8; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            background-color: #ffffff;
+            width: 100%;
+        }
 
         .btn-group-action {
             display: flex;
             gap: 8px;
             width: 100%;
-            margin-top: 5px;
+            margin-top: 4px;
         }
         .btn {
-            padding: 8px 12px;
+            padding: 8px 10px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             color: white;
             cursor: pointer;
             text-decoration: none;
             text-align: center;
+            flex: 1;
         }
         .btn-excel { background-color: #16a34a; }
         .btn-back { background-color: #475569; }
@@ -102,18 +130,24 @@
 
     <div class="filter-box">
         <!-- Search Bar -->
-        <div class="filter-group" style="flex: 2; min-width: 180px;">
+        <div class="filter-group">
             <label>🔍 Cari Data (ID / Tanggal / Waktu):</label>
             <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Ketik kata kunci...">
         </div>
-        <div class="filter-group">
-            <label>Tanggal Mulai:</label>
-            <input type="date" id="startDate" onchange="renderTable()">
+        
+        <!-- Tanggal Mulai & Selesai Sejajar Kiri-Kanan -->
+        <div class="filter-row-dates">
+            <div class="filter-group half">
+                <label>Tanggal Mulai:</label>
+                <input type="date" id="startDate" onchange="renderTable()">
+            </div>
+            <div class="filter-group half">
+                <label>Tanggal Selesai:</label>
+                <input type="date" id="endDate" onchange="renderTable()">
+            </div>
         </div>
-        <div class="filter-group">
-            <label>Tanggal Selesai:</label>
-            <input type="date" id="endDate" onchange="renderTable()">
-        </div>
+
+        <!-- Tombol Aksi -->
         <div class="btn-group-action">
             <button class="btn btn-excel" onclick="exportToExcel()">📥 Export Excel</button>
             <a href="report-shift2.html" class="btn btn-back">⬅️ Kembali ke Form</a>
@@ -159,7 +193,7 @@
                     <!-- Sub-header Afkir -->
                     <th class="cat-afkir">Afkir PC</th>
                     <th class="cat-afkir">Afkir PET</th>
-                    <th class="cat-afkir">Afkir 10L</th>
+                    <th class="cat-afkir">Afkir Luar</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -168,6 +202,16 @@
 </div>
 
 <script>
+    // Helper function untuk mengambil angka botol saja (membersihkan teks "Jgr" atau "(Btl)")
+    function parseOnlyNumber(val) {
+        if (typeof val === 'number') return val;
+        if (!val) return 0;
+        let matchInParen = val.toString().match(/\((\d+)\s*Btl\)/i);
+        if (matchInParen) return parseInt(matchInParen[1], 10) || 0;
+        let matchNum = val.toString().match(/\d+/);
+        return matchNum ? parseInt(matchNum[0], 10) : 0;
+    }
+
     function renderTable() {
         let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
         let tbody = document.getElementById('tableBody');
@@ -195,6 +239,36 @@
         }
 
         filtered.forEach((row) => {
+            let jgrKosong  = row.jgrKosong ?? row.jgr_kosong ?? 0;
+            
+            // Botol Siap Pakai & Lasahan
+            let siapPC     = row.siapPC ?? 0;
+            let siapPET    = row.siapPET ?? 0;
+            let lasahanPC  = row.lasahanPC ?? 0;
+            let lasahanPET = row.lasahanPET ?? 0;
+
+            // Hitung Botol Jugrack
+            let botolJgrPC  = row.botolJgrPC ?? (siapPC > lasahanPC ? siapPC - lasahanPC : 0);
+            let botolJgrPET = row.botolJgrPET ?? (siapPET > lasahanPET ? siapPET - lasahanPET : 0);
+
+            // Hitung Jugrack PC & PET (1 Jugrack = 28 Botol)
+            let jgrPC  = row.jgrPC ?? row.jgr_pc ?? (botolJgrPC > 0 ? Math.floor(botolJgrPC / 28) : 0);
+            let jgrPET = row.jgrPET ?? row.jgr_pet ?? (botolJgrPET > 0 ? Math.floor(botolJgrPET / 28) : 0);
+            let jgr10L = row.jgr10L ?? row.jgr_10l ?? 0;
+
+            let totalJugrack = row.totalJugrack || (jgrKosong + jgrPC + jgrPET + jgr10L);
+            let jgrRusak    = row.jgrRusak ?? 0;
+
+            // Finish Good (Murni Angka Botol Saja)
+            let fgPC  = parseOnlyNumber(row.fgJmlhPC ?? row.fgPC);
+            let fgPET = parseOnlyNumber(row.fgJmlhPET ?? row.fgPET);
+            let fg10L = parseOnlyNumber(row.fgJmlh10L ?? row.fg10L);
+
+            // Afkir
+            let afkirPC   = parseOnlyNumber(row.afkirPC);
+            let afkirPET  = parseOnlyNumber(row.afkirPET);
+            let afkirLuar = parseOnlyNumber(row.afkirLuar ?? row.afkir10L);
+
             let tr = document.createElement('tr');
             tr.id = `row-${row.id}`;
             tr.innerHTML = `
@@ -207,30 +281,30 @@
                 <td>${row.waktu}</td>
                 
                 <!-- Jugrack -->
-                <td><span class="view-mode">${row.jgrKosong ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrKosong ?? 0}" data-col="jgrKosong"></td>
-                <td><span class="view-mode">${row.jgrPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrPC ?? 0}" data-col="jgrPC"></td>
-                <td><span class="view-mode">${row.jgrPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrPET ?? 0}" data-col="jgrPET"></td>
-                <td><span class="view-mode">${row.jgr10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgr10L ?? 0}" data-col="jgr10L"></td>
-                <td><strong>${row.totalJugrack ?? 0}</strong></td>
-                <td><span class="view-mode">${row.jgrRusak ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.jgrRusak ?? 0}" data-col="jgrRusak"></td>
+                <td><span class="view-mode">${jgrKosong}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrKosong}" data-col="jgrKosong"></td>
+                <td><span class="view-mode">${jgrPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPC}" data-col="jgrPC"></td>
+                <td><span class="view-mode">${jgrPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPET}" data-col="jgrPET"></td>
+                <td><span class="view-mode">${jgr10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgr10L}" data-col="jgr10L"></td>
+                <td><strong>${totalJugrack}</strong></td>
+                <td><span class="view-mode">${jgrRusak}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrRusak}" data-col="jgrRusak"></td>
                 
                 <!-- Botol Kosong -->
-                <td><span class="view-mode">${row.botolJgrPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.botolJgrPC ?? 0}" data-col="botolJgrPC"></td>
-                <td><span class="view-mode">${row.botolJgrPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.botolJgrPET ?? 0}" data-col="botolJgrPET"></td>
-                <td><span class="view-mode">${row.lasahanPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.lasahanPC ?? 0}" data-col="lasahanPC"></td>
-                <td><span class="view-mode">${row.lasahanPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.lasahanPET ?? 0}" data-col="lasahanPET"></td>
-                <td><strong>${row.siapPC ?? 0}</strong></td>
-                <td><strong>${row.siapPET ?? 0}</strong></td>
+                <td><span class="view-mode">${botolJgrPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${botolJgrPC}" data-col="botolJgrPC"></td>
+                <td><span class="view-mode">${botolJgrPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${botolJgrPET}" data-col="botolJgrPET"></td>
+                <td><span class="view-mode">${lasahanPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${lasahanPC}" data-col="lasahanPC"></td>
+                <td><span class="view-mode">${lasahanPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${lasahanPET}" data-col="lasahanPET"></td>
+                <td><strong>${siapPC}</strong></td>
+                <td><strong>${siapPET}</strong></td>
 
-                <!-- FG -->
-                <td><span class="view-mode">${row.fgJmlhPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlhPC ?? 0}" data-col="fgJmlhPC"></td>
-                <td><span class="view-mode">${row.fgJmlhPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlhPET ?? 0}" data-col="fgJmlhPET"></td>
-                <td><span class="view-mode">${row.fgJmlh10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.fgJmlh10L ?? 0}" data-col="fgJmlh10L"></td>
+                <!-- FG (Angka Botol Murni) -->
+                <td><span class="view-mode">${fgPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPC}" data-col="fgJmlhPC"></td>
+                <td><span class="view-mode">${fgPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPET}" data-col="fgJmlhPET"></td>
+                <td><span class="view-mode">${fg10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fg10L}" data-col="fgJmlh10L"></td>
 
                 <!-- Afkir -->
-                <td><span class="view-mode">${row.afkirPC ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkirPC ?? 0}" data-col="afkirPC"></td>
-                <td><span class="view-mode">${row.afkirPET ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkirPET ?? 0}" data-col="afkirPET"></td>
-                <td><span class="view-mode">${row.afkir10L ?? 0}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${row.afkir10L ?? 0}" data-col="afkir10L"></td>
+                <td><span class="view-mode">${afkirPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirPC}" data-col="afkirPC"></td>
+                <td><span class="view-mode">${afkirPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirPET}" data-col="afkirPET"></td>
+                <td><span class="view-mode">${afkirLuar}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirLuar}" data-col="afkirLuar"></td>
             `;
             tbody.appendChild(tr);
         });
@@ -264,10 +338,11 @@
                 history[index][col] = parseInt(input.value) || 0;
             });
 
-            // Hitung Ulang Total Otomatis
-            history[index].totalJugrack = (history[index].jgrKosong || 0) + (history[index].jgrPC || 0) + (history[index].jgrPET || 0) + (history[index].jgr10L || 0);
-            history[index].siapPC = (history[index].botolJgrPC || 0) + (history[index].lasahanPC || 0);
-            history[index].siapPET = (history[index].botolJgrPET || 0) + (history[index].lasahanPET || 0);
+            // Hitung Ulang Total & Relasi Otomatis saat Di-edit
+            let item = history[index];
+            item.totalJugrack = (item.jgrKosong || 0) + (item.jgrPC || 0) + (item.jgrPET || 0) + (item.jgr10L || 0);
+            item.siapPC = (item.botolJgrPC || 0) + (item.lasahanPC || 0);
+            item.siapPET = (item.botolJgrPET || 0) + (item.lasahanPET || 0);
 
             localStorage.setItem('report_history_db', JSON.stringify(history));
             alert("Data berhasil diperbarui!");
