@@ -266,7 +266,7 @@
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
             let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
-            document.getElementById('liveDateTime').innerHTML = tglStr + ' | ' + jamStr;
+            document.getElementById('liveDateTime').innerText = tglStr + ' | ' + jamStr;
         }
         updateWaktu();
         setInterval(updateWaktu, 1000);
@@ -390,7 +390,7 @@
                 fg10L: `${fgJgr10L} Jgr (${fgJmlh10L} Btl)`,
                 afkirPC: afkirPC,
                 afkirPET: afkirPET,
-                afkir Luar: afkir Luar
+                afkirLuar: afkir10L
             };
         }
 
