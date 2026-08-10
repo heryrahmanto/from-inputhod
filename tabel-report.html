@@ -151,7 +151,7 @@
         <!-- Tombol Aksi -->
         <div class="btn-group-action">
             <button class="btn btn-excel" onclick="exportToExcel()">📥 Export Excel</button>
-            <a href="report-shift2.html" class="btn btn-back">⬅️ Kembali ke Form</a>
+            <a href="index.html" class="btn btn-back">⬅️ Kembali ke Menu</a>
         </div>
     </div>
 
@@ -168,7 +168,7 @@
                     <!-- Group Botol Siap Pakai -->
                     <th colspan="4" class="cat-btl">BOTOL KOSONG & SIAP PAKAI</th>
                     <!-- Group FG -->
-                    <th colspan="3" class="cat-fg">FINISH GOOD</th>
+                    <th colspan="3" class="cat-fg">FINISH GOOD (Btl)</th>
                     <!-- Group Afkir -->
                     <th colspan="3" class="cat-afkir">AFKIR 0011</th>
                 </tr>
@@ -201,7 +201,7 @@
 </div>
 
 <script>
-    // Helper ekstraksi angka murni
+    // Helper ekstraksi angka murni dari string apa pun
     function parseOnlyNumber(val) {
         if (typeof val === 'number') return isNaN(val) ? 0 : val;
         if (!val) return 0;
@@ -235,7 +235,7 @@
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="19" style="text-align:center; padding:20px; color:#64748b;">Data tidak ditemukan.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="20" style="text-align:center; padding:20px; color:#64748b;">Data tidak ditemukan.</td></tr>';
             return;
         }
 
@@ -250,12 +250,12 @@
             let siapPC  = parseOnlyNumber(row.siapPC ?? row.siap_pc ?? row.siapPakaiPC);
             let siapPET = parseOnlyNumber(row.siapPET ?? row.siap_pet ?? row.siapPakaiPET);
 
-            // Jugrack PC & PET (Cari dari berbagai variasi nama variabel)
-            let jgrPC  = parseOnlyNumber(row.jgrPC ?? row.jgr_pc ?? row.jgr_pc_qty ?? row.jugrackPC ?? row.jugrack_pc ?? row.jugrack_pc_qty);
-            let jgrPET = parseOnlyNumber(row.jgrPET ?? row.jgr_pet ?? row.jgr_pet_qty ?? row.jugrackPET ?? row.jugrack_pet ?? row.jugrack_pet_qty);
+            // Jugrack PC & PET
+            let jgrPC  = parseOnlyNumber(row.jgrPC ?? row.jgr_pc ?? row.jgr_pc_qty ?? row.jugrackPC ?? row.jugrack_pc);
+            let jgrPET = parseOnlyNumber(row.jgrPET ?? row.jgr_pet ?? row.jgr_pet_qty ?? row.jugrackPET ?? row.jugrack_pet);
             let jgr10L = parseOnlyNumber(row.jgr10L ?? row.jgr_10l ?? row.jgr_10l_qty ?? row.jugrack10L ?? row.jugrack_10l);
 
-            // FALLBACK LOGIC: Jika Jgr PC/PET bernilai 0 tapi ada data Siap PC/PET, hitung estimasi Jugrack-nya (Siap Pakai / 48)
+            // Fallback kalkulasi jika nol
             if (jgrPC === 0 && siapPC > 0) {
                 jgrPC = Math.floor((siapPC - lasahanPC) / 48);
                 if (jgrPC < 0) jgrPC = 0;
@@ -265,17 +265,16 @@
                 if (jgrPET < 0) jgrPET = 0;
             }
 
-            // Jika Siap Pakai bernilai 0 tapi ada Jugrack, hitung Siap Pakai = (Jugrack * 48) + Lasahan
             if (siapPC === 0 && jgrPC > 0) siapPC = (jgrPC * 48) + lasahanPC;
             if (siapPET === 0 && jgrPET > 0) siapPET = (jgrPET * 48) + lasahanPET;
 
             let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
             let jgrRusak     = parseOnlyNumber(row.jgrRusak ?? row.jgr_rusak);
 
-            // Finish Good
-            let fgPC  = parseOnlyNumber(row.fgJmlhPC ?? row.fgPC ?? row.fg_pc);
-            let fgPET = parseOnlyNumber(row.fgJmlhPET ?? row.fgPET ?? row.fg_pet);
-            let fg10L = parseOnlyNumber(row.fgJmlh10L ?? row.fg10L ?? row.fg_10l);
+            // Finish Good (Murni Ekstraksi Angka Botol)
+            let fgPC  = parseOnlyNumber(row.fgPC ?? row.fgJmlhPC ?? row.fg_pc);
+            let fgPET = parseOnlyNumber(row.fgPET ?? row.fgJmlhPET ?? row.fg_pet);
+            let fg10L = parseOnlyNumber(row.fg10L ?? row.fgJmlh10L ?? row.fg_10l);
 
             // Afkir
             let afkirPC   = parseOnlyNumber(row.afkirPC ?? row.afkir_pc);
@@ -307,10 +306,10 @@
                 <td><strong style="color: #0369a1; font-size: 12px;">${siapPC}</strong></td>
                 <td><strong style="color: #0369a1; font-size: 12px;">${siapPET}</strong></td>
 
-                <!-- FG -->
-                <td><span class="view-mode">${fgPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPC}" data-col="fgJmlhPC"></td>
-                <td><span class="view-mode">${fgPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPET}" data-col="fgJmlhPET"></td>
-                <td><span class="view-mode">${fg10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fg10L}" data-col="fgJmlh10L"></td>
+                <!-- FG (Angka Botol Murni) -->
+                <td><span class="view-mode">${fgPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPC}" data-col="fgPC"></td>
+                <td><span class="view-mode">${fgPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPET}" data-col="fgPET"></td>
+                <td><span class="view-mode">${fg10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fg10L}" data-col="fg10L"></td>
 
                 <!-- Afkir -->
                 <td><span class="view-mode">${afkirPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirPC}" data-col="afkirPC"></td>
@@ -351,14 +350,13 @@
 
             // Kalkulasi ulang otomatis setelah simpan
             let item = history[index];
-            let jgrPC = parseOnlyNumber(item.jgrPC ?? item.jgr_pc ?? item.jugrackPC);
-            let jgrPET = parseOnlyNumber(item.jgrPET ?? item.jgr_pet ?? item.jugrackPET);
-            let lasahanPC = parseOnlyNumber(item.lasahanPC ?? item.lasahan_pc);
-            let lasahanPET = parseOnlyNumber(item.lasahanPET ?? item.lasahan_pet);
+            let jgrPC = parseOnlyNumber(item.jgrPC);
+            let jgrPET = parseOnlyNumber(item.jgrPET);
+            let lasahanPC = parseOnlyNumber(item.lasahanPC);
+            let lasahanPET = parseOnlyNumber(item.lasahanPET);
 
             item.siapPC = (jgrPC * 48) + lasahanPC;
             item.siapPET = (jgrPET * 48) + lasahanPET;
-            item.totalJugrack = parseOnlyNumber(item.jgrKosong) + jgrPC + jgrPET + parseOnlyNumber(item.jgr10L);
 
             localStorage.setItem('report_history_db', JSON.stringify(history));
             alert("Data berhasil diperbarui!");
@@ -413,9 +411,9 @@
                 "Lasahan PET": lasahanPET,
                 "Siap PC": siapPC || ((jgrPC * 48) + lasahanPC),
                 "Siap PET": siapPET || ((jgrPET * 48) + lasahanPET),
-                "FG PC": parseOnlyNumber(item.fgJmlhPC ?? item.fgPC ?? item.fg_pc),
-                "FG PET": parseOnlyNumber(item.fgJmlhPET ?? item.fgPET ?? item.fg_pet),
-                "FG 10L": parseOnlyNumber(item.fgJmlh10L ?? item.fg10L ?? item.fg_10l),
+                "FG PC (Btl)": parseOnlyNumber(item.fgPC ?? item.fgJmlhPC ?? item.fg_pc),
+                "FG PET (Btl)": parseOnlyNumber(item.fgPET ?? item.fgJmlhPET ?? item.fg_pet),
+                "FG 10L (Btl)": parseOnlyNumber(item.fg10L ?? item.fgJmlh10L ?? item.fg_10l),
                 "Afkir PC": parseOnlyNumber(item.afkirPC ?? item.afkir_pc),
                 "Afkir PET": parseOnlyNumber(item.afkirPET ?? item.afkir_pet),
                 "Afkir Luar": parseOnlyNumber(item.afkirLuar ?? item.afkir10L ?? item.afkir_luar)

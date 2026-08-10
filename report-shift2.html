@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Botol & Jugrack HOD - Shift 2</title>
+    <title>Update Botol & Jugrack HOD</title>
     <!-- Library untuk Capture Gambar JPG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -271,7 +271,6 @@
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // Helper Pembaca LocalStorage Fleksibel
         function getRaw(keys) {
             for (let k of keys) {
                 let v = localStorage.getItem(k);
@@ -286,22 +285,19 @@
         function loadReportData() {
             const now = new Date();
             let dateISO = now.toISOString().split('T')[0];
-            let timeStr = now.toLocaleTimeString('id-ID');
+            let timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-            // 1. Data Jugrack Mentah Shift 2
             let rawJgrKosong = getRaw(['s2_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
             let rawJgrPC     = getRaw(['s2_jgr_pc', 's2_jgr_botol_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
             let rawJgrPET    = getRaw(['s2_jgr_pet', 's2_jgr_botol_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
             let rawJgr10L    = getRaw(['s2_jgr_10l', 'jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
             let rawJgrRusak  = getRaw(['s2_jgr_rusak', 'jgr_rusak', 'jugrack_rusak']) || 0;
 
-            // 2. Data Botol Kosong Mentah Shift 2
             let rawBtlJgrPC  = getRaw(['s2_botol_jgr_pc', 'botol_jgr_pc', 'btl_jgr_pc']);
             let rawBtlJgrPET = getRaw(['s2_botol_jgr_pet', 'botol_jgr_pet', 'btl_jgr_pet']);
             let lasahanPC    = getRaw(['s2_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
             let lasahanPET   = getRaw(['s2_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            // Logika Penyesuaian Otomatis Jugrack & Botol PC (1 Jugrack = 28 Botol)
             let jgrPC = 0;
             let btlJgrPC = 0;
             if (rawJgrPC !== null && rawJgrPC > 0) {
@@ -317,7 +313,6 @@
                 }
             }
 
-            // Logika Penyesuaian Otomatis Jugrack & Botol PET (1 Jugrack = 48 Botol)
             let jgrPET = 0;
             let btlJgrPET = 0;
             if (rawJgrPET !== null && rawJgrPET > 0) {
@@ -333,7 +328,6 @@
                 }
             }
 
-            // 3. Data Finish Good Shift 2
             let fgJgrPC  = getRaw(['s2_fg_jgr_pc', 'fg_jgr_pc', 'fg_pc']) || 0;
             let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 48);
 
@@ -343,7 +337,6 @@
             let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
             let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;
 
-            // 4. Data Afkir 0011 Shift 2
             let afkirPC  = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc']) || 0;
             let afkirPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet']) || 0;
             let afkir10L = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar']) || 0;
@@ -352,7 +345,6 @@
             let siapPC = btlJgrPC + lasahanPC;
             let siapPET = btlJgrPET + lasahanPET;
 
-            // Render Hasil ke Layar
             document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -376,18 +368,24 @@
             document.getElementById('val-afkir-pet').innerText = `${afkirPET.toLocaleString('id-ID')} Btl`;
             document.getElementById('val-afkir-10l').innerText = `${afkir10L.toLocaleString('id-ID')} Btl`;
 
-            // Simpan Snapshot Laporan
             currentSnapshot = {
                 id: 'REC-' + Date.now(),
-                shift: 'Shift 2',
+                shift: '',
                 tanggal: dateISO,
                 waktu: timeStr,
+                jgrKosong: rawJgrKosong,
+                jgrPC: jgrPC,
+                jgrPET: jgrPET,
+                jgr10L: rawJgr10L,
                 totalJugrack: totalJugrack,
+                jgrRusak: rawJgrRusak,
+                lasahanPC: lasahanPC,
+                lasahanPET: lasahanPET,
                 siapPC: siapPC,
                 siapPET: siapPET,
-                fgPC: `${fgJgrPC} Jgr (${fgJmlhPC} Btl)`,
-                fgPET: `${fgJgrPET} Jgr (${fgJmlhPET} Btl)`,
-                fg10L: `${fgJgr10L} Jgr (${fgJmlh10L} Btl)`,
+                fgPC: fgJmlhPC,
+                fgPET: fgJmlhPET,
+                fg10L: fgJmlh10L,
                 afkirPC: afkirPC,
                 afkirPET: afkirPET,
                 afkirLuar: afkir10L
@@ -401,7 +399,7 @@
             history.push(currentSnapshot);
             localStorage.setItem('report_history_db', JSON.stringify(history));
 
-            alert("Data Shift 2 berhasil di-Submit ke Riwayat Tabel!");
+            alert("Data laporan berhasil di-Submit ke Riwayat Tabel!");
             window.location.href = "tabel-report.html";
         }
 
@@ -417,7 +415,7 @@
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    link.download = 'Update-Botol-Jugrack-HOD-Shift2.jpg';
+                    link.download = 'Update-Botol-Jugrack-HOD.jpg';
                     link.href = url;
                     document.body.appendChild(link);
                     link.click();
