@@ -282,6 +282,38 @@
             return null;
         }
 
+        // Fungsi khusus mengambil data Afkir 0011 (Persis seperti logika Shift 1)
+        function getAfkirData() {
+            let sumPC = 0;
+            let sumPET = 0;
+            let sumLuar = 0;
+
+            // 1. Utamakan membaca langsung array JSON 'afkir_0011_data' dari Form Input Afkir
+            const afkirDataRaw = localStorage.getItem('afkir_0011_data');
+            if (afkirDataRaw) {
+                try {
+                    const parsed = JSON.parse(afkirDataRaw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        parsed.forEach(item => {
+                            sumPC += Number(item.pc) || 0;
+                            sumPET += Number(item.pet) || 0;
+                            sumLuar += Number(item.luar) || 0;
+                        });
+                        return { pc: sumPC, pet: sumPET, luar: sumLuar };
+                    }
+                } catch (e) {
+                    console.error("Gagal parse afkir_0011_data", e);
+                }
+            }
+
+            // 2. Fallback jika afkir_0011_data tidak ada, ambil dari key tunggal
+            sumPC = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc', 'afkirPC']) || 0;
+            sumPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet', 'afkirPET']) || 0;
+            sumLuar = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar', 'afkirLuar']) || 0;
+
+            return { pc: sumPC, pet: sumPET, luar: sumLuar };
+        }
+
         function loadReportData() {
             const now = new Date();
             let dateISO = now.toISOString().split('T')[0];
@@ -337,13 +369,16 @@
             let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
             let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;
 
-            let afkirPC  = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc']) || 0;
-            let afkirPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet']) || 0;
-            let afkir10L = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar']) || 0;
+            // Memanggil fungsi pencari Afkir
+            let afkirData = getAfkirData();
+            let afkirPC   = afkirData.pc;
+            let afkirPET  = afkirData.pet;
+            let afkir10L  = afkirData.luar;
 
             let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
             let siapPC = btlJgrPC + lasahanPC;
             let siapPET = btlJgrPET + lasahanPET;
+            let totalAfkir = afkirPC + afkirPET + afkir10L;
 
             document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
@@ -388,11 +423,13 @@
                 fg10L: fgJmlh10L,
                 afkirPC: afkirPC,
                 afkirPET: afkirPET,
-                afkirLuar: afkir10L
+                afkirLuar: afkir10L,
+                totalAfkir: totalAfkir
             };
         }
 
-        loadReportData();
+        // Jalankan saat dokumen selesai dimuat
+        document.addEventListener('DOMContentLoaded', loadReportData);
 
         function submitAndGoToTable() {
             let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
