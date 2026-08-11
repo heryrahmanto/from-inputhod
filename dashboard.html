@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dashboard Monitoring Logistik">
     <title>Dashboard Monitoring Logistik</title>
+    <!-- Library untuk screenshot (Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -18,6 +20,7 @@
         .dashboard-container {
             max-width: 600px;
             margin: 0 auto;
+            background-color: #f1f5f9; /* Agar background tidak transparan saat di-capture */
         }
 
         .header {
@@ -60,7 +63,7 @@
         }
 
         .card-value {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #0f172a;
             margin-top: 4px;
@@ -94,10 +97,14 @@
         .detail-label { color: #475569; font-weight: 600; }
         .detail-value { font-weight: 700; color: #0f172a; }
 
-        /* Tombol Navigasi */
+        /* Tombol */
+        .btn-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
         .btn-home {
-            display: block;
-            width: 100%;
+            flex: 1;
             background-color: #475569;
             color: white;
             text-align: center;
@@ -107,18 +114,31 @@
             font-weight: 700;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .btn-wa {
+            flex: 1;
+            background-color: #25d366;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
 
-    <main class="dashboard-container">
+    <main class="dashboard-container" id="dashboard-area">
         <!-- Header -->
         <header class="header">
             <h2>📈 DASHBOARD LOGISTIK</h2>
             <p id="timeInfo">-</p>
         </header>
 
-        <!-- Cards Ringkasan Utamakan Stok -->
+        <!-- Cards Ringkasan Utama -->
         <div class="grid-cards">
             <div class="card card-green">
                 <div class="card-title">Siap Pakai PC</div>
@@ -134,7 +154,7 @@
             </div>
             <div class="card card-red">
                 <div class="card-title">Total Afkir</div>
-                <div class="card-value" id="dash-total-afkir">0 Pcs</div>
+                <div class="card-value" id="dash-total-afkir">0</div>
             </div>
         </div>
 
@@ -184,8 +204,11 @@
             </div>
         </section>
 
-        <!-- Tombol Kembali -->
-        <a href="index.html" class="btn-home">🏠 Kembali ke Menu Utama</a>
+        <!-- Tombol Navigasi -->
+        <div class="btn-wrapper">
+            <button class="btn-wa" onclick="exportToWhatsApp()" id="btn-export">📷 Ekspor ke WA</button>
+            <a href="index.html" class="btn-home">🏠 Kembali</a>
+        </div>
     </main>
 
     <script>
@@ -206,32 +229,23 @@
                 timeElement.innerText = `${tglStr} | ${jamStr} WIB`;
             }
 
-            // 1. Ambil jumlah RAK JUGRACK dari localStorage
             let jgrKosong = safeParseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong'));
-            
-            // Mengambil angka input (Misal PC = 6, PET = 4)
             let jgrPC = safeParseInt(localStorage.getItem('jgr_botol_pc') || localStorage.getItem('botol_jgr_pc'));
             let jgrPET = safeParseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet'));
-            
             let jgr10L = safeParseInt(localStorage.getItem('jgr_kosong_10l'));
             let jgrRusak = safeParseInt(localStorage.getItem('jgr_rusak'));
 
-            // 2. Ambil Lasahan
             let lasahanPC = safeParseInt(localStorage.getItem('lasahan_pc'));
             let lasahanPET = safeParseInt(localStorage.getItem('lasahan_pet'));
 
-            // 3. HITUNG JUMLAH BOTOL (Jumlah Jugrack x 48)
             let botolJgrPC = jgrPC * 48;
             let botolJgrPET = jgrPET * 48;
 
-            // 4. HITUNG SIAP PAKAI (Botol Jugrack + Botol Lasahan)
             let siapPC = botolJgrPC + lasahanPC;
             let siapPET = botolJgrPET + lasahanPET;
 
-            // 5. HITUNG TOTAL JUGRACK
             let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
 
-            // 6. HITUNG AFKIR
             let totalAfkir = 0;
             const savedAfkir = localStorage.getItem('afkir_0011_data');
             if (savedAfkir) {
@@ -247,28 +261,49 @@
                 } catch(e) {}
             }
 
-            // Helper DOM
             function setText(id, value) {
                 const el = document.getElementById(id);
                 if (el) el.innerText = value;
             }
 
-            // Render ke UI
-            setText('dash-siap-pc', siapPC.toLocaleString('id-ID'));       // (6 * 48) = 288
-            setText('dash-siap-pet', siapPET.toLocaleString('id-ID'));     // (4 * 48) = 192
-            setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));   // 6 + 4 = 10
-            setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} Pcs`);
+            // Render ke UI dengan penambahan satuan "btl"
+            setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
+            setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
+            setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
+            setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
 
             setText('dash-jgr-kosong', jgrKosong.toLocaleString('id-ID'));
-            setText('dash-jgr-pc', jgrPC.toLocaleString('id-ID'));         // Menampilkan 6
-            setText('dash-jgr-pet', jgrPET.toLocaleString('id-ID'));       // Menampilkan 4
+            setText('dash-jgr-pc', jgrPC.toLocaleString('id-ID'));
+            setText('dash-jgr-pet', jgrPET.toLocaleString('id-ID'));
             setText('dash-jgr-10l', jgr10L.toLocaleString('id-ID'));
             setText('dash-jgr-rusak', jgrRusak.toLocaleString('id-ID'));
 
-            setText('dash-botol-jgr-pc', botolJgrPC.toLocaleString('id-ID')); // Menampilkan 288
-            setText('dash-botol-jgr-pet', botolJgrPET.toLocaleString('id-ID')); // Menampilkan 192
+            setText('dash-botol-jgr-pc', botolJgrPC.toLocaleString('id-ID'));
+            setText('dash-botol-jgr-pet', botolJgrPET.toLocaleString('id-ID'));
             setText('dash-lasahan-pc', lasahanPC.toLocaleString('id-ID'));
             setText('dash-lasahan-pet', lasahanPET.toLocaleString('id-ID'));
+        }
+
+        // Fungsi Ekspor ke Gambar
+        function exportToWhatsApp() {
+            const btn = document.getElementById('btn-export');
+            btn.innerText = "Memproses...";
+            btn.disabled = true;
+
+            const container = document.getElementById('dashboard-area');
+            
+            html2canvas(container, {
+                scale: 2, // Biar gambar tajam
+                backgroundColor: "#f1f5f9"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Dashboard_Logistik_${new Date().toLocaleDateString()}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
+            });
         }
 
         document.addEventListener('DOMContentLoaded', updateDashboard);
