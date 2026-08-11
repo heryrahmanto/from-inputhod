@@ -204,8 +204,8 @@
             </div>
         </section>
 
-        <!-- Tombol Navigasi -->
-        <div class="btn-wrapper">
+        <!-- Tombol Navigasi (Diabaikan saat ekspor gambar) -->
+        <div class="btn-wrapper" data-html2canvas-ignore="true">
             <button class="btn-wa" onclick="exportToWhatsApp()" id="btn-export">📷 Ekspor ke WA</button>
             <a href="index.html" class="btn-home">🏠 Kembali</a>
         </div>
@@ -284,7 +284,7 @@
             setText('dash-lasahan-pet', lasahanPET.toLocaleString('id-ID'));
         }
 
-        // Fungsi Ekspor ke Gambar
+        // Fungsi Ekspor ke Gambar yang telah disesuaikan
         function exportToWhatsApp() {
             const btn = document.getElementById('btn-export');
             btn.innerText = "Memproses...";
@@ -293,14 +293,27 @@
             const container = document.getElementById('dashboard-area');
             
             html2canvas(container, {
-                scale: 2, // Biar gambar tajam
-                backgroundColor: "#f1f5f9"
+                scale: 2, // Ketajaman tinggi
+                backgroundColor: "#f1f5f9",
+                logging: false,
+                onclone: (clonedDoc) => {
+                    // Penyesuaian tampilan khusus saat di-capture
+                    const clonedContainer = clonedDoc.getElementById('dashboard-area');
+                    clonedContainer.style.padding = "20px";
+                    clonedContainer.style.maxWidth = "500px"; // Ukuran proporsional untuk WA
+                }
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Dashboard_Logistik_${new Date().toLocaleDateString()}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                const today = new Date().toISOString().split('T')[0];
+                
+                link.download = `Dashboard_Logistik_${today}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
                 link.click();
                 
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
             });
