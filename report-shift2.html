@@ -155,7 +155,7 @@
 <body>
 
     <div class="report-card" id="reportArea">
-        <!-- Header Atas -->
+        <!-- Header Atas (TANPA TULISAN SHIFT 2) -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
             <div class="datetime-info" id="liveDateTime">-</div>
@@ -261,6 +261,7 @@
     <script>
         let currentSnapshot = {};
 
+        // Fungsi Update Jam
         function updateWaktu() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -271,6 +272,7 @@
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
+        // Fungsi Menangkap Data dari LocalStorage dengan aman
         function getRaw(keys) {
             for (let k of keys) {
                 let v = localStorage.getItem(k);
@@ -282,13 +284,12 @@
             return null;
         }
 
-        // Fungsi khusus mengambil data Afkir 0011 (Persis seperti logika Shift 1)
+        // Fungsi khusus mengambil data Afkir 0011
         function getAfkirData() {
             let sumPC = 0;
             let sumPET = 0;
             let sumLuar = 0;
 
-            // 1. Utamakan membaca langsung array JSON 'afkir_0011_data' dari Form Input Afkir
             const afkirDataRaw = localStorage.getItem('afkir_0011_data');
             if (afkirDataRaw) {
                 try {
@@ -301,12 +302,9 @@
                         });
                         return { pc: sumPC, pet: sumPET, luar: sumLuar };
                     }
-                } catch (e) {
-                    console.error("Gagal parse afkir_0011_data", e);
-                }
+                } catch (e) {}
             }
 
-            // 2. Fallback jika afkir_0011_data tidak ada, ambil dari key tunggal
             sumPC = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc', 'afkirPC']) || 0;
             sumPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet', 'afkirPET']) || 0;
             sumLuar = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar', 'afkirLuar']) || 0;
@@ -314,11 +312,13 @@
             return { pc: sumPC, pet: sumPET, luar: sumLuar };
         }
 
+        // Fungsi Utama Kalkulasi & Tampil Data
         function loadReportData() {
             const now = new Date();
             let dateISO = now.toISOString().split('T')[0];
             let timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
+            // Mengutamakan Key s2_ (Untuk Data Laporan Ini)
             let rawJgrKosong = getRaw(['s2_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
             let rawJgrPC     = getRaw(['s2_jgr_pc', 's2_jgr_botol_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
             let rawJgrPET    = getRaw(['s2_jgr_pet', 's2_jgr_botol_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
@@ -330,6 +330,7 @@
             let lasahanPC    = getRaw(['s2_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
             let lasahanPET   = getRaw(['s2_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
+            // LOGIKA PINTAR (AUTO-KOREKSI BOTOL & JUGRACK)
             let jgrPC = 0;
             let btlJgrPC = 0;
             if (rawJgrPC !== null && rawJgrPC > 0) {
@@ -360,6 +361,7 @@
                 }
             }
 
+            // Finish Good
             let fgJgrPC  = getRaw(['s2_fg_jgr_pc', 'fg_jgr_pc', 'fg_pc']) || 0;
             let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 48);
 
@@ -369,17 +371,19 @@
             let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
             let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;
 
-            // Memanggil fungsi pencari Afkir
+            // Afkir
             let afkirData = getAfkirData();
             let afkirPC   = afkirData.pc;
             let afkirPET  = afkirData.pet;
             let afkir10L  = afkirData.luar;
 
+            // Total Penjumlahan
             let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
             let siapPC = btlJgrPC + lasahanPC;
             let siapPET = btlJgrPET + lasahanPET;
             let totalAfkir = afkirPC + afkirPET + afkir10L;
 
+            // Cetak ke HTML
             document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -403,9 +407,10 @@
             document.getElementById('val-afkir-pet').innerText = `${afkirPET.toLocaleString('id-ID')} Btl`;
             document.getElementById('val-afkir-10l').innerText = `${afkir10L.toLocaleString('id-ID')} Btl`;
 
+            // Snapshot untuk History Table
             currentSnapshot = {
                 id: 'REC-' + Date.now(),
-                shift: '',
+                shift: '', // Shift dikosongkan jika tidak mau dicatat spesifik
                 tanggal: dateISO,
                 waktu: timeStr,
                 jgrKosong: rawJgrKosong,
@@ -428,9 +433,9 @@
             };
         }
 
-        // Jalankan saat dokumen selesai dimuat
         document.addEventListener('DOMContentLoaded', loadReportData);
 
+        // Fungsi Simpan ke History Table
         function submitAndGoToTable() {
             let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
             history.push(currentSnapshot);
@@ -440,6 +445,7 @@
             window.location.href = "tabel-report.html";
         }
 
+        // Fungsi Share WhatsApp & Unduh JPG (TANPA NAMA SHIFT 2)
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');

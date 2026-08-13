@@ -256,7 +256,7 @@
         }
 
         function loadReportData() {
-            // 1. Ambil Nilai Mentah dari LocalStorage
+            // 1. Ambil Nilai Mentah dari LocalStorage 
             let rawJgrKosong = getRaw(['s1_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
             let rawJgrPC     = getRaw(['s1_jgr_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
             let rawJgrPET    = getRaw(['s1_jgr_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
@@ -269,7 +269,7 @@
             let lasahanPC    = getRaw(['s1_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
             let lasahanPET   = getRaw(['s1_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            // 2. Logika Penyesuaian Otomatis (Jugrack <-> Botol)
+            // 2. Logika Penyesuaian Otomatis (Anti-Error / Auto-Koreksi)
             let jgrPC = 0;
             let btlJgrPC = 0;
 
