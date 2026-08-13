@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Botol & Jugrack HOD</title>
+    <!-- Library untuk Capture Gambar JPG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 12px;
+            color: #0f172a;
+        }
+
+        .report-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            border: 1px solid #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .report-header {
+            text-align: left;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0284c7;
+        }
+        .report-header h2 {
+            margin: 0 0 4px 0;
+            font-size: 19px;
+            color: #0369a1;
+            font-weight: 800;
+        }
+        .datetime-info {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            line-height: 1.3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+
+        th, td {
+            border: 2px solid #94a3b8;
+            padding: 8px 10px;
+            vertical-align: middle;
+        }
+
+        .section-title {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 800;
+            text-align: center;
+            font-size: 15px;
+            border-top: 2px solid #0284c7;
+            border-bottom: 2px solid #0284c7;
+        }
+
+        .row-even { background-color: #ffffff; }
+        .row-odd { background-color: #f8fafc; }
+
+        .label-col {
+            width: 65%;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .val-col {
+            width: 35%;
+            text-align: right;
+            font-weight: 800;
+            font-size: 14px;
+            color: #000000;
+        }
+
+        .text-pet { color: #b45309; }
+
+        .row-total-jgr { background-color: #f1f5f9; }
+        .row-total-jgr .label-col, .row-total-jgr .val-col {
+            color: #1e3a8a;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .row-rusak .label-col, .row-rusak .val-col {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .row-highlight {
+            background-color: #ffffff;
+            border: 3px solid #000000 !important;
+        }
+        .row-highlight td {
+            border-top: 3px solid #000000 !important;
+            border-bottom: 3px solid #000000 !important;
+            font-weight: 800;
+            font-size: 14px;
+            color: #000000;
+        }
+
+        .row-fg { background-color: #0284c7; }
+        .row-fg td {
+            border-color: #0284c7;
+            color: #ffffff !important;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .row-afkir { background-color: #fef2f2; }
+        .row-afkir .label-col, .row-afkir .val-col {
+            color: #991b1b;
+        }
+
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .btn-group-main {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .btn-submit { background-color: #0284c7; }
+        .btn-menu { background-color: #475569; }
+        .btn-wa { background-color: #16a34a; }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="report-card" id="reportArea">
+        <!-- Header Atas (TANPA TULISAN SHIFT 2) -->
+        <div class="report-header">
+            <h2>Update Botol & Jugrack " HOD "</h2>
+            <div class="datetime-info" id="liveDateTime">-</div>
+        </div>
+
+        <!-- Tabel Utama Komplit -->
+        <table id="reportTable">
+            <!-- 1. JUGRACK -->
+            <tr><td colspan="2" class="section-title">Jugrack</td></tr>
+            <tr class="row-even">
+                <td class="label-col">Jugrack Kosong</td>
+                <td class="val-col" id="val-jgr-kosong">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col">Jugrack Botol Kosong "PC"</td>
+                <td class="val-col" id="val-jgr-pc">0</td>
+            </tr>
+            <tr class="row-even">
+                <td class="label-col text-pet">Jugrack Botol Kosong "PET"</td>
+                <td class="val-col text-pet" id="val-jgr-pet">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col">Jugrack kosong 10 L</td>
+                <td class="val-col" id="val-jgr-10l">0</td>
+            </tr>
+            <tr class="row-total-jgr">
+                <td class="label-col">Total Jugrack</td>
+                <td class="val-col" id="val-total-jugrack">0</td>
+            </tr>
+            <tr class="row-rusak">
+                <td class="label-col">~Jugrack Rusak</td>
+                <td class="val-col" id="val-jugrack-rusak">0</td>
+            </tr>
+
+            <!-- 2. BOTOL KOSONG -->
+            <tr><td colspan="2" class="section-title">Botol Kosong</td></tr>
+            <tr class="row-even">
+                <td class="label-col">Botol Jugrack "PC"</td>
+                <td class="val-col" id="val-botol-jgr-pc">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col text-pet">Botol Jugrack "PET"</td>
+                <td class="val-col text-pet" id="val-botol-jgr-pet">0</td>
+            </tr>
+            <tr class="row-even">
+                <td class="label-col">Botol Lasahan ~ "PC"</td>
+                <td class="val-col" id="val-botol-lasahan-pc">0</td>
+            </tr>
+            <tr class="row-odd">
+                <td class="label-col text-pet">Botol Lasahan ~ "PET"</td>
+                <td class="val-col text-pet" id="val-botol-lasahan-pet">0</td>
+            </tr>
+            <tr class="row-highlight">
+                <td class="label-col">Total Botol Siap pakai "PC"</td>
+                <td class="val-col" id="val-siap-pc">0</td>
+            </tr>
+            <tr class="row-highlight">
+                <td class="label-col">Total Botol Siap pakai "PET"</td>
+                <td class="val-col" id="val-siap-pet">0</td>
+            </tr>
+
+            <!-- 3. FINISH GOOD -->
+            <tr><td colspan="2" class="section-title">Finish Good</td></tr>
+            <tr class="row-fg">
+                <td class="label-col">Finish Good PC ( 0002 )</td>
+                <td class="val-col" id="val-fg-pc">0 Jgr (0 Btl)</td>
+            </tr>
+            <tr class="row-fg" style="background-color: #0369a1;">
+                <td class="label-col">Finish Good PET ( 0012 )</td>
+                <td class="val-col" id="val-fg-pet">0 Jgr (0 Btl)</td>
+            </tr>
+            <tr class="row-fg" style="background-color: #075985;">
+                <td class="label-col">Finish Good 10 L</td>
+                <td class="val-col" id="val-fg-10l">0 Jgr (0 Btl)</td>
+            </tr>
+
+            <!-- 4. AFKIR 0011 -->
+            <tr><td colspan="2" class="section-title" style="background-color: #fee2e2; color: #991b1b; border-color: #ef4444;">Afkir 0011</td></tr>
+            <tr class="row-afkir">
+                <td class="label-col">Afkir Botol "PC"</td>
+                <td class="val-col" id="val-afkir-pc">0 Btl</td>
+            </tr>
+            <tr class="row-afkir">
+                <td class="label-col text-pet">Afkir Botol "PET"</td>
+                <td class="val-col text-pet" id="val-afkir-pet">0 Btl</td>
+            </tr>
+            <tr class="row-afkir">
+                <td class="label-col">Afkir Botol Luar</td>
+                <td class="val-col" id="val-afkir-10l">0 Btl</td>
+            </tr>
+        </table>
+
+        <!-- Tombol Aksi Bawah -->
+        <div class="action-container" id="actionButtons">
+            <button class="btn btn-submit" onclick="submitAndGoToTable()">📤 Submit & Lihat Tabel Laporan</button>
+            <div class="btn-group-main">
+                <a href="index.html" class="btn btn-menu">🏠 Menu</a>
+                <button class="btn btn-wa" onclick="shareWhatsApp()">💬 Share WA (JPG)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSnapshot = {};
+
+        // Fungsi Update Jam
+        function updateWaktu() {
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
+            document.getElementById('liveDateTime').innerText = tglStr + ' | ' + jamStr;
+        }
+        updateWaktu();
+        setInterval(updateWaktu, 1000);
+
+        // Fungsi Menangkap Data dari LocalStorage dengan aman
+        function getRaw(keys) {
+            for (let k of keys) {
+                let v = localStorage.getItem(k);
+                if (v !== null && v !== undefined && v !== '') {
+                    let num = parseInt(v, 10);
+                    if (!isNaN(num)) return num;
+                }
+            }
+            return null;
+        }
+
+        // Fungsi khusus mengambil data Afkir 0011
+        function getAfkirData() {
+            let sumPC = 0;
+            let sumPET = 0;
+            let sumLuar = 0;
+
+            const afkirDataRaw = localStorage.getItem('afkir_0011_data');
+            if (afkirDataRaw) {
+                try {
+                    const parsed = JSON.parse(afkirDataRaw);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        parsed.forEach(item => {
+                            sumPC += Number(item.pc) || 0;
+                            sumPET += Number(item.pet) || 0;
+                            sumLuar += Number(item.luar) || 0;
+                        });
+                        return { pc: sumPC, pet: sumPET, luar: sumLuar };
+                    }
+                } catch (e) {}
+            }
+
+            sumPC = getRaw(['s2_afkir_pc', 'afkir_pc', 'afkir_0011_pc', 'afkirPC']) || 0;
+            sumPET = getRaw(['s2_afkir_pet', 'afkir_pet', 'afkir_0011_pet', 'afkirPET']) || 0;
+            sumLuar = getRaw(['s2_afkir_10l', 'afkir_10l', 'afkir_0011_luar', 'afkirLuar']) || 0;
+
+            return { pc: sumPC, pet: sumPET, luar: sumLuar };
+        }
+
+        // Fungsi Utama Kalkulasi & Tampil Data
+        function loadReportData() {
+            const now = new Date();
+            let dateISO = now.toISOString().split('T')[0];
+            let timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            // Mengutamakan Key s2_ (Untuk Data Laporan Ini)
+            let rawJgrKosong = getRaw(['s2_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
+            let rawJgrPC     = getRaw(['s2_jgr_pc', 's2_jgr_botol_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
+            let rawJgrPET    = getRaw(['s2_jgr_pet', 's2_jgr_botol_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
+            let rawJgr10L    = getRaw(['s2_jgr_10l', 'jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
+            let rawJgrRusak  = getRaw(['s2_jgr_rusak', 'jgr_rusak', 'jugrack_rusak']) || 0;
+
+            let rawBtlJgrPC  = getRaw(['s2_botol_jgr_pc', 'botol_jgr_pc', 'btl_jgr_pc']);
+            let rawBtlJgrPET = getRaw(['s2_botol_jgr_pet', 'botol_jgr_pet', 'btl_jgr_pet']);
+            let lasahanPC    = getRaw(['s2_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
+            let lasahanPET   = getRaw(['s2_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
+
+            // LOGIKA PINTAR (AUTO-KOREKSI BOTOL & JUGRACK)
+            let jgrPC = 0;
+            let btlJgrPC = 0;
+            if (rawJgrPC !== null && rawJgrPC > 0) {
+                jgrPC = rawJgrPC;
+                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
+            } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
+                if (rawBtlJgrPC < 48) {
+                    jgrPC = rawBtlJgrPC;
+                    btlJgrPC = jgrPC * 48;
+                } else {
+                    btlJgrPC = rawBtlJgrPC;
+                    jgrPC = Math.floor(rawBtlJgrPC / 48);
+                }
+            }
+
+            let jgrPET = 0;
+            let btlJgrPET = 0;
+            if (rawJgrPET !== null && rawJgrPET > 0) {
+                jgrPET = rawJgrPET;
+                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
+            } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
+                if (rawBtlJgrPET < 48) {
+                    jgrPET = rawBtlJgrPET;
+                    btlJgrPET = jgrPET * 48;
+                } else {
+                    btlJgrPET = rawBtlJgrPET;
+                    jgrPET = Math.floor(rawBtlJgrPET / 48);
+                }
+            }
+
+            // Finish Good
+            let fgJgrPC  = getRaw(['s2_fg_jgr_pc', 'fg_jgr_pc', 'fg_pc']) || 0;
+            let fgJmlhPC = getRaw(['s2_fg_jmlh_pc', 'fg_jmlh_pc']) || (fgJgrPC * 48);
+
+            let fgJgrPET  = getRaw(['s2_fg_jgr_pet', 'fg_jgr_pet', 'fg_pet']) || 0;
+            let fgJmlhPET = getRaw(['s2_fg_jmlh_pet', 'fg_jmlh_pet']) || (fgJgrPET * 48);
+
+            let fgJgr10L  = getRaw(['s2_fg_jgr_10l', 'fg_jgr_10l']) || 0;
+            let fgJmlh10L = getRaw(['s2_fg_jmlh_10l', 'fg_jmlh_10l']) || 0;
+
+            // Afkir
+            let afkirData = getAfkirData();
+            let afkirPC   = afkirData.pc;
+            let afkirPET  = afkirData.pet;
+            let afkir10L  = afkirData.luar;
+
+            // Total Penjumlahan
+            let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
+            let siapPC = btlJgrPC + lasahanPC;
+            let siapPET = btlJgrPET + lasahanPET;
+            let totalAfkir = afkirPC + afkirPET + afkir10L;
+
+            // Cetak ke HTML
+            document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
+            document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
+            document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
+            document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
+            document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
+            document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
+
+            document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
+            document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
+            document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
+
+            document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
+            document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
+
+            document.getElementById('val-fg-pc').innerText = `${fgJgrPC.toLocaleString('id-ID')} Jgr (${fgJmlhPC.toLocaleString('id-ID')} Btl)`;
+            document.getElementById('val-fg-pet').innerText = `${fgJgrPET.toLocaleString('id-ID')} Jgr (${fgJmlhPET.toLocaleString('id-ID')} Btl)`;
+            document.getElementById('val-fg-10l').innerText = `${fgJgr10L.toLocaleString('id-ID')} Jgr (${fgJmlh10L.toLocaleString('id-ID')} Btl)`;
+
+            document.getElementById('val-afkir-pc').innerText = `${afkirPC.toLocaleString('id-ID')} Btl`;
+            document.getElementById('val-afkir-pet').innerText = `${afkirPET.toLocaleString('id-ID')} Btl`;
+            document.getElementById('val-afkir-10l').innerText = `${afkir10L.toLocaleString('id-ID')} Btl`;
+
+            // Snapshot untuk History Table
+            currentSnapshot = {
+                id: 'REC-' + Date.now(),
+                shift: '', // Shift dikosongkan jika tidak mau dicatat spesifik
+                tanggal: dateISO,
+                waktu: timeStr,
+                jgrKosong: rawJgrKosong,
+                jgrPC: jgrPC,
+                jgrPET: jgrPET,
+                jgr10L: rawJgr10L,
+                totalJugrack: totalJugrack,
+                jgrRusak: rawJgrRusak,
+                lasahanPC: lasahanPC,
+                lasahanPET: lasahanPET,
+                siapPC: siapPC,
+                siapPET: siapPET,
+                fgPC: fgJmlhPC,
+                fgPET: fgJmlhPET,
+                fg10L: fgJmlh10L,
+                afkirPC: afkirPC,
+                afkirPET: afkirPET,
+                afkirLuar: afkir10L,
+                totalAfkir: totalAfkir
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', loadReportData);
+
+        // Fungsi Simpan ke History Table
+        function submitAndGoToTable() {
+            let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+            history.push(currentSnapshot);
+            localStorage.setItem('report_history_db', JSON.stringify(history));
+
+            alert("Data laporan berhasil di-Submit ke Riwayat Tabel!");
+            window.location.href = "tabel-report.html";
+        }
+
+        // Fungsi Share WhatsApp & Unduh JPG (TANPA NAMA SHIFT 2)
+        function shareWhatsApp() {
+            const reportArea = document.getElementById('reportArea');
+            const actionButtons = document.getElementById('actionButtons');
+
+            actionButtons.style.display = 'none';
+
+            html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
+                actionButtons.style.display = 'flex';
+
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'Update-Botol-Jugrack-HOD.jpg';
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    let timeText = document.getElementById('liveDateTime').innerText;
+                    let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG otomatis terunduh, silakan lampirkan gambar di chat ini)*`;
+
+                    setTimeout(() => {
+                        window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
+                    }, 1200);
+
+                }, 'image/jpeg', 0.95);
+
+            }).catch(err => {
+                actionButtons.style.display = 'flex';
+                alert("Gagal memproses gambar: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
