@@ -15,8 +15,6 @@
             padding: 12px;
             color: #0f172a;
         }
-
-        /* Container Kartu Utama */
         .report-card {
             background: #ffffff;
             border-radius: 12px;
@@ -24,8 +22,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
             border: 1px solid #cbd5e1;
         }
-
-        /* Header Informasi Waktu */
         .report-header {
             text-align: left;
             margin-bottom: 12px;
@@ -44,22 +40,17 @@
             color: #1e3a8a;
             line-height: 1.3;
         }
-
-        /* Tabel Utama */
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
             background-color: #ffffff;
         }
-
         th, td {
             border: 2px solid #94a3b8;
             padding: 9px 10px;
             vertical-align: middle;
         }
-
-        /* Judul Section */
         .section-title {
             background-color: #e0f2fe;
             color: #0369a1;
@@ -69,78 +60,34 @@
             border-top: 2px solid #0284c7;
             border-bottom: 2px solid #0284c7;
         }
-
         .row-even { background-color: #ffffff; }
         .row-odd { background-color: #f8fafc; }
-
-        .label-col {
-            width: 65%;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .val-col {
-            width: 35%;
-            text-align: right;
-            font-weight: 800;
-            font-size: 14px;
-            color: #000000;
-        }
-
+        .label-col { width: 65%; font-weight: 700; color: #1e293b; }
+        .val-col { width: 35%; text-align: right; font-weight: 800; font-size: 14px; color: #000000; }
         .text-pet { color: #b45309; }
-
-        .row-total-jgr {
-            background-color: #f1f5f9;
-        }
-        .row-total-jgr .label-col, .row-total-jgr .val-col {
-            color: #1e3a8a;
-            font-size: 15px;
-            font-weight: 800;
-        }
-
-        .row-rusak .label-col, .row-rusak .val-col {
-            color: #dc2626;
-            font-weight: 700;
-        }
-
-        .row-highlight {
-            background-color: #ffffff;
-            border: 3px solid #000000 !important;
-        }
+        .row-total-jgr { background-color: #f1f5f9; }
+        .row-total-jgr .label-col, .row-total-jgr .val-col { color: #1e3a8a; font-size: 15px; font-weight: 800; }
+        .row-rusak .label-col, .row-rusak .val-col { color: #dc2626; font-weight: 700; }
+        .row-highlight { background-color: #ffffff; border: 3px solid #000000 !important; }
         .row-highlight td {
             border-top: 3px solid #000000 !important;
             border-bottom: 3px solid #000000 !important;
-            font-weight: 800;
-            font-size: 14px;
-            color: #000000;
+            font-weight: 800; font-size: 14px; color: #000000;
         }
-
-        .row-afkir {
-            background-color: #fef2f2;
-        }
+        .row-afkir { background-color: #fef2f2; }
         .row-afkir .label-col { color: #991b1b; }
         .row-afkir .val-col { color: #dc2626; font-weight: 800; }
 
-        .action-container {
-            display: flex;
-            gap: 8px;
-            margin-top: 15px;
-        }
-        .btn-menu, .btn-wa, .btn-reset {
-            flex: 1;
-            padding: 12px 5px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-            color: white;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        .action-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .btn-group-main { display: flex; gap: 8px; }
+        .btn {
+            flex: 1; padding: 11px; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 14px; color: white; cursor: pointer;
+            text-align: center; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .btn-menu { background-color: #475569; }
         .btn-wa { background-color: #16a34a; }
-        .btn-reset { background-color: #dc2626; } /* Warna merah untuk tombol reset */
+        .btn-reset { background-color: #dc2626; }
     </style>
 </head>
 <body>
@@ -156,81 +103,37 @@
         <table>
             <!-- 1. JUGRACK -->
             <tr><td colspan="2" class="section-title">Jugrack</td></tr>
-            <tr class="row-even">
-                <td class="label-col">Jugrack Kosong</td>
-                <td class="val-col" id="val-jgr-kosong">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col">Jugrack Botol Kosong "PC"</td>
-                <td class="val-col" id="val-jgr-pc">0</td>
-            </tr>
-            <tr class="row-even">
-                <td class="label-col text-pet">Jugrack Botol Kosong "PET"</td>
-                <td class="val-col text-pet" id="val-jgr-pet">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col">Jugrack kosong 10 L</td>
-                <td class="val-col" id="val-jgr-10l">0</td>
-            </tr>
-            <tr class="row-total-jgr">
-                <td class="label-col">Total Jugrack</td>
-                <td class="val-col" id="val-total-jugrack">0</td>
-            </tr>
-            <tr class="row-rusak">
-                <td class="label-col">~Jugrack Rusak</td>
-                <td class="val-col" id="val-jugrack-rusak">0</td>
-            </tr>
+            <tr class="row-even"><td class="label-col">Jugrack Kosong</td><td class="val-col" id="val-jgr-kosong">0</td></tr>
+            <tr class="row-odd"><td class="label-col">Jugrack Botol Kosong "PC"</td><td class="val-col" id="val-jgr-pc">0</td></tr>
+            <tr class="row-even"><td class="label-col text-pet">Jugrack Botol Kosong "PET"</td><td class="val-col text-pet" id="val-jgr-pet">0</td></tr>
+            <tr class="row-odd"><td class="label-col">Jugrack kosong 10 L</td><td class="val-col" id="val-jgr-10l">0</td></tr>
+            <tr class="row-total-jgr"><td class="label-col">Total Jugrack</td><td class="val-col" id="val-total-jugrack">0</td></tr>
+            <tr class="row-rusak"><td class="label-col">~Jugrack Rusak</td><td class="val-col" id="val-jugrack-rusak">0</td></tr>
 
             <!-- 2. BOTOL KOSONG -->
             <tr><td colspan="2" class="section-title">Botol Kosong</td></tr>
-            <tr class="row-even">
-                <td class="label-col">Botol Jugrack "PC"</td>
-                <td class="val-col" id="val-botol-jgr-pc">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col text-pet">Botol Jugrack "PET"</td>
-                <td class="val-col text-pet" id="val-botol-jgr-pet">0</td>
-            </tr>
-            <tr class="row-even">
-                <td class="label-col">Botol Lasahan ~ "PC"</td>
-                <td class="val-col" id="val-botol-lasahan-pc">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col text-pet">Botol Lasahan ~ "PET"</td>
-                <td class="val-col text-pet" id="val-botol-lasahan-pet">0</td>
-            </tr>
+            <tr class="row-even"><td class="label-col">Botol Jugrack "PC"</td><td class="val-col" id="val-botol-jgr-pc">0</td></tr>
+            <tr class="row-odd"><td class="label-col text-pet">Botol Jugrack "PET"</td><td class="val-col text-pet" id="val-botol-jgr-pet">0</td></tr>
+            <tr class="row-even"><td class="label-col">Botol Lasahan ~ "PC"</td><td class="val-col" id="val-botol-lasahan-pc">0</td></tr>
+            <tr class="row-odd"><td class="label-col text-pet">Botol Lasahan ~ "PET"</td><td class="val-col text-pet" id="val-botol-lasahan-pet">0</td></tr>
             
-            <!-- Kotak Highlight Siap Pakai -->
-            <tr class="row-highlight">
-                <td class="label-col">Total Botol Siap pakai "PC"</td>
-                <td class="val-col" id="val-siap-pc">0</td>
-            </tr>
-            <tr class="row-highlight">
-                <td class="label-col">Total Botol Siap pakai "PET"</td>
-                <td class="val-col" id="val-siap-pet">0</td>
-            </tr>
+            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PC"</td><td class="val-col" id="val-siap-pc">0</td></tr>
+            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PET"</td><td class="val-col" id="val-siap-pet">0</td></tr>
 
             <!-- 3. AFKIR 0011 -->
             <tr><td colspan="2" class="section-title" style="background-color: #fee2e2; color: #991b1b; border-color: #ef4444;">Afkir 0011</td></tr>
-            <tr class="row-afkir">
-                <td class="label-col">Afkir PC</td>
-                <td class="val-col" id="val-afkir-pc">0 Btl</td>
-            </tr>
-            <tr class="row-afkir">
-                <td class="label-col">Afkir PET</td>
-                <td class="val-col" id="val-afkir-pet">0 Btl</td>
-            </tr>
-            <tr class="row-afkir">
-                <td class="label-col">Afkir Luar</td>
-                <td class="val-col" id="val-afkir-luar">0 Btl</td>
-            </tr>
+            <tr class="row-afkir"><td class="label-col">Afkir PC</td><td class="val-col" id="val-afkir-pc">0 Btl</td></tr>
+            <tr class="row-afkir"><td class="label-col">Afkir PET</td><td class="val-col" id="val-afkir-pet">0 Btl</td></tr>
+            <tr class="row-afkir"><td class="label-col">Afkir Luar</td><td class="val-col" id="val-afkir-luar">0 Btl</td></tr>
         </table>
 
-        <!-- Tombol Bawah -->
+        <!-- Tombol Bawah (Murni Menu, Reset form, dan WA) -->
         <div class="action-container" id="actionButtons">
-            <a href="index.html" class="btn-menu">🏠 Menu</a>
-            <button class="btn-reset" onclick="resetData()">🗑️ Reset</button>
-            <button class="btn-wa" onclick="shareWhatsApp()">💬 WA (JPG)</button>
+            <div class="btn-group-main">
+                <a href="index.html" class="btn btn-menu">🏠 Menu</a>
+                <button class="btn btn-reset" onclick="resetData()">🗑️ Reset</button>
+                <button class="btn btn-wa" onclick="shareWhatsApp()">💬 WA (JPG)</button>
+            </div>
         </div>
     </div>
 
@@ -242,12 +145,13 @@
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
             let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
             
-            document.getElementById('liveDateTime').innerHTML = tglStr + ' | ' + jamStr;
+            let timeEl = document.getElementById('liveDateTime');
+            if(timeEl) timeEl.innerHTML = tglStr + ' | ' + jamStr;
         }
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // Fungsi Ambil Data (Prefix s1_ Dihilangkan Agar Sinkron Antar Shift)
+        // Fungsi Ambil Data 
         function getRaw(keys) {
             for (let k of keys) {
                 let v = localStorage.getItem(k);
@@ -260,113 +164,120 @@
         }
 
         function loadReportData() {
-            // 1. Ambil Nilai Mentah (Tanpa s1_)
-            let rawJgrKosong = getRaw(['jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
-            let rawJgrPC     = getRaw(['jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
-            let rawJgrPET    = getRaw(['jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
-            let rawJgr10L    = getRaw(['jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
-            let rawJgrRusak  = getRaw(['jgr_rusak', 'jugrack_rusak']) || 0;
+            try {
+                // 1. Ambil Nilai Mentah Jugrack & Botol Kosong
+                let rawJgrKosong = getRaw(['jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
+                let rawJgrPC     = getRaw(['jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
+                let rawJgrPET    = getRaw(['jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
+                let rawJgr10L    = getRaw(['jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
+                let rawJgrRusak  = getRaw(['jgr_rusak', 'jugrack_rusak']) || 0;
 
-            let rawBtlJgrPC  = getRaw(['botol_jgr_pc', 'btl_jgr_pc']);
-            let rawBtlJgrPET = getRaw(['botol_jgr_pet', 'btl_jgr_pet']);
+                let rawBtlJgrPC  = getRaw(['botol_jgr_pc', 'btl_jgr_pc']);
+                let rawBtlJgrPET = getRaw(['botol_jgr_pet', 'btl_jgr_pet']);
 
-            let lasahanPC    = getRaw(['lasahan_pc', 'botol_lasahan_pc']) || 0;
-            let lasahanPET   = getRaw(['lasahan_pet', 'botol_lasahan_pet']) || 0;
+                let lasahanPC    = getRaw(['lasahan_pc', 'botol_lasahan_pc']) || 0;
+                let lasahanPET   = getRaw(['lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            // 2. LOGIKA AUTO-KOREKSI DIKEMBALIKAN (Mengubah input < 48 menjadi Jugrack otomatis)
-            let jgrPC = 0;
-            let btlJgrPC = 0;
-
-            if (rawJgrPC !== null && rawJgrPC > 0) {
-                jgrPC = rawJgrPC;
-                btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
-            } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
-                if (rawBtlJgrPC < 48) {
-                    // Fitur andalan: Nilai yang diinput otomatis dianggap Jugrack!
-                    jgrPC = rawBtlJgrPC;
-                    btlJgrPC = jgrPC * 48;
-                } else {
-                    btlJgrPC = rawBtlJgrPC;
-                    jgrPC = Math.floor(rawBtlJgrPC / 48);
-                }
-            }
-
-            let jgrPET = 0;
-            let btlJgrPET = 0;
-
-            if (rawJgrPET !== null && rawJgrPET > 0) {
-                jgrPET = rawJgrPET;
-                btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
-            } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
-                if (rawBtlJgrPET < 48) {
-                    // Fitur andalan: Nilai yang diinput otomatis dianggap Jugrack!
-                    jgrPET = rawBtlJgrPET;
-                    btlJgrPET = jgrPET * 48;
-                } else {
-                    btlJgrPET = rawBtlJgrPET;
-                    jgrPET = Math.floor(rawBtlJgrPET / 48);
-                }
-            }
-
-            // 3. Afkir 0011
-            let totalAfkirPC = getRaw(['afkir_pc', 'afkir_0011_pc']) || 0;
-            let totalAfkirPET = getRaw(['afkir_pet', 'afkir_0011_pet']) || 0;
-            let totalAfkirLuar = getRaw(['afkir_luar', 'afkir_0011_luar']) || 0;
-
-            const savedAfkir = localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
-            if (savedAfkir) {
-                try {
-                    const parsed = JSON.parse(savedAfkir);
-                    if (Array.isArray(parsed)) {
-                        totalAfkirPC = 0; totalAfkirPET = 0; totalAfkirLuar = 0;
-                        parsed.forEach(item => {
-                            totalAfkirPC += parseInt(item.pc || item.afkir_pc || 0) || 0;
-                            totalAfkirPET += parseInt(item.pet || item.afkir_pet || 0) || 0;
-                            totalAfkirLuar += parseInt(item.luar || item.afkir_luar || 0) || 0;
-                        });
+                // 2. LOGIKA AUTO-KOREKSI
+                let jgrPC = 0; let btlJgrPC = 0;
+                if (rawJgrPC !== null && rawJgrPC > 0) {
+                    jgrPC = rawJgrPC;
+                    btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
+                } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
+                    if (rawBtlJgrPC < 48) {
+                        jgrPC = rawBtlJgrPC;
+                        btlJgrPC = jgrPC * 48;
+                    } else {
+                        btlJgrPC = rawBtlJgrPC;
+                        jgrPC = Math.floor(rawBtlJgrPC / 48);
                     }
-                } catch(e) {}
+                }
+
+                let jgrPET = 0; let btlJgrPET = 0;
+                if (rawJgrPET !== null && rawJgrPET > 0) {
+                    jgrPET = rawJgrPET;
+                    btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
+                } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
+                    if (rawBtlJgrPET < 48) {
+                        jgrPET = rawBtlJgrPET;
+                        btlJgrPET = jgrPET * 48;
+                    } else {
+                        btlJgrPET = rawBtlJgrPET;
+                        jgrPET = Math.floor(rawBtlJgrPET / 48);
+                    }
+                }
+
+                // 3. Afkir 0011
+                let totalAfkirPC = getRaw(['afkir_pc', 'afkir_0011_pc']) || 0;
+                let totalAfkirPET = getRaw(['afkir_pet', 'afkir_0011_pet']) || 0;
+                let totalAfkirLuar = getRaw(['afkir_luar', 'afkir_0011_luar']) || 0;
+
+                const savedAfkir = localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
+                if (savedAfkir) {
+                    try {
+                        const parsed = JSON.parse(savedAfkir);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            totalAfkirPC = 0; totalAfkirPET = 0; totalAfkirLuar = 0;
+                            parsed.forEach(item => {
+                                totalAfkirPC += parseInt(item.pc || item.afkir_pc || 0) || 0;
+                                totalAfkirPET += parseInt(item.pet || item.afkir_pet || 0) || 0;
+                                totalAfkirLuar += parseInt(item.luar || item.afkir_luar || 0) || 0;
+                            });
+                        }
+                    } catch(e) {}
+                }
+
+                // 4. Kalkulasi Total Akhir
+                let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
+                let siapPC = btlJgrPC + lasahanPC;
+                let siapPET = btlJgrPET + lasahanPET;
+
+                // 5. Render Nilai ke Tabel HTML
+                document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
+                document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
+                document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
+                document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
+                document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
+                document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
+
+                document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
+                document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
+                document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
+                document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
+
+                document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
+                document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
+
+                document.getElementById('val-afkir-pc').innerText = `${totalAfkirPC.toLocaleString('id-ID')} Btl`;
+                document.getElementById('val-afkir-pet').innerText = `${totalAfkirPET.toLocaleString('id-ID')} Btl`;
+                document.getElementById('val-afkir-luar').innerText = `${totalAfkirLuar.toLocaleString('id-ID')} Btl`;
+
+            } catch(e) {
+                console.error("Gagal memuat data: ", e);
             }
-
-            // 4. Kalkulasi Total Akhir
-            let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
-            let siapPC = btlJgrPC + lasahanPC;
-            let siapPET = btlJgrPET + lasahanPET;
-
-            // 5. Render Nilai ke Tabel
-            document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
-            document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
-            document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
-            document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
-            document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
-            document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
-
-            document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
-            document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
-            document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
-            document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
-
-            document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
-            document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
-
-            document.getElementById('val-afkir-pc').innerText = `${totalAfkirPC.toLocaleString('id-ID')} Btl`;
-            document.getElementById('val-afkir-pet').innerText = `${totalAfkirPET.toLocaleString('id-ID')} Btl`;
-            document.getElementById('val-afkir-luar').innerText = `${totalAfkirLuar.toLocaleString('id-ID')} Btl`;
         }
 
-        loadReportData();
+        document.addEventListener('DOMContentLoaded', loadReportData);
 
-        // Fitur Reset Data Baru
+        // Fitur Reset Data (Dijamin Aman dari penghapusan history database)
         function resetData() {
-            let konfirmasi = confirm("Yakin ingin mereset/menghapus semua data?\nLakukan ini saat pergantian shift agar data tidak menumpuk.");
+            let konfirmasi = confirm("Yakin ingin mereset/menghapus semua data form?\nLakukan ini saat pergantian shift agar data tidak menumpuk.");
             if (konfirmasi) {
-                localStorage.clear();
-                alert("Data berhasil direset menjadi 0!");
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    let key = localStorage.key(i);
+                    // Pastikan database history tidak ikut terhapus
+                    if (key !== 'report_history_db') {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(k => localStorage.removeItem(k));
+                alert("Data form berhasil direset menjadi 0!");
                 location.reload();
             }
         }
 
-        // Fitur Share WA
+        // Fitur Share WA MURNI (Hanya Foto & WA, tanpa simpan ke tabel)
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');

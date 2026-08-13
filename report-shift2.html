@@ -97,13 +97,11 @@
 <body>
 
     <div class="report-card" id="reportArea">
-        <!-- Header Atas -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
             <div class="datetime-info" id="liveDateTime">-</div>
         </div>
 
-        <!-- Tabel Utama Komplit -->
         <table id="reportTable">
             <tr><td colspan="2" class="section-title">Jugrack</td></tr>
             <tr class="row-even"><td class="label-col">Jugrack Kosong</td><td class="val-col" id="val-jgr-kosong">0</td></tr>
@@ -146,34 +144,26 @@
     <script>
         let currentSnapshot = {};
 
-        // 1. Fungsi Jam & Tanggal (Anti-Crash Manual Formatting)
         function updateWaktu() {
             try {
                 const now = new Date();
                 const pad = (num) => String(num).padStart(2, '0');
-                
                 const hari = pad(now.getDate());
                 const bulanArr = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
                 const bulan = bulanArr[now.getMonth()];
                 const tahun = now.getFullYear();
-                
                 const jam = pad(now.getHours());
                 const menit = pad(now.getMinutes());
                 const detik = pad(now.getSeconds());
-
                 const tglStr = `${hari}-${bulan}-${tahun}`;
                 const jamStr = `${jam}:${menit}:${detik} WIB`;
-                
                 let timeEl = document.getElementById('liveDateTime');
                 if(timeEl) timeEl.innerHTML = `${tglStr} | ${jamStr}`;
-            } catch (err) {
-                console.log("Gagal memuat jam: ", err);
-            }
+            } catch (err) {}
         }
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // Fungsi Menangkap Data
         function getRaw(keys) {
             for (let k of keys) {
                 let v = localStorage.getItem(k);
@@ -209,15 +199,13 @@
             return { pc: sumPC, pet: sumPET, luar: sumLuar };
         }
 
-        // Fungsi Utama
         function loadReportData() {
             try {
                 const now = new Date();
                 let dateISO = now.toISOString().split('T')[0];
-                let timeStr = padNum(now.getHours()) + ":" + padNum(now.getMinutes());
-                function padNum(n) { return String(n).padStart(2, '0'); }
+                let timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
 
-                // Tarik Data Mentah (Keys sudah disesuaikan untuk Shift 2)
+                // Tarik Data Mentah
                 let rawJgrKosong = getRaw(['s2_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
                 let rawJgr10L    = getRaw(['s2_jgr_10l', 'jgr_kosong_10l', 'jgr_10l']) || 0;
                 let rawJgrRusak  = getRaw(['s2_jgr_rusak', 'jgr_rusak']) || 0;
@@ -231,7 +219,7 @@
                 let lasahanPC    = getRaw(['s2_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
                 let lasahanPET   = getRaw(['s2_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-                // Logika Auto-Hitung Jugrack/Botol (PC)
+                // LOGIKA CERDAS DIKEMBALIKAN (PC)
                 let jgrPC = 0;
                 let btlJgrPC = 0;
                 if (rawJgrPC !== null && rawJgrPC > 0) {
@@ -247,7 +235,7 @@
                     }
                 }
 
-                // Logika Auto-Hitung Jugrack/Botol (PET)
+                // LOGIKA CERDAS DIKEMBALIKAN (PET)
                 let jgrPET = 0;
                 let btlJgrPET = 0;
                 if (rawJgrPET !== null && rawJgrPET > 0) {
@@ -305,14 +293,13 @@
                 document.getElementById('val-afkir-pet').innerText = `${afkirPET.toLocaleString('id-ID')} Btl`;
                 document.getElementById('val-afkir-10l').innerText = `${afkir10L.toLocaleString('id-ID')} Btl`;
 
-                // Snapshot Table
                 currentSnapshot = {
                     id: 'REC-' + Date.now(), shift: '', tanggal: dateISO, waktu: timeStr,
                     jgrKosong: rawJgrKosong, jgrPC: jgrPC, jgrPET: jgrPET, jgr10L: rawJgr10L, totalJugrack: totalJugrack,
                     jgrRusak: rawJgrRusak, lasahanPC: lasahanPC, lasahanPET: lasahanPET, siapPC: siapPC, siapPET: siapPET,
                     fgPC: fgJmlhPC, fgPET: fgJmlhPET, fg10L: fgJmlh10L, afkirPC: afkirPC, afkirPET: afkirPET, afkirLuar: afkir10L, totalAfkir: totalAfkir
                 };
-            } catch(e) { console.error("Error muat data: ", e); }
+            } catch(e) {}
         }
 
         document.addEventListener('DOMContentLoaded', loadReportData);
@@ -324,7 +311,7 @@
                 localStorage.setItem('report_history_db', JSON.stringify(history));
                 alert("Data laporan berhasil di-Submit ke Riwayat Tabel!");
                 window.location.href = "tabel-report.html";
-            } catch(e) { alert("Gagal menyimpan rekap!"); }
+            } catch(e) {}
         }
 
         function resetData() {
@@ -333,10 +320,7 @@
                 let keysToRemove = [];
                 for (let i = 0; i < localStorage.length; i++) {
                     let key = localStorage.key(i);
-                    // Amankan database history agar tidak terhapus
-                    if (key !== 'report_history_db') {
-                        keysToRemove.push(key);
-                    }
+                    if (key !== 'report_history_db') keysToRemove.push(key);
                 }
                 keysToRemove.forEach(k => localStorage.removeItem(k));
                 alert("Data form berhasil direset!");
