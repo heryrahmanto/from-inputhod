@@ -254,6 +254,8 @@
             document.getElementById('totalPC').textContent = sumPC;
             document.getElementById('totalPET').textContent = sumPET;
             document.getElementById('totalLuar').textContent = sumLuar;
+
+            return { sumPC, sumPET, sumLuar };
         }
 
         // Fungsi Auto Save
@@ -283,7 +285,24 @@
                 });
             });
 
+            // 1. Simpan data detail baris (agar tetap bisa diedit/load di form ini)
             localStorage.setItem(STORAGE_KEY, JSON.stringify(rowData));
+
+            // 2. Hitung total dan SIMPAN LANGSUNG KE KEY YANG DIBACA REPORT SHIFT 2
+            const totals = calculateTotal();
+            
+            // Simpan ke key spesifik Shift 2 & Global
+            localStorage.setItem('s2_afkir_pc', totals.sumPC);
+            localStorage.setItem('s2_afkir_pet', totals.sumPET);
+            localStorage.setItem('s2_afkir_10l', totals.sumLuar);
+
+            localStorage.setItem('afkir_pc', totals.sumPC);
+            localStorage.setItem('afkir_pet', totals.sumPET);
+            localStorage.setItem('afkir_10l', totals.sumLuar);
+
+            localStorage.setItem('afkirPC', totals.sumPC);
+            localStorage.setItem('afkirPET', totals.sumPET);
+            localStorage.setItem('afkirLuar', totals.sumLuar);
 
             if (showAlert) {
                 alert("Data berhasil disimpan secara manual!");
@@ -317,6 +336,18 @@
         function resetForm() {
             if (confirm("Apakah Anda yakin ingin mengosongkan semua data?")) {
                 localStorage.removeItem(STORAGE_KEY);
+                
+                // Clear key yang dibaca oleh report
+                localStorage.removeItem('s2_afkir_pc');
+                localStorage.removeItem('s2_afkir_pet');
+                localStorage.removeItem('s2_afkir_10l');
+                localStorage.removeItem('afkir_pc');
+                localStorage.removeItem('afkir_pet');
+                localStorage.removeItem('afkir_10l');
+                localStorage.removeItem('afkirPC');
+                localStorage.removeItem('afkirPET');
+                localStorage.removeItem('afkirLuar');
+
                 loadData();
                 document.getElementById('saveStatus').textContent = 'Data telah direset';
             }
