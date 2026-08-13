@@ -122,16 +122,16 @@
 
         .action-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 15px;
         }
-        .btn-menu, .btn-wa {
+        .btn-menu, .btn-wa, .btn-reset {
             flex: 1;
-            padding: 13px;
+            padding: 12px 5px;
             border: none;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             color: white;
             cursor: pointer;
             text-align: center;
@@ -140,6 +140,7 @@
         }
         .btn-menu { background-color: #475569; }
         .btn-wa { background-color: #16a34a; }
+        .btn-reset { background-color: #dc2626; } /* Warna merah untuk tombol reset */
     </style>
 </head>
 <body>
@@ -228,11 +229,13 @@
         <!-- Tombol Bawah -->
         <div class="action-container" id="actionButtons">
             <a href="index.html" class="btn-menu">🏠 Menu</a>
-            <button class="btn-wa" onclick="shareWhatsApp()">💬 Share WA (JPG)</button>
+            <button class="btn-reset" onclick="resetData()">🗑️ Reset</button>
+            <button class="btn-wa" onclick="shareWhatsApp()">💬 WA (JPG)</button>
         </div>
     </div>
 
     <script>
+        // Fungsi Waktu Berjalan
         function updateWaktu() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -244,6 +247,7 @@
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
+        // Fungsi Ambil Data (Prefix s1_ Dihilangkan Agar Sinkron Antar Shift)
         function getRaw(keys) {
             for (let k of keys) {
                 let v = localStorage.getItem(k);
@@ -256,20 +260,20 @@
         }
 
         function loadReportData() {
-            // 1. Ambil Nilai Mentah dari LocalStorage 
-            let rawJgrKosong = getRaw(['s1_jgr_kosong', 'jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
-            let rawJgrPC     = getRaw(['s1_jgr_pc', 'jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
-            let rawJgrPET    = getRaw(['s1_jgr_pet', 'jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
-            let rawJgr10L    = getRaw(['s1_jgr_10l', 'jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
-            let rawJgrRusak  = getRaw(['s1_jgr_rusak', 'jgr_rusak', 'jugrack_rusak']) || 0;
+            // 1. Ambil Nilai Mentah (Tanpa s1_)
+            let rawJgrKosong = getRaw(['jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
+            let rawJgrPC     = getRaw(['jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
+            let rawJgrPET    = getRaw(['jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
+            let rawJgr10L    = getRaw(['jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
+            let rawJgrRusak  = getRaw(['jgr_rusak', 'jugrack_rusak']) || 0;
 
-            let rawBtlJgrPC  = getRaw(['s1_botol_jgr_pc', 'botol_jgr_pc', 'btl_jgr_pc']);
-            let rawBtlJgrPET = getRaw(['s1_botol_jgr_pet', 'botol_jgr_pet', 'btl_jgr_pet']);
+            let rawBtlJgrPC  = getRaw(['botol_jgr_pc', 'btl_jgr_pc']);
+            let rawBtlJgrPET = getRaw(['botol_jgr_pet', 'btl_jgr_pet']);
 
-            let lasahanPC    = getRaw(['s1_lasahan_pc', 'lasahan_pc', 'botol_lasahan_pc']) || 0;
-            let lasahanPET   = getRaw(['s1_lasahan_pet', 'lasahan_pet', 'botol_lasahan_pet']) || 0;
+            let lasahanPC    = getRaw(['lasahan_pc', 'botol_lasahan_pc']) || 0;
+            let lasahanPET   = getRaw(['lasahan_pet', 'botol_lasahan_pet']) || 0;
 
-            // 2. Logika Penyesuaian Otomatis (Anti-Error / Auto-Koreksi)
+            // 2. LOGIKA AUTO-KOREKSI DIKEMBALIKAN (Mengubah input < 48 menjadi Jugrack otomatis)
             let jgrPC = 0;
             let btlJgrPC = 0;
 
@@ -278,7 +282,7 @@
                 btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
             } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
                 if (rawBtlJgrPC < 48) {
-                    // Nilai yang diinput sebenarnya adalah jumlah Jugrack
+                    // Fitur andalan: Nilai yang diinput otomatis dianggap Jugrack!
                     jgrPC = rawBtlJgrPC;
                     btlJgrPC = jgrPC * 48;
                 } else {
@@ -295,7 +299,7 @@
                 btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
             } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
                 if (rawBtlJgrPET < 48) {
-                    // Nilai yang diinput sebenarnya adalah jumlah Jugrack
+                    // Fitur andalan: Nilai yang diinput otomatis dianggap Jugrack!
                     jgrPET = rawBtlJgrPET;
                     btlJgrPET = jgrPET * 48;
                 } else {
@@ -305,11 +309,11 @@
             }
 
             // 3. Afkir 0011
-            let totalAfkirPC = getRaw(['s1_afkir_pc', 'afkir_pc', 'afkir_0011_pc']) || 0;
-            let totalAfkirPET = getRaw(['s1_afkir_pet', 'afkir_pet', 'afkir_0011_pet']) || 0;
-            let totalAfkirLuar = getRaw(['s1_afkir_luar', 'afkir_luar', 'afkir_0011_luar']) || 0;
+            let totalAfkirPC = getRaw(['afkir_pc', 'afkir_0011_pc']) || 0;
+            let totalAfkirPET = getRaw(['afkir_pet', 'afkir_0011_pet']) || 0;
+            let totalAfkirLuar = getRaw(['afkir_luar', 'afkir_0011_luar']) || 0;
 
-            const savedAfkir = localStorage.getItem('s1_afkir_0011_data') || localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
+            const savedAfkir = localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
             if (savedAfkir) {
                 try {
                     const parsed = JSON.parse(savedAfkir);
@@ -324,11 +328,12 @@
                 } catch(e) {}
             }
 
+            // 4. Kalkulasi Total Akhir
             let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
             let siapPC = btlJgrPC + lasahanPC;
             let siapPET = btlJgrPET + lasahanPET;
 
-            // Render Nilai ke Tabel
+            // 5. Render Nilai ke Tabel
             document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -351,13 +356,26 @@
 
         loadReportData();
 
+        // Fitur Reset Data Baru
+        function resetData() {
+            let konfirmasi = confirm("Yakin ingin mereset/menghapus semua data?\nLakukan ini saat pergantian shift agar data tidak menumpuk.");
+            if (konfirmasi) {
+                localStorage.clear();
+                alert("Data berhasil direset menjadi 0!");
+                location.reload();
+            }
+        }
+
+        // Fitur Share WA
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');
 
+            // Sembunyikan tombol saat foto diambil
             actionButtons.style.display = 'none';
 
             html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
+                // Munculkan kembali tombol
                 actionButtons.style.display = 'flex';
 
                 canvas.toBlob(function(blob) {
