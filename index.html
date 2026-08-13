@@ -118,8 +118,8 @@
       <p>Sistem Input & Pelaporan Operasional</p>
     </div>
 
-    <!-- Group 1 -->
-    <div class="menu-group" onclick="toggleGroup(this)">
+    <!-- Group 1 (Ditambahkan ID khusus) -->
+    <div class="menu-group" id="menu-input" onclick="toggleGroup(this)">
       <div class="menu-header">
         <span>1. Form Input</span>
         <span class="arrow">▼</span>
@@ -133,8 +133,8 @@
       </div>
     </div>
 
-    <!-- Group 2 -->
-    <div class="menu-group" onclick="toggleGroup(this)">
+    <!-- Group 2 (Ditambahkan ID khusus) -->
+    <div class="menu-group" id="menu-rekap" onclick="toggleGroup(this)">
       <div class="menu-header">
         <span>2. Rekap & Report</span>
         <span class="arrow">▼</span>
@@ -150,8 +150,33 @@
   </div>
 
   <script>
+    // 1. Saat halaman dimuat, cek Local Storage untuk melihat status terakhir menu
+    document.addEventListener('DOMContentLoaded', () => {
+      const groups = document.querySelectorAll('.menu-group');
+      
+      groups.forEach(group => {
+        const groupId = group.id; // Ambil ID (contoh: menu-input)
+        const savedState = localStorage.getItem('status_' + groupId);
+        
+        // Jika catatannya bilang 'buka', tambahkan class active agar otomatis terbuka
+        if (savedState === 'buka') {
+          group.classList.add('active');
+        }
+      });
+    });
+
+    // 2. Fungsi untuk toggle (Buka/Tutup) sekaligus menyimpan statusnya
     function toggleGroup(element) {
       element.classList.toggle('active');
+      
+      const groupId = element.id;
+      
+      // Cek apakah menu sedang terbuka atau tertutup, lalu simpan ke Local Storage
+      if (element.classList.contains('active')) {
+        localStorage.setItem('status_' + groupId, 'buka');
+      } else {
+        localStorage.setItem('status_' + groupId, 'tutup');
+      }
     }
 
     // Biar pas link a, b, c diklik BISA MASUK & GAK BENTROK
