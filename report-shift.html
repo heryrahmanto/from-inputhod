@@ -129,7 +129,7 @@
             font-size: 14px;
         }
 
-        /* Tombol Navigasi Bawah (SUDAH DITAMBAH TOMBOL SUBMIT) */
+        /* Tombol Navigasi Bawah */
         .action-container {
             display: flex;
             gap: 8px;
@@ -149,106 +149,49 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .btn-menu { background-color: #475569; }
-        .btn-submit { background-color: #f59e0b; color: #fff; } /* Warna Kuning Orange untuk Submit */
+        .btn-submit { background-color: #f59e0b; color: #fff; }
         .btn-wa { background-color: #16a34a; }
     </style>
 </head>
 <body>
 
     <div class="report-card" id="reportArea">
-        <!-- Header Waktu & Judul -->
         <div class="report-header">
             <h2>Update Botol & Jugrack " HOD "</h2>
             <div class="datetime-info" id="liveDateTime">-</div>
         </div>
 
-        <!-- Tabel Utama -->
         <table>
             <!-- 1. JUGRACK -->
             <tr><td colspan="2" class="section-title">Jugrack</td></tr>
-            <tr class="row-even">
-                <td class="label-col">Jugrack Kosong</td>
-                <td class="val-col" id="val-jgr-kosong">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col">Jugrack Botol Kosong "PC"</td>
-                <td class="val-col" id="val-jgr-pc">0</td>
-            </tr>
-            <tr class="row-even">
-                <td class="label-col text-pet">Jugrack Botol Kosong "PET"</td>
-                <td class="val-col text-pet" id="val-jgr-pet">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col">Jugrack kosong 10 L</td>
-                <td class="val-col" id="val-jgr-10l">0</td>
-            </tr>
-            <tr class="row-total-jgr">
-                <td class="label-col">Total Jugrack</td>
-                <td class="val-col" id="val-total-jugrack">0</td>
-            </tr>
-            <tr class="row-rusak">
-                <td class="label-col">~Jugrack Rusak</td>
-                <td class="val-col" id="val-jugrack-rusak">0</td>
-            </tr>
+            <tr class="row-even"><td class="label-col">Jugrack Kosong</td><td class="val-col" id="val-jgr-kosong">0</td></tr>
+            <tr class="row-odd"><td class="label-col">Jugrack Botol Kosong "PC"</td><td class="val-col" id="val-jgr-pc">0</td></tr>
+            <tr class="row-even"><td class="label-col text-pet">Jugrack Botol Kosong "PET"</td><td class="val-col text-pet" id="val-jgr-pet">0</td></tr>
+            <tr class="row-odd"><td class="label-col">Jugrack kosong 10 L</td><td class="val-col" id="val-jgr-10l">0</td></tr>
+            <tr class="row-total-jgr"><td class="label-col">Total Jugrack</td><td class="val-col" id="val-total-jugrack">0</td></tr>
+            <tr class="row-rusak"><td class="label-col">~Jugrack Rusak</td><td class="val-col" id="val-jugrack-rusak">0</td></tr>
 
             <!-- 2. BOTOL KOSONG -->
             <tr><td colspan="2" class="section-title">Botol Kosong</td></tr>
-            <tr class="row-even">
-                <td class="label-col">Botol Jugrack "PC"</td>
-                <td class="val-col" id="val-botol-jgr-pc">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col text-pet">Botol Jugrack "PET"</td>
-                <td class="val-col text-pet" id="val-botol-jgr-pet">0</td>
-            </tr>
-            <tr class="row-even">
-                <td class="label-col">Botol Lasahan ~ "PC"</td>
-                <td class="val-col" id="val-botol-lasahan-pc">0</td>
-            </tr>
-            <tr class="row-odd">
-                <td class="label-col text-pet">Botol Lasahan ~ "PET"</td>
-                <td class="val-col text-pet" id="val-botol-lasahan-pet">0</td>
-            </tr>
+            <tr class="row-even"><td class="label-col">Botol Jugrack "PC"</td><td class="val-col" id="val-botol-jgr-pc">0</td></tr>
+            <tr class="row-odd"><td class="label-col text-pet">Botol Jugrack "PET"</td><td class="val-col text-pet" id="val-botol-jgr-pet">0</td></tr>
+            <tr class="row-even"><td class="label-col">Botol Lasahan ~ "PC"</td><td class="val-col" id="val-botol-lasahan-pc">0</td></tr>
+            <tr class="row-odd"><td class="label-col text-pet">Botol Lasahan ~ "PET"</td><td class="val-col text-pet" id="val-botol-lasahan-pet">0</td></tr>
             
-            <!-- Kotak Highlight Siap Pakai -->
-            <tr class="row-highlight">
-                <td class="label-col">Total Botol Siap pakai "PC"</td>
-                <td class="val-col" id="val-siap-pc">0</td>
-            </tr>
-            <tr class="row-highlight">
-                <td class="label-col">Total Botol Siap pakai "PET"</td>
-                <td class="val-col" id="val-siap-pet">0</td>
-            </tr>
+            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PC"</td><td class="val-col" id="val-siap-pc">0</td></tr>
+            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PET"</td><td class="val-col" id="val-siap-pet">0</td></tr>
 
             <!-- 3. FINISH GOOD -->
             <tr><td colspan="2" class="section-title">Finish Good</td></tr>
-            <tr class="row-fg">
-                <td class="label-col">Finish Good PC ( 0002 )</td>
-                <td class="val-col" id="val-fg-pc">0 Jgr (0 Btl)</td>
-            </tr>
-            <tr class="row-fg" style="background-color: #0369a1;">
-                <td class="label-col">Finish Good PET ( 0012 )</td>
-                <td class="val-col" id="val-fg-pet">0 Jgr (0 Btl)</td>
-            </tr>
-            <tr class="row-fg" style="background-color: #075985;"> 
-                <td class="label-col">Finish Good 10 L</td>
-                <td class="val-col" id="val-fg-10l">0 Jgr (0 Btl)</td>
-            </tr>
+            <tr class="row-fg"><td class="label-col">Finish Good PC ( 0002 )</td><td class="val-col" id="val-fg-pc">0 Jgr (0 Btl)</td></tr>
+            <tr class="row-fg" style="background-color: #0369a1;"><td class="label-col">Finish Good PET ( 0012 )</td><td class="val-col" id="val-fg-pet">0 Jgr (0 Btl)</td></tr>
+            <tr class="row-fg" style="background-color: #075985;"><td class="label-col">Finish Good 10 L</td><td class="val-col" id="val-fg-10l">0 Jgr (0 Btl)</td></tr>
 
             <!-- 4. AFKIR 0011 -->
             <tr><td colspan="2" class="section-title">Afkir ( 0011 )</td></tr>
-            <tr class="row-even row-afkir">
-                <td class="label-col">Afkir "PC"</td>
-                <td class="val-col" id="val-afkir-pc">0</td>
-            </tr>
-            <tr class="row-odd row-afkir">
-                <td class="label-col">Afkir "PET"</td>
-                <td class="val-col" id="val-afkir-pet">0</td>
-            </tr>
-            <tr class="row-even row-afkir">
-                <td class="label-col">Afkir Luar</td>
-                <td class="val-col" id="val-afkir-luar">0</td>
-            </tr>
+            <tr class="row-even row-afkir"><td class="label-col">Afkir "PC"</td><td class="val-col" id="val-afkir-pc">0</td></tr>
+            <tr class="row-odd row-afkir"><td class="label-col">Afkir "PET"</td><td class="val-col" id="val-afkir-pet">0</td></tr>
+            <tr class="row-even row-afkir"><td class="label-col">Afkir Luar</td><td class="val-col" id="val-afkir-luar">0</td></tr>
         </table>
 
         <!-- Tombol Bawah -->
@@ -261,74 +204,50 @@
 
     <!-- SCRIPT UTAMA LOGIKA WAKTU & DATA -->
     <script>
-        // 1. UPDATE WAKTU DENGAN JAM BERJALAN OTO DETIK
         function updateWaktu() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
             let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
-            
             document.getElementById('liveDateTime').innerHTML = tglStr + ' | ' + jamStr;
         }
         
         updateWaktu();
         setInterval(updateWaktu, 1000);
 
-        // 2. MENGHUBUNGKAN DATA DARI LOCALSTORAGE
         function loadReportData() {
-            // A. Data Jugrack Kosong & Rusak
             let jgrKosong = parseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong') || '0');
             let jgr10L = parseInt(localStorage.getItem('jgr_kosong_10l') || '0');
             let jgrRusak = parseInt(localStorage.getItem('jgr_rusak') || '0');
 
-            // B. Data Jugrack Botol Kosong
             let jgrPC = parseInt(localStorage.getItem('jgr_botol_pc') || localStorage.getItem('botol_jgr_pc') || localStorage.getItem('botol_jgr_pc_jgr') || '0');
             let jgrPET = parseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet') || localStorage.getItem('botol_jgr_pet_jgr') || '0');
 
-            // C. Data Botol Jugrack
-            let botolJgrPC = parseInt(
-                localStorage.getItem('botol_jgr_pc_pcs') || 
-                localStorage.getItem('botol_jgr_pcs_pc') || 
-                localStorage.getItem('jmlh_botol_pc') || 
-                localStorage.getItem('botol_pc') || 
-                localStorage.getItem('botol_jgr_btl_pc') || '0'
-            );
+            let botolJgrPC = parseInt(localStorage.getItem('botol_jgr_pc_pcs') || localStorage.getItem('jmlh_botol_pc') || localStorage.getItem('botol_jgr_btl_pc') || '0');
             if (botolJgrPC === 0 && jgrPC > 0) botolJgrPC = jgrPC * 48; 
 
-            let botolJgrPET = parseInt(
-                localStorage.getItem('botol_jgr_pet_pcs') || 
-                localStorage.getItem('botol_jgr_pcs_pet') || 
-                localStorage.getItem('jmlh_botol_pet') || 
-                localStorage.getItem('botol_pet') || 
-                localStorage.getItem('botol_jgr_btl_pet') || '0'
-            );
+            let botolJgrPET = parseInt(localStorage.getItem('botol_jgr_pet_pcs') || localStorage.getItem('jmlh_botol_pet') || localStorage.getItem('botol_jgr_btl_pet') || '0');
             if (botolJgrPET === 0 && jgrPET > 0) botolJgrPET = jgrPET * 48; 
 
-            // D. Data Lasahan (Botol Kosong)
             let lasahanPC = parseInt(localStorage.getItem('lasahan_pc') || '0');
             let lasahanPET = parseInt(localStorage.getItem('lasahan_pet') || '0');
 
-            // E. Data Finish Good
             let fgJgrPC = parseInt(localStorage.getItem('fg_jgr_pc') || localStorage.getItem('fg_pc') || '0');
             let fgJmlhPC = parseInt(localStorage.getItem('fg_jmlh_pc') || '0');
-
             let fgJgrPET = parseInt(localStorage.getItem('fg_jgr_pet') || localStorage.getItem('fg_pet') || '0');
             let fgJmlhPET = parseInt(localStorage.getItem('fg_jmlh_pet') || '0');
-
             let fgJgr10L = parseInt(localStorage.getItem('fg_jgr_10l') || localStorage.getItem('fg_10l') || '0');
             let fgJmlh10L = parseInt(localStorage.getItem('fg_jmlh_10l') || '0');
 
-            // F. Data Afkir 0011 (Sudah direvisi ke afkir_luar)
+            // --- REVISI AFKIR LUAR: Kita tambahkan jaring pengaman buat baca memori lama dan baru ---
             let afkirPC = parseInt(localStorage.getItem('afkir_pc') || localStorage.getItem('afkir_0011_pc') || '0');
             let afkirPET = parseInt(localStorage.getItem('afkir_pet') || localStorage.getItem('afkir_0011_pet') || '0');
-            let afkirLuar = parseInt(localStorage.getItem('afkir_luar') || localStorage.getItem('afkir_botol_luar') || '0');
+            let afkirLuar = parseInt(localStorage.getItem('afkir_luar') || localStorage.getItem('afkirLuar') || localStorage.getItem('afkir_10l') || localStorage.getItem('s2_afkir_10l') || '0');
 
-            // Rumus Total
             let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
             let siapPC = botolJgrPC + lasahanPC;
             let siapPET = botolJgrPET + lasahanPET;
 
-            // Tampilkan ke Elemen HTML
             document.getElementById('val-jgr-kosong').innerText = jgrKosong.toLocaleString('id-ID');
             document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
             document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
@@ -344,12 +263,10 @@
             document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
             document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
 
-            // Format Tampilan FG
             document.getElementById('val-fg-pc').innerText = `${fgJgrPC.toLocaleString('id-ID')} Jgr (${fgJmlhPC.toLocaleString('id-ID')} Btl)`;
             document.getElementById('val-fg-pet').innerText = `${fgJgrPET.toLocaleString('id-ID')} Jgr (${fgJmlhPET.toLocaleString('id-ID')} Btl)`;
             document.getElementById('val-fg-10l').innerText = `${fgJgr10L.toLocaleString('id-ID')} Jgr (${fgJmlh10L.toLocaleString('id-ID')} Btl)`;
 
-            // Tampilan Afkir
             document.getElementById('val-afkir-pc').innerText = afkirPC.toLocaleString('id-ID');
             document.getElementById('val-afkir-pet').innerText = afkirPET.toLocaleString('id-ID');
             document.getElementById('val-afkir-luar').innerText = afkirLuar.toLocaleString('id-ID');
@@ -357,64 +274,43 @@
 
         loadReportData();
 
-        // 3. FUNGSI UNTUK SUBMIT KE TABEL REKAP
         function submitToRekap() {
-            // Ambil waktu laporan
             let timeStr = document.getElementById('liveDateTime').innerText;
-            
-            // Susun data dalam bentuk Object
             let newData = {
                 waktu: timeStr,
-                // Jugrack
                 jgrKosong: document.getElementById('val-jgr-kosong').innerText,
                 jgrPC: document.getElementById('val-jgr-pc').innerText,
                 jgrPET: document.getElementById('val-jgr-pet').innerText,
                 jgr10L: document.getElementById('val-jgr-10l').innerText,
                 totalJgr: document.getElementById('val-total-jugrack').innerText,
                 jgrRusak: document.getElementById('val-jugrack-rusak').innerText,
-                // Botol Kosong
                 btlJgrPC: document.getElementById('val-botol-jgr-pc').innerText,
                 btlJgrPET: document.getElementById('val-botol-jgr-pet').innerText,
                 lasahanPC: document.getElementById('val-botol-lasahan-pc').innerText,
                 lasahanPET: document.getElementById('val-botol-lasahan-pet').innerText,
                 siapPC: document.getElementById('val-siap-pc').innerText,
                 siapPET: document.getElementById('val-siap-pet').innerText,
-                // Finish Good
                 fgPC: document.getElementById('val-fg-pc').innerText,
                 fgPET: document.getElementById('val-fg-pet').innerText,
                 fg10L: document.getElementById('val-fg-10l').innerText,
-                // Afkir
                 afkirPC: document.getElementById('val-afkir-pc').innerText,
                 afkirPET: document.getElementById('val-afkir-pet').innerText,
                 afkirLuar: document.getElementById('val-afkir-luar').innerText
             };
 
-            // Ambil array lama dari localStorage (kalau belum ada, buat array kosong)
             let existingData = JSON.parse(localStorage.getItem('data_rekap_tabel')) || [];
-            
-            // Masukkan data baru ini ke dalam array
             existingData.push(newData);
-            
-            // Simpan kembali array yang sudah ditambah ke localStorage
             localStorage.setItem('data_rekap_tabel', JSON.stringify(existingData));
-            
             alert("Mantap bos! Data berhasil disimpan ke Tabel Rekap.");
-            
-            // Kalau boskuh mau tombol ini otomatis pindah halaman ke tabel report setelah diklik, 
-            // hapus tanda // di depan kode bawah ini:
-            // window.location.href = 'tabel-report.html';
         }
 
-        // 4. FUNGSI SHARE WA (JPG)
         function shareWhatsApp() {
             const reportArea = document.getElementById('reportArea');
             const actionButtons = document.getElementById('actionButtons');
-
             actionButtons.style.display = 'none';
 
             html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
                 actionButtons.style.display = 'flex';
-
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -430,9 +326,7 @@
                     setTimeout(() => {
                         window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
                     }, 1200);
-
                 }, 'image/jpeg', 0.95);
-
             }).catch(err => {
                 actionButtons.style.display = 'flex';
                 alert("Gagal memproses gambar: " + err);

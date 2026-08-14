@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tabel Riwayat Report HOD</title>
-    <!-- Library SheetJS untuk Export Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -25,7 +24,6 @@
         }
         h2 { margin-top: 0; color: #0369a1; font-size: 16px; margin-bottom: 12px; }
         
-        /* Area Filter & Search */
         .filter-box {
             background-color: #e0f2fe;
             padding: 10px;
@@ -43,48 +41,13 @@
             width: 100%;
         }
 
-        .filter-group { 
-            display: flex; 
-            flex-direction: column; 
-            width: 100%;
-        }
-        .filter-group.half {
-            width: 50%;
-        }
-        
-        .filter-group label { 
-            font-size: 11px; 
-            font-weight: bold; 
-            margin-bottom: 3px; 
-            color: #0369a1; 
-        }
-        .filter-group input { 
-            padding: 7px 8px; 
-            border: 1px solid #94a3b8; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            background-color: #ffffff;
-            width: 100%;
-        }
+        .filter-group { display: flex; flex-direction: column; width: 100%; }
+        .filter-group.half { width: 50%; }
+        .filter-group label { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #0369a1; }
+        .filter-group input { padding: 7px 8px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 12px; background-color: #ffffff; width: 100%; }
 
-        .btn-group-action {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            margin-top: 4px;
-        }
-        .btn {
-            padding: 8px 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 11px;
-            color: white;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            flex: 1;
-        }
+        .btn-group-action { display: flex; gap: 8px; width: 100%; margin-top: 4px; }
+        .btn { padding: 8px 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 11px; color: white; cursor: pointer; text-decoration: none; text-align: center; flex: 1; }
         .btn-excel { background-color: #16a34a; }
         .btn-back { background-color: #475569; }
         
@@ -92,36 +55,18 @@
         .btn-delete { background-color: #dc2626; padding: 4px 8px; font-size: 11px; }
         .btn-save { background-color: #16a34a; padding: 4px 8px; font-size: 11px; }
 
-        /* Tabel Responsive */
         .table-responsive { overflow-x: auto; max-height: 70vh; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            white-space: nowrap;
-        }
-        th, td {
-            border: 1px solid #cbd5e1;
-            padding: 6px 8px;
-            text-align: center;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+        th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; }
         th { background-color: #0284c7; color: white; position: sticky; top: 0; z-index: 10; }
         tr:nth-child(even) { background-color: #f8fafc; }
         
-        /* Highlight Header Kategori */
         th.cat-jgr { background-color: #0369a1; }
         th.cat-btl { background-color: #0d9488; }
         th.cat-fg { background-color: #15803d; }
         th.cat-afkir { background-color: #b91c1c; }
 
-        input.editable-cell {
-            width: 55px;
-            text-align: center;
-            font-size: 11px;
-            padding: 2px;
-            border: 1px solid #0284c7;
-            border-radius: 4px;
-        }
+        input.editable-cell { width: 55px; text-align: center; font-size: 11px; padding: 2px; border: 1px solid #0284c7; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -130,25 +75,14 @@
     <h2>📊 Rekap Tabel Laporan HOD</h2>
 
     <div class="filter-box">
-        <!-- Search Bar -->
         <div class="filter-group">
             <label>🔍 Cari Data (ID / Tanggal / Waktu):</label>
             <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Ketik kata kunci...">
         </div>
-        
-        <!-- Tanggal Mulai & Selesai -->
         <div class="filter-row-dates">
-            <div class="filter-group half">
-                <label>Tanggal Mulai:</label>
-                <input type="date" id="startDate" onchange="renderTable()">
-            </div>
-            <div class="filter-group half">
-                <label>Tanggal Selesai:</label>
-                <input type="date" id="endDate" onchange="renderTable()">
-            </div>
+            <div class="filter-group half"><label>Tanggal Mulai:</label><input type="date" id="startDate" onchange="renderTable()"></div>
+            <div class="filter-group half"><label>Tanggal Selesai:</label><input type="date" id="endDate" onchange="renderTable()"></div>
         </div>
-
-        <!-- Tombol Aksi -->
         <div class="btn-group-action">
             <button class="btn btn-excel" onclick="exportToExcel()">📥 Export Excel</button>
             <a href="index.html" class="btn btn-back">⬅️ Menu</a>
@@ -163,36 +97,16 @@
                     <th rowspan="2">ID</th>
                     <th rowspan="2">Tanggal</th>
                     <th rowspan="2">Jam</th>
-                    <!-- Group Jugrack -->
                     <th colspan="6" class="cat-jgr">JUGRACK</th>
-                    <!-- Group Botol Siap Pakai -->
                     <th colspan="4" class="cat-btl">BOTOL KOSONG & SIAP PAKAI</th>
-                    <!-- Group FG -->
                     <th colspan="3" class="cat-fg">FINISH GOOD (Btl)</th>
-                    <!-- Group Afkir -->
                     <th colspan="3" class="cat-afkir">AFKIR 0011</th>
                 </tr>
                 <tr>
-                    <!-- Sub-header Jugrack -->
-                    <th class="cat-jgr">Jgr Kosong</th>
-                    <th class="cat-jgr">Jgr PC</th>
-                    <th class="cat-jgr">Jgr PET</th>
-                    <th class="cat-jgr">Jgr 10L</th>
-                    <th class="cat-jgr">Total Jgr</th>
-                    <th class="cat-jgr">Jgr Rusak</th>
-                    <!-- Sub-header Botol Kosong & Siap Pakai -->
-                    <th class="cat-btl">Lasahan PC</th>
-                    <th class="cat-btl">Lasahan PET</th>
-                    <th class="cat-btl">Siap PC</th>
-                    <th class="cat-btl">Siap PET</th>
-                    <!-- Sub-header FG -->
-                    <th class="cat-fg">FG PC</th>
-                    <th class="cat-fg">FG PET</th>
-                    <th class="cat-fg">FG 10L</th>
-                    <!-- Sub-header Afkir -->
-                    <th class="cat-afkir">Afkir PC</th>
-                    <th class="cat-afkir">Afkir PET</th>
-                    <th class="cat-afkir">Afkir Luar</th>
+                    <th class="cat-jgr">Jgr Kosong</th><th class="cat-jgr">Jgr PC</th><th class="cat-jgr">Jgr PET</th><th class="cat-jgr">Jgr 10L</th><th class="cat-jgr">Total Jgr</th><th class="cat-jgr">Jgr Rusak</th>
+                    <th class="cat-btl">Lasahan PC</th><th class="cat-btl">Lasahan PET</th><th class="cat-btl">Siap PC</th><th class="cat-btl">Siap PET</th>
+                    <th class="cat-fg">FG PC</th><th class="cat-fg">FG PET</th><th class="cat-fg">FG 10L</th>
+                    <th class="cat-afkir">Afkir PC</th><th class="cat-afkir">Afkir PET</th><th class="cat-afkir">Afkir Luar</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -201,40 +115,41 @@
 </div>
 
 <script>
-    // NAMA KUNCI MEMORI (SINKRON DENGAN REPORT SHIFT)
     const DB_KEY = 'data_rekap_tabel';
 
-    // Helper ekstraksi angka murni (Contoh: "10 Jgr (480 Btl)" -> jadi "480")
+    // --- REVISI EKSTRAK ANGKA: Sekarang kebal sama titik ribuan! ---
     function parseOnlyNumber(val) {
         if (typeof val === 'number') return isNaN(val) ? 0 : val;
-        if (!val) return 0;
+        if (val === null || val === undefined || val === '') return 0;
         
-        let matchInParen = val.toString().match(/\((\d+)\s*Btl\)/i);
-        if (matchInParen) return parseInt(matchInParen[1], 10) || 0;
+        let strVal = val.toString();
         
-        let matchNum = val.toString().replace(/\./g, '').match(/\d+/);
+        // Cari tulisan seperti "(1.000 Btl)" dan tangkap angka di dalamnya
+        let matchInParen = strVal.match(/\(([\d.]+)\s*Btl\)/i);
+        if (matchInParen) {
+            // Hilangkan semua titik ribuan lalu jadikan angka murni
+            return parseInt(matchInParen[1].replace(/\./g, ''), 10) || 0;
+        }
+        
+        // Kalau nggak ada tulisan dalam kurung, ambil angka pertama yang muncul
+        let matchNum = strVal.replace(/\./g, '').match(/\d+/);
         return matchNum ? parseInt(matchNum[0], 10) : 0;
     }
 
-    // Load & Standarisasi Data dari Report Shift
     function loadAndNormalizeData() {
         let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
         let needsSave = false;
 
         history.forEach((row, index) => {
-            // Buat ID otomatis jika belum ada (Biar bisa di-edit/hapus)
             if (!row.id) {
                 row.id = 'RPT-' + Date.now().toString().slice(-4) + '-' + index;
                 needsSave = true;
             }
-            
-            // Pecah "14-Aug-2026 | 18:25:48 WIB" jadi Tanggal dan Jam
             if (row.waktu && !row.tanggal_ymd) {
                 let parts = row.waktu.split(' | ');
                 row.tanggal_tampil = parts[0] || '-';
                 row.jam_tampil = parts[1] ? parts[1].replace(' WIB', '') : '-';
                 
-                // Konversi tanggal ke format YYYY-MM-DD biar filter kalender jalan
                 let dParts = row.tanggal_tampil.split('-');
                 let months = { 'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12'};
                 if(dParts.length === 3) {
@@ -244,10 +159,7 @@
             }
         });
 
-        // Simpan perbaikan ID & Tanggal ke memori
-        if (needsSave) {
-            localStorage.setItem(DB_KEY, JSON.stringify(history));
-        }
+        if (needsSave) localStorage.setItem(DB_KEY, JSON.stringify(history));
         return history;
     }
 
@@ -260,16 +172,11 @@
 
         tbody.innerHTML = '';
 
-        // Filter Engine
         let filtered = history.filter(item => {
-            let matchSearch = (item.id || '').toLowerCase().includes(searchVal) || 
-                              (item.tanggal_tampil || '').toLowerCase().includes(searchVal) || 
-                              (item.waktu || '').toLowerCase().includes(searchVal);
-
+            let matchSearch = (item.id || '').toLowerCase().includes(searchVal) || (item.tanggal_tampil || '').toLowerCase().includes(searchVal) || (item.waktu || '').toLowerCase().includes(searchVal);
             let matchDate = true;
             if (startVal && item.tanggal_ymd < startVal) matchDate = false;
             if (endVal && item.tanggal_ymd > endVal) matchDate = false;
-
             return matchSearch && matchDate;
         });
 
@@ -278,9 +185,7 @@
             return;
         }
 
-        // Render Data
         filtered.forEach((row) => {
-            // Ambil dari key report-shift
             let jgrKosong = parseOnlyNumber(row.jgrKosong);
             let jgrPC = parseOnlyNumber(row.jgrPC);
             let jgrPET = parseOnlyNumber(row.jgrPET);
@@ -312,7 +217,6 @@
                 <td>${row.tanggal_tampil}</td>
                 <td>${row.jam_tampil}</td>
                 
-                <!-- Jugrack -->
                 <td><span class="view-mode">${jgrKosong}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrKosong}" data-col="jgrKosong"></td>
                 <td><span class="view-mode">${jgrPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPC}" data-col="jgrPC"></td>
                 <td><span class="view-mode">${jgrPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPET}" data-col="jgrPET"></td>
@@ -320,18 +224,15 @@
                 <td><strong>${totalJgr}</strong></td>
                 <td><span class="view-mode">${jgrRusak}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrRusak}" data-col="jgrRusak"></td>
                 
-                <!-- Botol Kosong & Siap Pakai -->
                 <td><span class="view-mode">${lasahanPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${lasahanPC}" data-col="lasahanPC"></td>
                 <td><span class="view-mode">${lasahanPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${lasahanPET}" data-col="lasahanPET"></td>
                 <td><strong style="color: #0369a1; font-size: 12px;">${siapPC}</strong></td>
                 <td><strong style="color: #0369a1; font-size: 12px;">${siapPET}</strong></td>
 
-                <!-- FG (Angka Botol Murni) -->
                 <td><span class="view-mode">${fgPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPC}" data-col="fgPC"></td>
                 <td><span class="view-mode">${fgPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fgPET}" data-col="fgPET"></td>
                 <td><span class="view-mode">${fg10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${fg10L}" data-col="fg10L"></td>
 
-                <!-- Afkir -->
                 <td><span class="view-mode">${afkirPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirPC}" data-col="afkirPC"></td>
                 <td><span class="view-mode">${afkirPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirPET}" data-col="afkirPET"></td>
                 <td><span class="view-mode">${afkirLuar}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${afkirLuar}" data-col="afkirLuar"></td>
@@ -342,7 +243,6 @@
 
     renderTable();
 
-    // EDIT DATA PER BARIS
     function enableEdit(id) {
         let tr = document.getElementById(`row-${id}`);
         let viewModes = tr.querySelectorAll('.view-mode');
@@ -368,7 +268,6 @@
                 history[index][col] = parseInt(input.value, 10) || 0;
             });
 
-            // Kalkulasi Ulang Total Jgr & Siap Pakai saat diedit
             let item = history[index];
             item.totalJgr = parseInt(item.jgrKosong||0) + parseInt(item.jgrPC||0) + parseInt(item.jgrPET||0) + parseInt(item.jgr10L||0);
             item.siapPC = (parseInt(item.jgrPC||0) * 48) + parseInt(item.lasahanPC||0);
@@ -380,7 +279,6 @@
         }
     }
 
-    // HAPUS DATA PER BARIS
     function deleteRow(id) {
         if (confirm(`Yakin ingin menghapus data ID: ${id}?`)) {
             let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
@@ -390,7 +288,6 @@
         }
     }
 
-    // EXPORT EXCEL
     function exportToExcel() {
         let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
         if (history.length === 0) {
