@@ -151,7 +151,7 @@
         <!-- Tombol Aksi -->
         <div class="btn-group-action">
             <button class="btn btn-excel" onclick="exportToExcel()">📥 Export Excel</button>
-            <a href="index.html" class="btn btn-back">⬅️ Kembali ke Menu</a>
+            <a href="index.html" class="btn btn-back">⬅️ Menu</a>
         </div>
     </div>
 
@@ -162,7 +162,7 @@
                     <th rowspan="2">Aksi</th>
                     <th rowspan="2">ID</th>
                     <th rowspan="2">Tanggal</th>
-                    <th rowspan="2">Waktu</th>
+                    <th rowspan="2">Jam</th>
                     <!-- Group Jugrack -->
                     <th colspan="6" class="cat-jgr">JUGRACK</th>
                     <!-- Group Botol Siap Pakai -->
@@ -201,7 +201,10 @@
 </div>
 
 <script>
-    // Helper ekstraksi angka murni dari string apa pun
+    // NAMA KUNCI MEMORI (SINKRON DENGAN REPORT SHIFT)
+    const DB_KEY = 'data_rekap_tabel';
+
+    // Helper ekstraksi angka murni (Contoh: "10 Jgr (480 Btl)" -> jadi "480")
     function parseOnlyNumber(val) {
         if (typeof val === 'number') return isNaN(val) ? 0 : val;
         if (!val) return 0;
@@ -209,12 +212,47 @@
         let matchInParen = val.toString().match(/\((\d+)\s*Btl\)/i);
         if (matchInParen) return parseInt(matchInParen[1], 10) || 0;
         
-        let matchNum = val.toString().match(/\d+/);
+        let matchNum = val.toString().replace(/\./g, '').match(/\d+/);
         return matchNum ? parseInt(matchNum[0], 10) : 0;
     }
 
+    // Load & Standarisasi Data dari Report Shift
+    function loadAndNormalizeData() {
+        let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        let needsSave = false;
+
+        history.forEach((row, index) => {
+            // Buat ID otomatis jika belum ada (Biar bisa di-edit/hapus)
+            if (!row.id) {
+                row.id = 'RPT-' + Date.now().toString().slice(-4) + '-' + index;
+                needsSave = true;
+            }
+            
+            // Pecah "14-Aug-2026 | 18:25:48 WIB" jadi Tanggal dan Jam
+            if (row.waktu && !row.tanggal_ymd) {
+                let parts = row.waktu.split(' | ');
+                row.tanggal_tampil = parts[0] || '-';
+                row.jam_tampil = parts[1] ? parts[1].replace(' WIB', '') : '-';
+                
+                // Konversi tanggal ke format YYYY-MM-DD biar filter kalender jalan
+                let dParts = row.tanggal_tampil.split('-');
+                let months = { 'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12'};
+                if(dParts.length === 3) {
+                    row.tanggal_ymd = `${dParts[2]}-${months[dParts[1]] || '01'}-${dParts[0].padStart(2, '0')}`;
+                }
+                needsSave = true;
+            }
+        });
+
+        // Simpan perbaikan ID & Tanggal ke memori
+        if (needsSave) {
+            localStorage.setItem(DB_KEY, JSON.stringify(history));
+        }
+        return history;
+    }
+
     function renderTable() {
-        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        let history = loadAndNormalizeData();
         let tbody = document.getElementById('tableBody');
         let searchVal = document.getElementById('searchInput').value.toLowerCase();
         let startVal = document.getElementById('startDate').value;
@@ -222,64 +260,46 @@
 
         tbody.innerHTML = '';
 
+        // Filter Engine
         let filtered = history.filter(item => {
             let matchSearch = (item.id || '').toLowerCase().includes(searchVal) || 
-                              (item.tanggal || '').toLowerCase().includes(searchVal) || 
+                              (item.tanggal_tampil || '').toLowerCase().includes(searchVal) || 
                               (item.waktu || '').toLowerCase().includes(searchVal);
 
             let matchDate = true;
-            if (startVal && item.tanggal < startVal) matchDate = false;
-            if (endVal && item.tanggal > endVal) matchDate = false;
+            if (startVal && item.tanggal_ymd < startVal) matchDate = false;
+            if (endVal && item.tanggal_ymd > endVal) matchDate = false;
 
             return matchSearch && matchDate;
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="20" style="text-align:center; padding:20px; color:#64748b;">Data tidak ditemukan.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="20" style="text-align:center; padding:20px; color:#64748b;">Belum ada data dari Report Shift. Silakan Submit data dulu!</td></tr>';
             return;
         }
 
+        // Render Data
         filtered.forEach((row) => {
-            let jgrKosong = parseOnlyNumber(row.jgrKosong ?? row.jgr_kosong ?? row.jugrackKosong);
-            
-            // Lasahan PC & PET
-            let lasahanPC  = parseOnlyNumber(row.lasahanPC ?? row.lasahan_pc ?? row.lasahan_pc_qty);
-            let lasahanPET = parseOnlyNumber(row.lasahanPET ?? row.lasahan_pet ?? row.lasahan_pet_qty);
+            // Ambil dari key report-shift
+            let jgrKosong = parseOnlyNumber(row.jgrKosong);
+            let jgrPC = parseOnlyNumber(row.jgrPC);
+            let jgrPET = parseOnlyNumber(row.jgrPET);
+            let jgr10L = parseOnlyNumber(row.jgr10L);
+            let totalJgr = parseOnlyNumber(row.totalJgr);
+            let jgrRusak = parseOnlyNumber(row.jgrRusak);
 
-            // Siap Pakai Botol
-            let siapPC  = parseOnlyNumber(row.siapPC ?? row.siap_pc ?? row.siapPakaiPC);
-            let siapPET = parseOnlyNumber(row.siapPET ?? row.siap_pet ?? row.siapPakaiPET);
+            let lasahanPC = parseOnlyNumber(row.lasahanPC);
+            let lasahanPET = parseOnlyNumber(row.lasahanPET);
+            let siapPC = parseOnlyNumber(row.siapPC);
+            let siapPET = parseOnlyNumber(row.siapPET);
 
-            // Jugrack PC & PET
-            let jgrPC  = parseOnlyNumber(row.jgrPC ?? row.jgr_pc ?? row.jgr_pc_qty ?? row.jugrackPC ?? row.jugrack_pc);
-            let jgrPET = parseOnlyNumber(row.jgrPET ?? row.jgr_pet ?? row.jgr_pet_qty ?? row.jugrackPET ?? row.jugrack_pet);
-            let jgr10L = parseOnlyNumber(row.jgr10L ?? row.jgr_10l ?? row.jgr_10l_qty ?? row.jugrack10L ?? row.jugrack_10l);
+            let fgPC = parseOnlyNumber(row.fgPC);
+            let fgPET = parseOnlyNumber(row.fgPET);
+            let fg10L = parseOnlyNumber(row.fg10L);
 
-            // Fallback kalkulasi jika nol
-            if (jgrPC === 0 && siapPC > 0) {
-                jgrPC = Math.floor((siapPC - lasahanPC) / 48);
-                if (jgrPC < 0) jgrPC = 0;
-            }
-            if (jgrPET === 0 && siapPET > 0) {
-                jgrPET = Math.floor((siapPET - lasahanPET) / 48);
-                if (jgrPET < 0) jgrPET = 0;
-            }
-
-            if (siapPC === 0 && jgrPC > 0) siapPC = (jgrPC * 48) + lasahanPC;
-            if (siapPET === 0 && jgrPET > 0) siapPET = (jgrPET * 48) + lasahanPET;
-
-            let totalJugrack = jgrKosong + jgrPC + jgrPET + jgr10L;
-            let jgrRusak     = parseOnlyNumber(row.jgrRusak ?? row.jgr_rusak);
-
-            // Finish Good (Murni Ekstraksi Angka Botol)
-            let fgPC  = parseOnlyNumber(row.fgPC ?? row.fgJmlhPC ?? row.fg_pc);
-            let fgPET = parseOnlyNumber(row.fgPET ?? row.fgJmlhPET ?? row.fg_pet);
-            let fg10L = parseOnlyNumber(row.fg10L ?? row.fgJmlh10L ?? row.fg_10l);
-
-            // Afkir
-            let afkirPC   = parseOnlyNumber(row.afkirPC ?? row.afkir_pc);
-            let afkirPET  = parseOnlyNumber(row.afkirPET ?? row.afkir_pet);
-            let afkirLuar = parseOnlyNumber(row.afkirLuar ?? row.afkir10L ?? row.afkir_luar);
+            let afkirPC = parseOnlyNumber(row.afkirPC);
+            let afkirPET = parseOnlyNumber(row.afkirPET);
+            let afkirLuar = parseOnlyNumber(row.afkirLuar);
 
             let tr = document.createElement('tr');
             tr.id = `row-${row.id}`;
@@ -289,15 +309,15 @@
                     <button class="btn btn-delete" onclick="deleteRow('${row.id}')">🗑️</button>
                 </td>
                 <td><strong>${row.id}</strong></td>
-                <td>${row.tanggal}</td>
-                <td>${row.waktu}</td>
+                <td>${row.tanggal_tampil}</td>
+                <td>${row.jam_tampil}</td>
                 
                 <!-- Jugrack -->
                 <td><span class="view-mode">${jgrKosong}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrKosong}" data-col="jgrKosong"></td>
                 <td><span class="view-mode">${jgrPC}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPC}" data-col="jgrPC"></td>
                 <td><span class="view-mode">${jgrPET}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrPET}" data-col="jgrPET"></td>
                 <td><span class="view-mode">${jgr10L}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgr10L}" data-col="jgr10L"></td>
-                <td><strong>${totalJugrack}</strong></td>
+                <td><strong>${totalJgr}</strong></td>
                 <td><span class="view-mode">${jgrRusak}</span><input type="number" class="edit-mode editable-cell" style="display:none;" value="${jgrRusak}" data-col="jgrRusak"></td>
                 
                 <!-- Botol Kosong & Siap Pakai -->
@@ -332,11 +352,11 @@
         editModes.forEach(el => el.style.display = 'inline-block');
 
         let actionTd = tr.children[0];
-        actionTd.innerHTML = `<button class="btn btn-save" onclick="saveEdit('${id}')">💾 Simpan</button>`;
+        actionTd.innerHTML = `<button class="btn btn-save" onclick="saveEdit('${id}')">💾 Save</button>`;
     }
 
     function saveEdit(id) {
-        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
         let index = history.findIndex(item => item.id === id);
 
         if (index !== -1) {
@@ -348,17 +368,13 @@
                 history[index][col] = parseInt(input.value, 10) || 0;
             });
 
-            // Kalkulasi ulang otomatis setelah simpan
+            // Kalkulasi Ulang Total Jgr & Siap Pakai saat diedit
             let item = history[index];
-            let jgrPC = parseOnlyNumber(item.jgrPC);
-            let jgrPET = parseOnlyNumber(item.jgrPET);
-            let lasahanPC = parseOnlyNumber(item.lasahanPC);
-            let lasahanPET = parseOnlyNumber(item.lasahanPET);
+            item.totalJgr = parseInt(item.jgrKosong||0) + parseInt(item.jgrPC||0) + parseInt(item.jgrPET||0) + parseInt(item.jgr10L||0);
+            item.siapPC = (parseInt(item.jgrPC||0) * 48) + parseInt(item.lasahanPC||0);
+            item.siapPET = (parseInt(item.jgrPET||0) * 48) + parseInt(item.lasahanPET||0);
 
-            item.siapPC = (jgrPC * 48) + lasahanPC;
-            item.siapPET = (jgrPET * 48) + lasahanPET;
-
-            localStorage.setItem('report_history_db', JSON.stringify(history));
+            localStorage.setItem(DB_KEY, JSON.stringify(history));
             alert("Data berhasil diperbarui!");
             renderTable();
         }
@@ -367,56 +383,42 @@
     // HAPUS DATA PER BARIS
     function deleteRow(id) {
         if (confirm(`Yakin ingin menghapus data ID: ${id}?`)) {
-            let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+            let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             history = history.filter(item => item.id !== id);
-            localStorage.setItem('report_history_db', JSON.stringify(history));
+            localStorage.setItem(DB_KEY, JSON.stringify(history));
             renderTable();
         }
     }
 
     // EXPORT EXCEL
     function exportToExcel() {
-        let history = JSON.parse(localStorage.getItem('report_history_db') || '[]');
+        let history = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
         if (history.length === 0) {
             alert("Tidak ada data untuk di-export!");
             return;
         }
 
         let cleanHistory = history.map(item => {
-            let jgrKosong = parseOnlyNumber(item.jgrKosong ?? item.jgr_kosong);
-            let lasahanPC = parseOnlyNumber(item.lasahanPC ?? item.lasahan_pc);
-            let lasahanPET = parseOnlyNumber(item.lasahanPET ?? item.lasahan_pet);
-
-            let siapPC = parseOnlyNumber(item.siapPC ?? item.siap_pc);
-            let siapPET = parseOnlyNumber(item.siapPET ?? item.siap_pet);
-
-            let jgrPC = parseOnlyNumber(item.jgrPC ?? item.jgr_pc ?? item.jugrackPC);
-            let jgrPET = parseOnlyNumber(item.jgrPET ?? item.jgr_pet ?? item.jugrackPET);
-            let jgr10L = parseOnlyNumber(item.jgr10L ?? item.jgr_10l);
-
-            if (jgrPC === 0 && siapPC > 0) jgrPC = Math.floor((siapPC - lasahanPC) / 48);
-            if (jgrPET === 0 && siapPET > 0) jgrPET = Math.floor((siapPET - lasahanPET) / 48);
-
             return {
                 "ID": item.id,
-                "Tanggal": item.tanggal,
-                "Waktu": item.waktu,
-                "Jgr Kosong": jgrKosong,
-                "Jgr PC": jgrPC,
-                "Jgr PET": jgrPET,
-                "Jgr 10L": jgr10L,
-                "Total Jgr": jgrKosong + jgrPC + jgrPET + jgr10L,
-                "Jgr Rusak": parseOnlyNumber(item.jgrRusak ?? item.jgr_rusak),
-                "Lasahan PC": lasahanPC,
-                "Lasahan PET": lasahanPET,
-                "Siap PC": siapPC || ((jgrPC * 48) + lasahanPC),
-                "Siap PET": siapPET || ((jgrPET * 48) + lasahanPET),
-                "FG PC (Btl)": parseOnlyNumber(item.fgPC ?? item.fgJmlhPC ?? item.fg_pc),
-                "FG PET (Btl)": parseOnlyNumber(item.fgPET ?? item.fgJmlhPET ?? item.fg_pet),
-                "FG 10L (Btl)": parseOnlyNumber(item.fg10L ?? item.fgJmlh10L ?? item.fg_10l),
-                "Afkir PC": parseOnlyNumber(item.afkirPC ?? item.afkir_pc),
-                "Afkir PET": parseOnlyNumber(item.afkirPET ?? item.afkir_pet),
-                "Afkir Luar": parseOnlyNumber(item.afkirLuar ?? item.afkir10L ?? item.afkir_luar)
+                "Tanggal": item.tanggal_tampil,
+                "Jam": item.jam_tampil,
+                "Jgr Kosong": parseOnlyNumber(item.jgrKosong),
+                "Jgr PC": parseOnlyNumber(item.jgrPC),
+                "Jgr PET": parseOnlyNumber(item.jgrPET),
+                "Jgr 10L": parseOnlyNumber(item.jgr10L),
+                "Total Jgr": parseOnlyNumber(item.totalJgr),
+                "Jgr Rusak": parseOnlyNumber(item.jgrRusak),
+                "Lasahan PC": parseOnlyNumber(item.lasahanPC),
+                "Lasahan PET": parseOnlyNumber(item.lasahanPET),
+                "Siap PC": parseOnlyNumber(item.siapPC),
+                "Siap PET": parseOnlyNumber(item.siapPET),
+                "FG PC (Btl)": parseOnlyNumber(item.fgPC),
+                "FG PET (Btl)": parseOnlyNumber(item.fgPET),
+                "FG 10L (Btl)": parseOnlyNumber(item.fg10L),
+                "Afkir PC": parseOnlyNumber(item.afkirPC),
+                "Afkir PET": parseOnlyNumber(item.afkirPET),
+                "Afkir Luar": parseOnlyNumber(item.afkirLuar)
             };
         });
 
