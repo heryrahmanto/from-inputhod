@@ -3,315 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Botol & Jugrack HOD</title>
-    <!-- Library untuk Mengubah HTML ke Gambar JPG -->
+    <meta name="description" content="Dashboard Monitoring Logistik">
+    <title>Dashboard Monitoring Logistik</title>
+    
+    <!-- Library untuk screenshot (Export) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #e2e8f0;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 12px;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #bfcfe4; /* Background Lebih Soft & Terang */
+            padding: 15px 12px; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px; 
+            background-color: #bfccdd; /* Untuk render html2canvas biar warna sama */
+        }
+
+        /* Header */
+        .header-card {
+            background-color: #1e293b;
+            color: white;
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            text-align: center;  
+            gap: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            font-weight: 600; 
+            color: #cbd5e1; /* Warna teks sub-judul sedikit disesuaikan */
+        }
+
+        /* Grid KPI */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .kpi-card {
+            background-color: #ffffff;
+            padding: 14px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+        }
+
+        .kpi-card.green::before { background-color: #10b981; }
+        .kpi-card.yellow::before { background-color: #f59e0b; }
+        .kpi-card.blue::before { background-color: #3b82f6; }
+        .kpi-card.red::before { background-color: #f43f5e; }
+
+        .kpi-title {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 800; 
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-size: 18px;
+            font-weight: 800; 
             color: #0f172a;
         }
-        .report-card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-            border: 1px solid #cbd5e1;
-        }
-        .report-header {
-            text-align: left;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #0284c7;
-        }
-        .report-header h2 {
-            margin: 0 0 4px 0;
-            font-size: 19px;
-            color: #0369a1;
-            font-weight: 800;
-        }
-        .datetime-info {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1e3a8a;
-            line-height: 1.3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background-color: #ffffff;
-        }
-        th, td {
-            border: 2px solid #94a3b8;
-            padding: 9px 10px;
-            vertical-align: middle;
-        }
-        .section-title {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            font-weight: 800;
-            text-align: center;
-            font-size: 16px;
-            border-top: 2px solid #0284c7;
-            border-bottom: 2px solid #0284c7;
-        }
-        .row-even { background-color: #ffffff; }
-        .row-odd { background-color: #f8fafc; }
-        .label-col { width: 65%; font-weight: 700; color: #1e293b; }
-        .val-col { width: 35%; text-align: right; font-weight: 800; font-size: 14px; color: #000000; }
-        .text-pet { color: #b45309; }
-        .row-total-jgr { background-color: #f1f5f9; }
-        .row-total-jgr .label-col, .row-total-jgr .val-col { color: #1e3a8a; font-size: 15px; font-weight: 800; }
-        .row-rusak .label-col, .row-rusak .val-col { color: #dc2626; font-weight: 700; }
-        .row-highlight { background-color: #ffffff; border: 3px solid #000000 !important; }
-        .row-highlight td {
-            border-top: 3px solid #000000 !important;
-            border-bottom: 3px solid #000000 !important;
-            font-weight: 800; font-size: 14px; color: #000000;
-        }
-        .row-afkir { background-color: #fef2f2; }
-        .row-afkir .label-col { color: #991b1b; }
-        .row-afkir .val-col { color: #dc2626; font-weight: 800; }
 
-        .action-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .btn-group-main { display: flex; gap: 8px; }
-        .btn {
-            flex: 1; padding: 11px; border: none; border-radius: 8px;
-            font-weight: 700; font-size: 14px; color: white; cursor: pointer;
-            text-align: center; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        /* Kartu Ringkasan */
+        .summary-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-        .btn-menu { background-color: #475569; }
-        .btn-wa { background-color: #16a34a; }
-        .btn-reset { background-color: #dc2626; }
+
+        .summary-header {
+            font-size: 14px;
+            font-weight: 800; 
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 2px solid #e2e8f0; 
+            padding-bottom: 8px;
+        }
+
+        .item-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px; 
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px; 
+            font-weight: 700; 
+            color: #334155; 
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 4px;
+        }
+        
+        .item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .item-value {
+            font-weight: 800; 
+            color: #0f172a;
+        }
+
+        .item-value.red-text {
+            color: #f43f5e;
+        }
+
+        /* Tombol Navigasi */
+        .btn-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+        .btn-home {
+            flex: 1;
+            background-color: #475569;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        .btn-wa {
+            flex: 1;
+            background-color: #10b981;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body>
 
-    <div class="report-card" id="reportArea">
-        <!-- Header Waktu & Judul -->
-        <div class="report-header">
-            <h2>Update Botol & Jugrack " HOD "</h2>
-            <div class="datetime-info" id="liveDateTime">-</div>
-        </div>
+    <main class="dashboard-container" id="dashboard-area">
+        
+        <!-- Header -->
+        <header class="header-card">
+            <div class="header-title">📊 DASHBOARD LOGISTIK</div>
+            <div class="header-subtitle" id="timeInfo">-</div>
+        </header>
 
-        <!-- Tabel Utama -->
-        <table>
-            <!-- 1. JUGRACK -->
-            <tr><td colspan="2" class="section-title">Jugrack</td></tr>
-            <tr class="row-even"><td class="label-col">Jugrack Kosong</td><td class="val-col" id="val-jgr-kosong">0</td></tr>
-            <tr class="row-odd"><td class="label-col">Jugrack Botol Kosong "PC"</td><td class="val-col" id="val-jgr-pc">0</td></tr>
-            <tr class="row-even"><td class="label-col text-pet">Jugrack Botol Kosong "PET"</td><td class="val-col text-pet" id="val-jgr-pet">0</td></tr>
-            <tr class="row-odd"><td class="label-col">Jugrack kosong 10 L</td><td class="val-col" id="val-jgr-10l">0</td></tr>
-            <tr class="row-total-jgr"><td class="label-col">Total Jugrack</td><td class="val-col" id="val-total-jugrack">0</td></tr>
-            <tr class="row-rusak"><td class="label-col">~Jugrack Rusak</td><td class="val-col" id="val-jugrack-rusak">0</td></tr>
-
-            <!-- 2. BOTOL KOSONG -->
-            <tr><td colspan="2" class="section-title">Botol Kosong</td></tr>
-            <tr class="row-even"><td class="label-col">Botol Jugrack "PC"</td><td class="val-col" id="val-botol-jgr-pc">0</td></tr>
-            <tr class="row-odd"><td class="label-col text-pet">Botol Jugrack "PET"</td><td class="val-col text-pet" id="val-botol-jgr-pet">0</td></tr>
-            <tr class="row-even"><td class="label-col">Botol Lasahan ~ "PC"</td><td class="val-col" id="val-botol-lasahan-pc">0</td></tr>
-            <tr class="row-odd"><td class="label-col text-pet">Botol Lasahan ~ "PET"</td><td class="val-col text-pet" id="val-botol-lasahan-pet">0</td></tr>
-            
-            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PC"</td><td class="val-col" id="val-siap-pc">0</td></tr>
-            <tr class="row-highlight"><td class="label-col">Total Botol Siap pakai "PET"</td><td class="val-col" id="val-siap-pet">0</td></tr>
-
-            <!-- 3. AFKIR 0011 -->
-            <tr><td colspan="2" class="section-title" style="background-color: #fee2e2; color: #991b1b; border-color: #ef4444;">Afkir 0011</td></tr>
-            <tr class="row-afkir"><td class="label-col">Afkir PC</td><td class="val-col" id="val-afkir-pc">0 Btl</td></tr>
-            <tr class="row-afkir"><td class="label-col">Afkir PET</td><td class="val-col" id="val-afkir-pet">0 Btl</td></tr>
-            <tr class="row-afkir"><td class="label-col">Afkir Luar</td><td class="val-col" id="val-afkir-luar">0 Btl</td></tr>
-        </table>
-
-        <!-- Tombol Bawah (Murni Menu, Reset form, dan WA) -->
-        <div class="action-container" id="actionButtons">
-            <div class="btn-group-main">
-                <a href="index.html" class="btn btn-menu">🏠 Menu</a>
-                <button class="btn btn-reset" onclick="resetData()">🗑️ Reset</button>
-                <button class="btn btn-wa" onclick="shareWhatsApp()">💬 WA (JPG)</button>
+        <!-- Cards KPI Utama -->
+        <div class="kpi-grid">
+            <div class="kpi-card green">
+                <div class="kpi-title">Siap Pakai PC</div>
+                <div class="kpi-value" id="dash-siap-pc">0</div>
+            </div>
+            <div class="kpi-card yellow">
+                <div class="kpi-title">Siap Pakai PET</div>
+                <div class="kpi-value" id="dash-siap-pet">0</div>
+            </div>
+            <div class="kpi-card blue">
+                <div class="kpi-title">Total Jugrack</div>
+                <div class="kpi-value" id="dash-total-jgr">0</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-title">Total Afkir</div>
+                <div class="kpi-value" id="dash-total-afkir">0</div>
             </div>
         </div>
-    </div>
+
+        <!-- Summary FG -->
+        <div class="summary-card">
+            <div class="summary-header">✅ Summary Finish Good (FG)</div>
+            <div class="item-list">
+                <div class="item-row"><span class="detail-label">Finish Good PC</span> <span class="item-value" id="dash-fg-pc">0</span></div>
+                <div class="item-row"><span class="detail-label">Finish Good PET</span> <span class="item-value" id="dash-fg-pet">0</span></div>
+                <div class="item-row"><span class="detail-label">Finish Good 10 L</span> <span class="item-value" id="dash-fg-10l">0</span></div>
+            </div>
+        </div>
+
+        <!-- Summary Jugrack -->
+        <div class="summary-card">
+            <div class="summary-header">☐ Summary Jugrack</div>
+            <div class="item-list">
+                <div class="item-row"><span class="detail-label">Jugrack Kosong</span> <span class="item-value" id="dash-jgr-kosong">0</span></div>
+                <div class="item-row"><span class="detail-label">Jugrack Kosong 10 L</span> <span class="item-value" id="dash-jgr-10l">0</span></div>
+                <div class="item-row"><span class="detail-label">Jugrack Botol PC</span> <span class="item-value" id="dash-jgr-pc">0</span></div>
+                <div class="item-row"><span class="detail-label">Jugrack Botol PET</span> <span class="item-value" id="dash-jgr-pet">0</span></div>
+                <div class="item-row"><span class="detail-label" style="color: #f43f5e;">Jugrack Rusak</span> <span class="item-value red-text" id="dash-jgr-rusak">0</span></div>
+            </div>
+        </div>
+
+        <!-- Summary Botol Kosong -->
+        <div class="summary-card">
+            <div class="summary-header">🍾 Summary Botol Kosong</div>
+            <div class="item-list">
+                <div class="item-row"><span class="detail-label">Botol Jugrack PC</span> <span class="item-value" id="dash-botol-jgr-pc">0</span></div>
+                <div class="item-row"><span class="detail-label">Botol Jugrack PET</span> <span class="item-value" id="dash-botol-jgr-pet">0</span></div>
+                <div class="item-row"><span class="detail-label">Lasahan PC</span> <span class="item-value" id="dash-lasahan-pc">0</span></div>
+                <div class="item-row"><span class="detail-label">Lasahan PET</span> <span class="item-value" id="dash-lasahan-pet">0</span></div>
+            </div>
+        </div>
+
+        <!-- Tombol Navigasi -->
+        <div class="btn-wrapper" data-html2canvas-ignore="true">
+            <button class="btn-wa" onclick="exportToWhatsApp()" id="btn-export">📷 Ekspor ke WA</button>
+            <a href="index.html" class="btn-home">🏠 Kembali</a>
+        </div>
+        
+    </main>
 
     <script>
-        // Fungsi Waktu Berjalan
-        function updateWaktu() {
+        function safeParseInt(val) {
+            const parsed = parseInt(val, 10);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        function updateDashboard() {
             const now = new Date();
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
-            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':');
             
-            let timeEl = document.getElementById('liveDateTime');
-            if(timeEl) timeEl.innerHTML = tglStr + ' | ' + jamStr;
-        }
-        updateWaktu();
-        setInterval(updateWaktu, 1000);
-
-        // Fungsi Ambil Data 
-        function getRaw(keys) {
-            for (let k of keys) {
-                let v = localStorage.getItem(k);
-                if (v !== null && v !== undefined && v !== '') {
-                    let num = parseInt(v, 10);
-                    if (!isNaN(num)) return num;
-                }
+            const timeElement = document.getElementById('timeInfo');
+            if (timeElement) {
+                timeElement.innerText = `${tglStr} | ${jamStr} WIB`;
             }
-            return null;
-        }
 
-        function loadReportData() {
-            try {
-                // 1. Ambil Nilai Mentah Jugrack & Botol Kosong
-                let rawJgrKosong = getRaw(['jgr_kosong_brd', 'jgr_kosong', 'jugrack_kosong']) || 0;
-                let rawJgrPC     = getRaw(['jgr_botol_pc', 'jgr_pc', 'jugrack_pc']);
-                let rawJgrPET    = getRaw(['jgr_botol_pet', 'jgr_pet', 'jugrack_pet']);
-                let rawJgr10L    = getRaw(['jgr_kosong_10l', 'jgr_10l', 'jugrack_10l']) || 0;
-                let rawJgrRusak  = getRaw(['jgr_rusak', 'jugrack_rusak']) || 0;
+            let jgrKosong = safeParseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong'));
+            let jgrPC = safeParseInt(localStorage.getItem('jgr_botol_pc') || localStorage.getItem('botol_jgr_pc'));
+            let jgrPET = safeParseInt(localStorage.getItem('jgr_botol_pet') || localStorage.getItem('botol_jgr_pet'));
+            let jgr10L = safeParseInt(localStorage.getItem('jgr_kosong_10l'));
+            let jgrRusak = safeParseInt(localStorage.getItem('jgr_rusak'));
 
-                let rawBtlJgrPC  = getRaw(['botol_jgr_pc', 'btl_jgr_pc']);
-                let rawBtlJgrPET = getRaw(['botol_jgr_pet', 'btl_jgr_pet']);
+            let lasahanPC = safeParseInt(localStorage.getItem('lasahan_pc'));
+            let lasahanPET = safeParseInt(localStorage.getItem('lasahan_pet'));
 
-                let lasahanPC    = getRaw(['lasahan_pc', 'botol_lasahan_pc']) || 0;
-                let lasahanPET   = getRaw(['lasahan_pet', 'botol_lasahan_pet']) || 0;
+            let fgPC = safeParseInt(localStorage.getItem('fg_jmlh_pc'));
+            let fgPET = safeParseInt(localStorage.getItem('fg_jmlh_pet'));
+            let fg10L = safeParseInt(localStorage.getItem('fg_jmlh_10l'));
 
-                // 2. LOGIKA AUTO-KOREKSI
-                let jgrPC = 0; let btlJgrPC = 0;
-                if (rawJgrPC !== null && rawJgrPC > 0) {
-                    jgrPC = rawJgrPC;
-                    btlJgrPC = (rawBtlJgrPC !== null && rawBtlJgrPC >= jgrPC * 48) ? rawBtlJgrPC : (jgrPC * 48);
-                } else if (rawBtlJgrPC !== null && rawBtlJgrPC > 0) {
-                    if (rawBtlJgrPC < 48) {
-                        jgrPC = rawBtlJgrPC;
-                        btlJgrPC = jgrPC * 48;
-                    } else {
-                        btlJgrPC = rawBtlJgrPC;
-                        jgrPC = Math.floor(rawBtlJgrPC / 48);
+            let botolJgrPC = jgrPC * 48;
+            let botolJgrPET = jgrPET * 48;
+
+            let siapPC = botolJgrPC + lasahanPC;
+            let siapPET = botolJgrPET + lasahanPET;
+
+            let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
+
+            let totalAfkir = 0;
+            const savedAfkir = localStorage.getItem('afkir_0011_data');
+            if (savedAfkir) {
+                try {
+                    const parsed = JSON.parse(savedAfkir);
+                    if (Array.isArray(parsed)) {
+                        parsed.forEach(item => {
+                            totalAfkir += safeParseInt(item.pc) + safeParseInt(item.pet) + safeParseInt(item.luar);
+                        });
+                    } else if (typeof parsed === 'object' && parsed !== null) {
+                        totalAfkir = safeParseInt(parsed.pc) + safeParseInt(parsed.pet) + safeParseInt(parsed.luar);
                     }
-                }
-
-                let jgrPET = 0; let btlJgrPET = 0;
-                if (rawJgrPET !== null && rawJgrPET > 0) {
-                    jgrPET = rawJgrPET;
-                    btlJgrPET = (rawBtlJgrPET !== null && rawBtlJgrPET >= jgrPET * 48) ? rawBtlJgrPET : (jgrPET * 48);
-                } else if (rawBtlJgrPET !== null && rawBtlJgrPET > 0) {
-                    if (rawBtlJgrPET < 48) {
-                        jgrPET = rawBtlJgrPET;
-                        btlJgrPET = jgrPET * 48;
-                    } else {
-                        btlJgrPET = rawBtlJgrPET;
-                        jgrPET = Math.floor(rawBtlJgrPET / 48);
-                    }
-                }
-
-                // 3. Afkir 0011
-                let totalAfkirPC = getRaw(['afkir_pc', 'afkir_0011_pc']) || 0;
-                let totalAfkirPET = getRaw(['afkir_pet', 'afkir_0011_pet']) || 0;
-                let totalAfkirLuar = getRaw(['afkir_luar', 'afkir_0011_luar']) || 0;
-
-                const savedAfkir = localStorage.getItem('afkir_0011_data') || localStorage.getItem('afkir_0011');
-                if (savedAfkir) {
-                    try {
-                        const parsed = JSON.parse(savedAfkir);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            totalAfkirPC = 0; totalAfkirPET = 0; totalAfkirLuar = 0;
-                            parsed.forEach(item => {
-                                totalAfkirPC += parseInt(item.pc || item.afkir_pc || 0) || 0;
-                                totalAfkirPET += parseInt(item.pet || item.afkir_pet || 0) || 0;
-                                totalAfkirLuar += parseInt(item.luar || item.afkir_luar || 0) || 0;
-                            });
-                        }
-                    } catch(e) {}
-                }
-
-                // 4. Kalkulasi Total Akhir
-                let totalJugrack = rawJgrKosong + jgrPC + jgrPET + rawJgr10L;
-                let siapPC = btlJgrPC + lasahanPC;
-                let siapPET = btlJgrPET + lasahanPET;
-
-                // 5. Render Nilai ke Tabel HTML
-                document.getElementById('val-jgr-kosong').innerText = rawJgrKosong.toLocaleString('id-ID');
-                document.getElementById('val-jgr-pc').innerText = jgrPC.toLocaleString('id-ID');
-                document.getElementById('val-jgr-pet').innerText = jgrPET.toLocaleString('id-ID');
-                document.getElementById('val-jgr-10l').innerText = rawJgr10L.toLocaleString('id-ID');
-                document.getElementById('val-total-jugrack').innerText = totalJugrack.toLocaleString('id-ID');
-                document.getElementById('val-jugrack-rusak').innerText = rawJgrRusak.toLocaleString('id-ID');
-
-                document.getElementById('val-botol-jgr-pc').innerText = btlJgrPC.toLocaleString('id-ID');
-                document.getElementById('val-botol-jgr-pet').innerText = btlJgrPET.toLocaleString('id-ID');
-                document.getElementById('val-botol-lasahan-pc').innerText = lasahanPC.toLocaleString('id-ID');
-                document.getElementById('val-botol-lasahan-pet').innerText = lasahanPET.toLocaleString('id-ID');
-
-                document.getElementById('val-siap-pc').innerText = siapPC.toLocaleString('id-ID');
-                document.getElementById('val-siap-pet').innerText = siapPET.toLocaleString('id-ID');
-
-                document.getElementById('val-afkir-pc').innerText = `${totalAfkirPC.toLocaleString('id-ID')} Btl`;
-                document.getElementById('val-afkir-pet').innerText = `${totalAfkirPET.toLocaleString('id-ID')} Btl`;
-                document.getElementById('val-afkir-luar').innerText = `${totalAfkirLuar.toLocaleString('id-ID')} Btl`;
-
-            } catch(e) {
-                console.error("Gagal memuat data: ", e);
+                } catch(e) {}
             }
-        }
 
-        document.addEventListener('DOMContentLoaded', loadReportData);
-
-        // Fitur Reset Data (Dijamin Aman dari penghapusan history database)
-        function resetData() {
-            let konfirmasi = confirm("Yakin ingin mereset/menghapus semua data form?\nLakukan ini saat pergantian shift agar data tidak menumpuk.");
-            if (konfirmasi) {
-                let keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    let key = localStorage.key(i);
-                    // Pastikan database history tidak ikut terhapus
-                    if (key !== 'report_history_db') {
-                        keysToRemove.push(key);
-                    }
-                }
-                keysToRemove.forEach(k => localStorage.removeItem(k));
-                alert("Data form berhasil direset menjadi 0!");
-                location.reload();
+            function setText(id, value) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = value;
             }
+
+            setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
+            setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
+            setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
+            setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
+
+            setText('dash-fg-pc', fgPC.toLocaleString('id-ID'));
+            setText('dash-fg-pet', fgPET.toLocaleString('id-ID'));
+            setText('dash-fg-10l', fg10L.toLocaleString('id-ID'));
+
+            setText('dash-jgr-kosong', jgrKosong.toLocaleString('id-ID'));
+            setText('dash-jgr-pc', jgrPC.toLocaleString('id-ID'));
+            setText('dash-jgr-pet', jgrPET.toLocaleString('id-ID'));
+            setText('dash-jgr-10l', jgr10L.toLocaleString('id-ID'));
+            setText('dash-jgr-rusak', jgrRusak.toLocaleString('id-ID'));
+
+            setText('dash-botol-jgr-pc', botolJgrPC.toLocaleString('id-ID'));
+            setText('dash-botol-jgr-pet', botolJgrPET.toLocaleString('id-ID'));
+            setText('dash-lasahan-pc', lasahanPC.toLocaleString('id-ID'));
+            setText('dash-lasahan-pet', lasahanPET.toLocaleString('id-ID'));
         }
 
-        // Fitur Share WA MURNI (Hanya Foto & WA, tanpa simpan ke tabel)
-        function shareWhatsApp() {
-            const reportArea = document.getElementById('reportArea');
-            const actionButtons = document.getElementById('actionButtons');
+        function exportToWhatsApp() {
+            const btn = document.getElementById('btn-export');
+            btn.innerText = "Memproses...";
+            btn.disabled = true;
 
-            // Sembunyikan tombol saat foto diambil
-            actionButtons.style.display = 'none';
-
-            html2canvas(reportArea, { scale: 2, useCORS: true }).then(canvas => {
-                // Munculkan kembali tombol
-                actionButtons.style.display = 'flex';
-
-                canvas.toBlob(function(blob) {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = 'Update-Botol-Jugrack-HOD.jpg';
-                    link.href = url;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    let timeText = document.getElementById('liveDateTime').innerText;
-                    let textPesan = `Halo bos, berikut Update Botol & Jugrack HOD (${timeText}).\n*(Gambar JPG otomatis terunduh, silakan lampirkan gambar di chat ini)*`;
-
-                    setTimeout(() => {
-                        window.location.href = `https://wa.me/?text=${encodeURIComponent(textPesan)}`;
-                    }, 1200);
-
-                }, 'image/jpeg', 0.95);
-
+            const container = document.getElementById('dashboard-area');
+            
+            html2canvas(container, {
+                scale: 2, 
+                backgroundColor: "#94a3b8", // Background disamakan agar pas ekspor tidak belang
+                logging: false,
+                onclone: (clonedDoc) => {
+                    const clonedContainer = clonedDoc.getElementById('dashboard-area');
+                    clonedContainer.style.padding = "20px";
+                    clonedContainer.style.maxWidth = "500px";
+                }
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const today = new Date().toISOString().split('T')[0];
+                
+                link.download = `Dashboard_Logistik_${today}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.click();
+                
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
             }).catch(err => {
-                actionButtons.style.display = 'flex';
-                alert("Gagal memproses gambar: " + err);
+                console.error(err);
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard(); 
+            setInterval(updateDashboard, 1000); 
+        });
     </script>
 </body>
 </html>
