@@ -239,7 +239,6 @@
             let fgJgr10L = parseInt(localStorage.getItem('fg_jgr_10l') || localStorage.getItem('fg_10l') || '0');
             let fgJmlh10L = parseInt(localStorage.getItem('fg_jmlh_10l') || '0');
 
-            // --- REVISI AFKIR LUAR: Kita tambahkan jaring pengaman buat baca memori lama dan baru ---
             let afkirPC = parseInt(localStorage.getItem('afkir_pc') || localStorage.getItem('afkir_0011_pc') || '0');
             let afkirPET = parseInt(localStorage.getItem('afkir_pet') || localStorage.getItem('afkir_0011_pet') || '0');
             let afkirLuar = parseInt(localStorage.getItem('afkir_luar') || localStorage.getItem('afkirLuar') || localStorage.getItem('afkir_10l') || localStorage.getItem('s2_afkir_10l') || '0');
@@ -275,6 +274,7 @@
         loadReportData();
 
         function submitToRekap() {
+            // --- 1. PROSES SIMPAN KE TABEL REKAP LOKAL ---
             let timeStr = document.getElementById('liveDateTime').innerText;
             let newData = {
                 waktu: timeStr,
@@ -301,7 +301,55 @@
             let existingData = JSON.parse(localStorage.getItem('data_rekap_tabel')) || [];
             existingData.push(newData);
             localStorage.setItem('data_rekap_tabel', JSON.stringify(existingData));
-            alert("Mantap bos! Data berhasil disimpan ke Tabel Rekap.");
+
+            // --- 2. PROSES KIRIM KE GOOGLE SHEETS ---
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyIMFX8t-FurE_9GrmufJIgKhKvQ5DucJYuaqzd8sqvvce0wnapYzVifa_HdvLHx-k0ZA/exec';
+            
+            // Ubah tampilan tombol pas loading
+            const btnSubmit = document.querySelector('.btn-submit');
+            const teksAsli = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '⏳ Tunggu Bos...';
+            btnSubmit.disabled = true;
+
+            // Memasukkan data ke dalam paket pengiriman (FormData)
+            let formData = new FormData();
+            let splitWaktu = timeStr.split(' | ');
+            
+            // --- JANGAN LUPA SINKRONKAN TULISAN MERAH DI BAWAH INI DENGAN HEADER EXCEL BOSKUH ---
+            formData.append('Tanggal', splitWaktu[0]);
+            formData.append('Jam', splitWaktu[1]);
+            formData.append('Jgr Kosong', newData.jgrKosong);
+            formData.append('Jgr PC', newData.jgrPC);
+            formData.append('Jgr PET', newData.jgrPET);
+            formData.append('Jgr 10L', newData.jgr10L);
+            formData.append('Total Jgr', newData.totalJgr);
+            formData.append('Jgr Rusak', newData.jgrRusak);
+            formData.append('Botol Jgr PC', newData.btlJgrPC);
+            formData.append('Botol Jgr PET', newData.btlJgrPET);
+            formData.append('Lasahan PC', newData.lasahanPC);
+            formData.append('Lasahan PET', newData.lasahanPET);
+            formData.append('Siap PC', newData.siapPC);
+            formData.append('Siap PET', newData.siapPET);
+            formData.append('FG PC', newData.fgPC);
+            formData.append('FG PET', newData.fgPET);
+            formData.append('FG 10L', newData.fg10L);
+            formData.append('Afkir PC', newData.afkirPC);
+            formData.append('Afkir PET', newData.afkirPET);
+            formData.append('Afkir Luar', newData.afkirLuar);
+
+            // Eksekusi pengiriman via jalan tol
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => {
+                    alert("MANTAP BOSKUH! Data udah masuk ke Tabel Rekap & Google Sheets! 🚀");
+                    btnSubmit.innerHTML = teksAsli;
+                    btnSubmit.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert("Waduh, data cuma masuk ke Tabel lokal, GAGAL ke Google Sheets. Cek sinyal internet bos!");
+                    btnSubmit.innerHTML = teksAsli;
+                    btnSubmit.disabled = false;
+                });
         }
 
         function shareWhatsApp() {
@@ -333,38 +381,5 @@
             });
         }
     </script>
-  <script>
-  // Ini link jalan tol Google Apps Script boskuh yang udah didapet tadi
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyIMFX8t-FurE_9GrmufJIgKhKvQ5DucJYuaqzd8sqvvce0wnapYzVifa_HdvLHx-k0ZA/exec';
-  
-  // Mencari form di dalam halaman HTML
-  const form = document.querySelector('form');
-
-  form.addEventListener('submit', e => {
-    e.preventDefault(); // Biar halaman nggak nge-refresh saat submit
-    
-    // Bikin tombol submit berubah teksnya pas lagi loading ngirim data
-    const btnSubmit = form.querySelector('button[type="submit"]') || form.querySelector('button');
-    const teksAsli = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = 'Menyimpan... Tunggu bentar bos...';
-    btnSubmit.disabled = true;
-
-    // Proses pengiriman data ke Google Sheets
-    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-      .then(response => {
-        alert("MANTAP BOSKUH! Data sukses masuk ke Google Sheets! 🚀");
-        form.reset(); // Otomatis mengosongkan isian form setelah sukses
-        btnSubmit.innerHTML = teksAsli; // Kembalikan teks tombol
-        btnSubmit.disabled = false;
-      })
-      .catch(error => {
-        console.error('Error!', error.message);
-        alert("Waduh, gagal ngirim data nih bos. Coba cek koneksi!");
-        btnSubmit.innerHTML = teksAsli;
-        btnSubmit.disabled = false;
-      });
-  });
-</script>
-
 </body>
 </html>
