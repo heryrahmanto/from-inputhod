@@ -305,17 +305,15 @@
             // --- 2. PROSES KIRIM KE GOOGLE SHEETS ---
             const scriptURL = 'https://script.google.com/macros/s/AKfycbyIMFX8t-FurE_9GrmufJIgKhKvQ5DucJYuaqzd8sqvvce0wnapYzVifa_HdvLHx-k0ZA/exec';
             
-            // Ubah tampilan tombol pas loading
             const btnSubmit = document.querySelector('.btn-submit');
             const teksAsli = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '⏳ Tunggu Bos...';
             btnSubmit.disabled = true;
 
-            // Memasukkan data ke dalam paket pengiriman (FormData)
-            let formData = new FormData();
+            let formData = new URLSearchParams();
+
             let splitWaktu = timeStr.split(' | ');
             
-            // --- JANGAN LUPA SINKRONKAN TULISAN MERAH DI BAWAH INI DENGAN HEADER EXCEL BOSKUH ---
             formData.append('Tanggal', splitWaktu[0]);
             formData.append('Jam', splitWaktu[1]);
             formData.append('Jgr Kosong', newData.jgrKosong);
@@ -337,16 +335,22 @@
             formData.append('Afkir PET', newData.afkirPET);
             formData.append('Afkir Luar', newData.afkirLuar);
 
-            // Eksekusi pengiriman via jalan tol
+            // Eksekusi pengiriman via jalan tol dengan SENSOR PINTAR
             fetch(scriptURL, { method: 'POST', body: formData })
-                .then(response => {
-                    alert("MANTAP BOSKUH! Data udah masuk ke Tabel Rekap & Google Sheets! 🚀");
+                .then(response => response.json()) 
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert("MANTAP BOSKUH! Data beneran masuk ke baris " + data.row + " di Excel! 🚀");
+                    } else {
+                        // Kalau Google nolak, pesannya bakal muncul di sini
+                        alert("WADUH! Google nolak datanya. Errornya: " + (data.error.message || JSON.stringify(data.error)));
+                    }
                     btnSubmit.innerHTML = teksAsli;
                     btnSubmit.disabled = false;
                 })
                 .catch(error => {
-                    console.error('Error!', error.message);
-                    alert("Waduh, data cuma masuk ke Tabel lokal, GAGAL ke Google Sheets. Cek sinyal internet bos!");
+                    console.error('Error!', error);
+                    alert("GAGAL KONEK! Error: " + error.message);
                     btnSubmit.innerHTML = teksAsli;
                     btnSubmit.disabled = false;
                 });
