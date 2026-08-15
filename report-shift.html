@@ -333,5 +333,38 @@
             });
         }
     </script>
+  <script>
+  // Ini link jalan tol Google Apps Script boskuh yang udah didapet tadi
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyIMFX8t-FurE_9GrmufJIgKhKvQ5DucJYuaqzd8sqvvce0wnapYzVifa_HdvLHx-k0ZA/exec';
+  
+  // Mencari form di dalam halaman HTML
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault(); // Biar halaman nggak nge-refresh saat submit
+    
+    // Bikin tombol submit berubah teksnya pas lagi loading ngirim data
+    const btnSubmit = form.querySelector('button[type="submit"]') || form.querySelector('button');
+    const teksAsli = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = 'Menyimpan... Tunggu bentar bos...';
+    btnSubmit.disabled = true;
+
+    // Proses pengiriman data ke Google Sheets
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => {
+        alert("MANTAP BOSKUH! Data sukses masuk ke Google Sheets! 🚀");
+        form.reset(); // Otomatis mengosongkan isian form setelah sukses
+        btnSubmit.innerHTML = teksAsli; // Kembalikan teks tombol
+        btnSubmit.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        alert("Waduh, gagal ngirim data nih bos. Coba cek koneksi!");
+        btnSubmit.innerHTML = teksAsli;
+        btnSubmit.disabled = false;
+      });
+  });
+</script>
+
 </body>
 </html>
