@@ -290,9 +290,9 @@
                 lasahanPET: document.getElementById('val-botol-lasahan-pet').innerText,
                 siapPC: document.getElementById('val-siap-pc').innerText,
                 siapPET: document.getElementById('val-siap-pet').innerText,
-                fgPC: document.getElementById('val-fg-pc').innerText,
-                fgPET: document.getElementById('val-fg-pet').innerText,
-                fg10L: document.getElementById('val-fg-10l').innerText,
+                fgPC: parseInt(localStorage.getItem('fg_jmlh_pc') || '0').toLocaleString('id-ID'),
+fgPET: parseInt(localStorage.getItem('fg_jmlh_pet') || '0').toLocaleString('id-ID'),
+fg10L: parseInt(localStorage.getItem('fg_jmlh_10l') || '0').toLocaleString('id-ID'),
                 afkirPC: document.getElementById('val-afkir-pc').innerText,
                 afkirPET: document.getElementById('val-afkir-pet').innerText,
                 afkirLuar: document.getElementById('val-afkir-luar').innerText
