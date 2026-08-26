@@ -58,7 +58,7 @@
         .header-subtitle {
             font-size: 12px;
             font-weight: 600; 
-            color: #cbd5e1; /* Warna teks sub-judul sedikit disesuaikan */
+            color: #cbd5e1; 
         }
 
         /* Grid KPI */
@@ -75,6 +75,9 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .kpi-card::before {
@@ -103,6 +106,15 @@
             font-size: 18px;
             font-weight: 800; 
             color: #0f172a;
+        }
+
+        /* Tambahan rincian kecil untuk Afkir */
+        .kpi-detail-text {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
+            margin-top: 4px;
+            letter-spacing: 0.2px;
         }
 
         /* Kartu Ringkasan */
@@ -213,9 +225,11 @@
                 <div class="kpi-title">Total Jugrack</div>
                 <div class="kpi-value" id="dash-total-jgr">0</div>
             </div>
+            <!-- INI BAGIAN AFKIR YANG DITAMBAH RINCIAN -->
             <div class="kpi-card red">
                 <div class="kpi-title">Total Afkir</div>
                 <div class="kpi-value" id="dash-total-afkir">0</div>
+                <div class="kpi-detail-text" id="dash-detail-afkir">PC: 0 | PET: 0 | Luar: 0</div>
             </div>
         </div>
 
@@ -298,18 +312,28 @@
 
             let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
 
+            // Update Logika Rincian Afkir
             let totalAfkir = 0;
+            let detailAfkirPC = 0;
+            let detailAfkirPET = 0;
+            let detailAfkirLuar = 0;
+
             const savedAfkir = localStorage.getItem('afkir_0011_data');
             if (savedAfkir) {
                 try {
                     const parsed = JSON.parse(savedAfkir);
                     if (Array.isArray(parsed)) {
                         parsed.forEach(item => {
-                            totalAfkir += safeParseInt(item.pc) + safeParseInt(item.pet) + safeParseInt(item.luar);
+                            detailAfkirPC += safeParseInt(item.pc);
+                            detailAfkirPET += safeParseInt(item.pet);
+                            detailAfkirLuar += safeParseInt(item.luar);
                         });
                     } else if (typeof parsed === 'object' && parsed !== null) {
-                        totalAfkir = safeParseInt(parsed.pc) + safeParseInt(parsed.pet) + safeParseInt(parsed.luar);
+                        detailAfkirPC = safeParseInt(parsed.pc);
+                        detailAfkirPET = safeParseInt(parsed.pet);
+                        detailAfkirLuar = safeParseInt(parsed.luar);
                     }
+                    totalAfkir = detailAfkirPC + detailAfkirPET + detailAfkirLuar;
                 } catch(e) {}
             }
 
@@ -321,7 +345,11 @@
             setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
             setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
             setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
+            
+            // Set Total Afkir Utama
             setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
+            // Set Rincian Kecil di Bawahnya
+            setText('dash-detail-afkir', `PC: ${detailAfkirPC.toLocaleString('id-ID')} | PET: ${detailAfkirPET.toLocaleString('id-ID')} | Luar: ${detailAfkirLuar.toLocaleString('id-ID')}`);
 
             setText('dash-fg-pc', fgPC.toLocaleString('id-ID'));
             setText('dash-fg-pet', fgPET.toLocaleString('id-ID'));
@@ -348,7 +376,7 @@
             
             html2canvas(container, {
                 scale: 2, 
-                backgroundColor: "#bfcfe4", // Background disamakan 100% biar hasil WA mulus
+                backgroundColor: "#bfcfe4", 
                 logging: false,
                 onclone: (clonedDoc) => {
                     const clonedContainer = clonedDoc.getElementById('dashboard-area');
