@@ -394,21 +394,26 @@
             btn.disabled = true;
 
             const container = document.getElementById('dashboard-area');
-            const originalMaxWidth = container.style.maxWidth; // Simpan nilai asli
-            const originalPadding = container.style.padding; // Simpan nilai asli
             
-            // Paksa ukuran kontainer dan hapus padding sebelum jepret
+            // Simpan nilai asli dari CSS
+            const originalWidth = container.style.width;
+            const originalMaxWidth = container.style.maxWidth; 
+            const originalPadding = container.style.padding; 
+            
+            // PAKSA UKURAN SEBELUM JEPRET (Kunci format baku)
+            // Biar hasilnya konsisten nggak mepet dan nggak keciut
+            container.style.width = "480px"; 
             container.style.maxWidth = "none";
-            container.style.padding = "0";
+            container.style.padding = "20px"; // Ini kunci biar ada jarak pinggirnya!
 
             html2canvas(container, {
                 scale: 2, 
                 backgroundColor: "#bfcfe4", 
                 logging: false,
-                width: container.offsetWidth, // Paksa lebar sesuai elemen
-                height: container.offsetHeight // Paksa tinggi sesuai elemen
+                width: 480 // Paksa lebar kanvasnya
             }).then(canvas => {
-                // Kembalikan ukuran asli setelah jepret
+                // KEMBALIKAN KE SEMULA biar di layar HP tetep normal
+                container.style.width = originalWidth;
                 container.style.maxWidth = originalMaxWidth;
                 container.style.padding = originalPadding;
 
@@ -422,7 +427,8 @@
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
             }).catch(err => {
-                // Kembalikan ukuran asli kalau error
+                // Jaga-jaga kalau error, tetep dikembalikan semula
+                container.style.width = originalWidth;
                 container.style.maxWidth = originalMaxWidth;
                 container.style.padding = originalPadding;
 
