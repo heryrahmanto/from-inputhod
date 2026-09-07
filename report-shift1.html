@@ -394,17 +394,24 @@
             btn.disabled = true;
 
             const container = document.getElementById('dashboard-area');
+            const originalMaxWidth = container.style.maxWidth; // Simpan nilai asli
+            const originalPadding = container.style.padding; // Simpan nilai asli
             
+            // Paksa ukuran kontainer dan hapus padding sebelum jepret
+            container.style.maxWidth = "none";
+            container.style.padding = "0";
+
             html2canvas(container, {
                 scale: 2, 
                 backgroundColor: "#bfcfe4", 
                 logging: false,
-                onclone: (clonedDoc) => {
-                    const clonedContainer = clonedDoc.getElementById('dashboard-area');
-                    clonedContainer.style.padding = "20px";
-                    clonedContainer.style.maxWidth = "500px";
-                }
+                width: container.offsetWidth, // Paksa lebar sesuai elemen
+                height: container.offsetHeight // Paksa tinggi sesuai elemen
             }).then(canvas => {
+                // Kembalikan ukuran asli setelah jepret
+                container.style.maxWidth = originalMaxWidth;
+                container.style.padding = originalPadding;
+
                 const link = document.createElement('a');
                 const today = new Date().toISOString().split('T')[0];
                 
@@ -415,6 +422,10 @@
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
             }).catch(err => {
+                // Kembalikan ukuran asli kalau error
+                container.style.maxWidth = originalMaxWidth;
+                container.style.padding = originalPadding;
+
                 console.error(err);
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
