@@ -18,7 +18,7 @@
         }
 
         body {
-            background-color: #bfcfe4; /* Background Lebih Soft & Terang */
+            background-color: #bfcfe4; 
             padding: 15px 12px; 
             display: flex;
             justify-content: center;
@@ -32,7 +32,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px; 
-            background-color: #bfcfe4; /* Disamakan dengan body biar tidak belang */
+            background-color: #bfcfe4; 
         }
 
         /* Header */
@@ -108,7 +108,7 @@
             color: #0f172a;
         }
 
-        /* Tambahan rincian kecil untuk Afkir */
+        /* Teks rincian kecil untuk KPI */
         .kpi-detail-text {
             font-size: 10px;
             color: #64748b;
@@ -221,11 +221,13 @@
                 <div class="kpi-title">Siap Pakai PET</div>
                 <div class="kpi-value" id="dash-siap-pet">0</div>
             </div>
+            <!-- JUGRACK DENGAN LOGIKA DEFISIT -->
             <div class="kpi-card blue">
                 <div class="kpi-title">Total Jugrack</div>
                 <div class="kpi-value" id="dash-total-jgr">0</div>
+                <div class="kpi-detail-text" id="dash-detail-jgr">Menghitung...</div>
             </div>
-            <!-- INI BAGIAN AFKIR YANG DITAMBAH RINCIAN -->
+            <!-- AFKIR DENGAN RINCIAN -->
             <div class="kpi-card red">
                 <div class="kpi-title">Total Afkir</div>
                 <div class="kpi-value" id="dash-total-afkir">0</div>
@@ -310,7 +312,25 @@
             let siapPC = botolJgrPC + lasahanPC;
             let siapPET = botolJgrPET + lasahanPET;
 
+            // Logika Hitungan Defisit Jugrack
             let totalJgr = jgrKosong + jgrPC + jgrPET + jgr10L;
+            let totalLasahan = lasahanPC + lasahanPET;
+            let butuhJugrack = Math.floor(totalLasahan / 48);
+            let defisitJgr = butuhJugrack - jgrKosong;
+            
+            // Elemen rincian Jugrack
+            const elDetailJgr = document.getElementById('dash-detail-jgr');
+            
+            if (defisitJgr > 0) {
+                // Kurang Jugrack -> Warna Merah
+                elDetailJgr.innerHTML = `<span style="color: #f43f5e; font-weight: 800;">Defisit jgr ${defisitJgr.toLocaleString('id-ID')} PCS</span>`;
+            } else if (defisitJgr === 0) {
+                // Pas
+                elDetailJgr.innerHTML = `<span style="color: #64748b;">Kapasitas Pas</span>`;
+            } else {
+                // Sisa / Surplus -> Warna Hijau
+                elDetailJgr.innerHTML = `<span style="color: #10b981;">Aman (Sisa jgr ${Math.abs(defisitJgr).toLocaleString('id-ID')} PCS)</span>`;
+            }
 
             // Update Logika Rincian Afkir
             let totalAfkir = 0;
@@ -344,11 +364,12 @@
 
             setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
             setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
+            
+            // Set Total Jugrack Utama
             setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
             
-            // Set Total Afkir Utama
+            // Set Afkir Utama & Rinciannya
             setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
-            // Set Rincian Kecil di Bawahnya
             setText('dash-detail-afkir', `PC: ${detailAfkirPC.toLocaleString('id-ID')} | PET: ${detailAfkirPET.toLocaleString('id-ID')} | Luar: ${detailAfkirLuar.toLocaleString('id-ID')}`);
 
             setText('dash-fg-pc', fgPC.toLocaleString('id-ID'));
