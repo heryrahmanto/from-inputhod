@@ -19,7 +19,7 @@
 
         body {
             background-color: #bfcfe4; 
-            padding: 15px 12px; 
+            /* Padding body dihilangkan, dipindah ke kontainer */
             display: flex;
             justify-content: center;
             align-items: flex-start; 
@@ -29,6 +29,8 @@
         .dashboard-container {
             width: 100%;
             max-width: 480px;
+            /* INI KUNCINYA: Padding dipindah ke sini biar ikut kejepret! */
+            padding: 20px 15px; 
             display: flex;
             flex-direction: column;
             gap: 12px; 
@@ -394,29 +396,13 @@
             btn.disabled = true;
 
             const container = document.getElementById('dashboard-area');
-            
-            // Simpan nilai asli dari CSS
-            const originalWidth = container.style.width;
-            const originalMaxWidth = container.style.maxWidth; 
-            const originalPadding = container.style.padding; 
-            
-            // PAKSA UKURAN SEBELUM JEPRET (Kunci format baku)
-            // Biar hasilnya konsisten nggak mepet dan nggak keciut
-            container.style.width = "480px"; 
-            container.style.maxWidth = "none";
-            container.style.padding = "20px"; // Ini kunci biar ada jarak pinggirnya!
 
+            // Scriptnya dikembalikan ke versi bersih natural! Nggak ada paksaan ukuran lagi.
             html2canvas(container, {
                 scale: 2, 
                 backgroundColor: "#bfcfe4", 
-                logging: false,
-                width: 480 // Paksa lebar kanvasnya
+                logging: false
             }).then(canvas => {
-                // KEMBALIKAN KE SEMULA biar di layar HP tetep normal
-                container.style.width = originalWidth;
-                container.style.maxWidth = originalMaxWidth;
-                container.style.padding = originalPadding;
-
                 const link = document.createElement('a');
                 const today = new Date().toISOString().split('T')[0];
                 
@@ -427,11 +413,6 @@
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
             }).catch(err => {
-                // Jaga-jaga kalau error, tetep dikembalikan semula
-                container.style.width = originalWidth;
-                container.style.maxWidth = originalMaxWidth;
-                container.style.padding = originalPadding;
-
                 console.error(err);
                 btn.innerText = "📷 Ekspor ke WA";
                 btn.disabled = false;
