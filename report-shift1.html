@@ -19,17 +19,16 @@
 
         body {
             background-color: #bfcfe4; 
-            /* Padding body dihilangkan, dipindah ke kontainer */
             display: flex;
             justify-content: center;
             align-items: flex-start; 
             min-height: 100vh;
         }
 
+        /* --- TAMPILAN DEFAULT (UNTUK HP) --- */
         .dashboard-container {
             width: 100%;
             max-width: 480px;
-            /* INI KUNCINYA: Padding dipindah ke sini biar ikut kejepret! */
             padding: 20px 15px; 
             display: flex;
             flex-direction: column;
@@ -110,13 +109,19 @@
             color: #0f172a;
         }
 
-        /* Teks rincian kecil untuk KPI */
         .kpi-detail-text {
             font-size: 10px;
             color: #64748b;
             font-weight: 700;
             margin-top: 4px;
             letter-spacing: 0.2px;
+        }
+
+        /* Wrapper buat 3 kotak summary */
+        .summary-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         /* Kartu Ringkasan */
@@ -201,6 +206,43 @@
             cursor: pointer;
             box-shadow: 0 3px 6px rgba(0,0,0,0.15);
         }
+
+        /* --- TAMPILAN KHUSUS UNTUK LAPTOP / PC (LAYAR LEBAR) --- */
+        @media screen and (min-width: 768px) {
+            .dashboard-container {
+                max-width: 1000px; 
+                padding: 40px; 
+            }
+
+            .header-title { font-size: 24px; }
+            .header-subtitle { font-size: 14px; }
+
+            .kpi-title { font-size: 13px; }
+            .kpi-value { font-size: 26px; }
+            .kpi-detail-text { font-size: 12px; }
+
+            .summary-header { font-size: 18px; margin-bottom: 12px; }
+            .item-row { font-size: 15px; padding-bottom: 8px; }
+
+            .btn-wa, .btn-home { font-size: 16px; padding: 14px; }
+
+            .kpi-grid {
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 15px;
+            }
+
+            .summary-wrapper {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr); 
+                align-items: start; 
+                gap: 20px;
+            }
+
+            .btn-wrapper {
+                max-width: 500px;
+                margin: 30px auto 0 auto; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -229,46 +271,51 @@
                 <div class="kpi-value" id="dash-total-jgr">0</div>
                 <div class="kpi-detail-text" id="dash-detail-jgr">Menghitung...</div>
             </div>
-            <!-- AFKIR DENGAN RINCIAN -->
+            <!-- AFKIR DENGAN RINCIAN (LUAR DIHAPUS SEPENUHNYA) -->
             <div class="kpi-card red">
                 <div class="kpi-title">Total Afkir</div>
                 <div class="kpi-value" id="dash-total-afkir">0</div>
-                <div class="kpi-detail-text" id="dash-detail-afkir">PC: 0 | PET: 0 | Luar: 0</div>
+                <div class="kpi-detail-text" id="dash-detail-afkir">PC: 0 | PET: 0</div>
             </div>
         </div>
 
-        <!-- 1. Summary Jugrack -->
-        <div class="summary-card">
-            <div class="summary-header">☐ Summary Jugrack</div>
-            <div class="item-list">
-                <div class="item-row"><span class="detail-label">Jugrack Kosong</span> <span class="item-value" id="dash-jgr-kosong">0</span></div>
-                <div class="item-row"><span class="detail-label">Jugrack Kosong 10 L</span> <span class="item-value" id="dash-jgr-10l">0</span></div>
-                <div class="item-row"><span class="detail-label">Jugrack Botol PC</span> <span class="item-value" id="dash-jgr-pc">0</span></div>
-                <div class="item-row"><span class="detail-label">Jugrack Botol PET</span> <span class="item-value" id="dash-jgr-pet">0</span></div>
-                <div class="item-row"><span class="detail-label" style="color: #f43f5e;">Jugrack Rusak</span> <span class="item-value red-text" id="dash-jgr-rusak">0</span></div>
+        <!-- BUNGKUSAN BARU UNTUK 3 KOTAK SUMMARY -->
+        <div class="summary-wrapper">
+            
+            <!-- 1. Summary Jugrack -->
+            <div class="summary-card">
+                <div class="summary-header">☐ Summary Jugrack</div>
+                <div class="item-list">
+                    <div class="item-row"><span class="detail-label">Jugrack Kosong</span> <span class="item-value" id="dash-jgr-kosong">0</span></div>
+                    <div class="item-row"><span class="detail-label">Jugrack Kosong 10 L</span> <span class="item-value" id="dash-jgr-10l">0</span></div>
+                    <div class="item-row"><span class="detail-label">Jugrack Botol PC</span> <span class="item-value" id="dash-jgr-pc">0</span></div>
+                    <div class="item-row"><span class="detail-label">Jugrack Botol PET</span> <span class="item-value" id="dash-jgr-pet">0</span></div>
+                    <div class="item-row"><span class="detail-label" style="color: #f43f5e;">Jugrack Rusak</span> <span class="item-value red-text" id="dash-jgr-rusak">0</span></div>
+                </div>
             </div>
-        </div>
 
-        <!-- 2. Summary Botol Kosong -->
-        <div class="summary-card">
-            <div class="summary-header">🍾 Summary Botol Kosong</div>
-            <div class="item-list">
-                <div class="item-row"><span class="detail-label">Botol Jugrack PC</span> <span class="item-value" id="dash-botol-jgr-pc">0</span></div>
-                <div class="item-row"><span class="detail-label">Botol Jugrack PET</span> <span class="item-value" id="dash-botol-jgr-pet">0</span></div>
-                <div class="item-row"><span class="detail-label">Lasahan PC</span> <span class="item-value" id="dash-lasahan-pc">0</span></div>
-                <div class="item-row"><span class="detail-label">Lasahan PET</span> <span class="item-value" id="dash-lasahan-pet">0</span></div>
+            <!-- 2. Summary Botol Kosong -->
+            <div class="summary-card">
+                <div class="summary-header">🍾 Summary Botol Kosong</div>
+                <div class="item-list">
+                    <div class="item-row"><span class="detail-label">Botol Jugrack PC</span> <span class="item-value" id="dash-botol-jgr-pc">0</span></div>
+                    <div class="item-row"><span class="detail-label">Botol Jugrack PET</span> <span class="item-value" id="dash-botol-jgr-pet">0</span></div>
+                    <div class="item-row"><span class="detail-label">Lasahan PC</span> <span class="item-value" id="dash-lasahan-pc">0</span></div>
+                    <div class="item-row"><span class="detail-label">Lasahan PET</span> <span class="item-value" id="dash-lasahan-pet">0</span></div>
+                </div>
             </div>
-        </div>
 
-        <!-- 3. Summary FG -->
-        <div class="summary-card">
-            <div class="summary-header">✅ Summary Finish Good (FG)</div>
-            <div class="item-list">
-                <div class="item-row"><span class="detail-label">Finish Good PC</span> <span class="item-value" id="dash-fg-pc">0</span></div>
-                <div class="item-row"><span class="detail-label">Finish Good PET</span> <span class="item-value" id="dash-fg-pet">0</span></div>
-                <div class="item-row"><span class="detail-label">Finish Good 10 L</span> <span class="item-value" id="dash-fg-10l">0</span></div>
+            <!-- 3. Summary FG -->
+            <div class="summary-card">
+                <div class="summary-header">✅ Summary Finish Good (FG)</div>
+                <div class="item-list">
+                    <div class="item-row"><span class="detail-label">Finish Good PC</span> <span class="item-value" id="dash-fg-pc">0</span></div>
+                    <div class="item-row"><span class="detail-label">Finish Good PET</span> <span class="item-value" id="dash-fg-pet">0</span></div>
+                    <div class="item-row"><span class="detail-label">Finish Good 10 L</span> <span class="item-value" id="dash-fg-10l">0</span></div>
+                </div>
             </div>
-        </div>
+            
+        </div> <!-- End Summary Wrapper -->
 
         <!-- Tombol Navigasi -->
         <div class="btn-wrapper" data-html2canvas-ignore="true">
@@ -324,21 +371,17 @@
             const elDetailJgr = document.getElementById('dash-detail-jgr');
             
             if (defisitJgr > 0) {
-                // Kurang Jugrack -> Warna Merah
                 elDetailJgr.innerHTML = `<span style="color: #f43f5e; font-weight: 800;">Defisit jgr ${defisitJgr.toLocaleString('id-ID')} PCS</span>`;
             } else if (defisitJgr === 0) {
-                // Pas
                 elDetailJgr.innerHTML = `<span style="color: #64748b;">Kapasitas Pas</span>`;
             } else {
-                // Sisa / Surplus -> Warna Hijau
                 elDetailJgr.innerHTML = `<span style="color: #10b981;">Aman (Sisa jgr ${Math.abs(defisitJgr).toLocaleString('id-ID')} PCS)</span>`;
             }
 
-            // Update Logika Rincian Afkir
+            // Update Logika Rincian Afkir (Luar dihapus sama sekali!)
             let totalAfkir = 0;
             let detailAfkirPC = 0;
             let detailAfkirPET = 0;
-            let detailAfkirLuar = 0;
 
             const savedAfkir = localStorage.getItem('afkir_0011_data');
             if (savedAfkir) {
@@ -348,14 +391,13 @@
                         parsed.forEach(item => {
                             detailAfkirPC += safeParseInt(item.pc);
                             detailAfkirPET += safeParseInt(item.pet);
-                            detailAfkirLuar += safeParseInt(item.luar);
                         });
                     } else if (typeof parsed === 'object' && parsed !== null) {
                         detailAfkirPC = safeParseInt(parsed.pc);
                         detailAfkirPET = safeParseInt(parsed.pet);
-                        detailAfkirLuar = safeParseInt(parsed.luar);
                     }
-                    totalAfkir = detailAfkirPC + detailAfkirPET + detailAfkirLuar;
+                    // MURNI CUMA PC + PET
+                    totalAfkir = detailAfkirPC + detailAfkirPET;
                 } catch(e) {}
             }
 
@@ -367,12 +409,11 @@
             setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
             setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
             
-            // Set Total Jugrack Utama
             setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
             
-            // Set Afkir Utama & Rinciannya
+            // Set Afkir Utama & Rinciannya (PASTI TANPA LUAR)
             setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
-            setText('dash-detail-afkir', `PC: ${detailAfkirPC.toLocaleString('id-ID')} | PET: ${detailAfkirPET.toLocaleString('id-ID')} | Luar: ${detailAfkirLuar.toLocaleString('id-ID')}`);
+            setText('dash-detail-afkir', `PC: ${detailAfkirPC.toLocaleString('id-ID')} | PET: ${detailAfkirPET.toLocaleString('id-ID')}`);
 
             setText('dash-fg-pc', fgPC.toLocaleString('id-ID'));
             setText('dash-fg-pet', fgPET.toLocaleString('id-ID'));
@@ -397,7 +438,6 @@
 
             const container = document.getElementById('dashboard-area');
 
-            // Scriptnya dikembalikan ke versi bersih natural! Nggak ada paksaan ukuran lagi.
             html2canvas(container, {
                 scale: 2, 
                 backgroundColor: "#bfcfe4", 
