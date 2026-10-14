@@ -271,7 +271,7 @@
                 <div class="kpi-value" id="dash-total-jgr">0</div>
                 <div class="kpi-detail-text" id="dash-detail-jgr">Menghitung...</div>
             </div>
-            <!-- AFKIR DENGAN RINCIAN (LUAR DIHAPUS) -->
+            <!-- AFKIR DENGAN RINCIAN (LUAR DIHAPUS SEPENUHNYA) -->
             <div class="kpi-card red">
                 <div class="kpi-title">Total Afkir</div>
                 <div class="kpi-value" id="dash-total-afkir">0</div>
@@ -378,7 +378,7 @@
                 elDetailJgr.innerHTML = `<span style="color: #10b981;">Aman (Sisa jgr ${Math.abs(defisitJgr).toLocaleString('id-ID')} PCS)</span>`;
             }
 
-            // Update Logika Rincian Afkir (Luar dihapus)
+            // Update Logika Rincian Afkir (Luar dihapus sama sekali!)
             let totalAfkir = 0;
             let detailAfkirPC = 0;
             let detailAfkirPET = 0;
@@ -396,6 +396,7 @@
                         detailAfkirPC = safeParseInt(parsed.pc);
                         detailAfkirPET = safeParseInt(parsed.pet);
                     }
+                    // MURNI CUMA PC + PET
                     totalAfkir = detailAfkirPC + detailAfkirPET;
                 } catch(e) {}
             }
@@ -408,10 +409,9 @@
             setText('dash-siap-pc', `${siapPC.toLocaleString('id-ID')} btl`);
             setText('dash-siap-pet', `${siapPET.toLocaleString('id-ID')} btl`);
             
-            // Set Total Jugrack Utama
             setText('dash-total-jgr', totalJgr.toLocaleString('id-ID'));
             
-            // Set Afkir Utama & Rinciannya (Tanpa Luar)
+            // Set Afkir Utama & Rinciannya (PASTI TANPA LUAR)
             setText('dash-total-afkir', `${totalAfkir.toLocaleString('id-ID')} btl`);
             setText('dash-detail-afkir', `PC: ${detailAfkirPC.toLocaleString('id-ID')} | PET: ${detailAfkirPET.toLocaleString('id-ID')}`);
 
