@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Report Jugrack Kosong - Produksi">
+    <title>Report Jugrack Produksi</title>
+    
+    <!-- Library untuk screenshot (Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #e2e8f0; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px 15px; 
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+            background-color: #e2e8f0; 
+        }
+
+        /* Header Khusus Produksi */
+        .header-card {
+            background-color: #0f766e; 
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;  
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            font-weight: 600; 
+            color: #ccfbf1; 
+        }
+
+        /* Kartu Total Utama (Gede) */
+        .kpi-main-card {
+            background-color: #ffffff;
+            padding: 25px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+            border-top: 6px solid #3b82f6; 
+        }
+
+        .kpi-title {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 800; 
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 42px; 
+            font-weight: 900; 
+            color: #1e293b;
+        }
+
+        .kpi-unit {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        /* Kartu Rincian */
+        .summary-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .summary-header {
+            font-size: 15px;
+            font-weight: 800; 
+            color: #1e293b;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0; 
+            padding-bottom: 8px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #334155; 
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .item-value {
+            font-weight: 800; 
+            color: #0f172a;
+            font-size: 15px;
+        }
+
+        /* Tombol */
+        .btn-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-home {
+            flex: 1;
+            background-color: #475569;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        .btn-wa {
+            flex: 1;
+            background-color: #10b981;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+        @media screen and (min-width: 768px) {
+            .dashboard-container { max-width: 600px; padding: 40px; }
+            .header-title { font-size: 22px; }
+            .kpi-value { font-size: 56px; }
+            .btn-wrapper { max-width: 400px; margin: 20px auto 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="dashboard-container" id="dashboard-area">
+        
+        <!-- Header -->
+        <header class="header-card">
+            <div class="header-title">🏭 INFO JUGRACK KOSONG</div>
+            <div class="header-subtitle" id="timeInfo">-</div>
+        </header>
+
+        <!-- KPI Utama -->
+        <div class="kpi-main-card">
+            <div class="kpi-title">Total Jugrack Kosong Ready</div>
+            <div class="kpi-value" id="dash-total-kosong">0 <span class="kpi-unit">PCS</span></div>
+        </div>
+
+        <!-- Rincian -->
+        <div class="summary-card">
+            <!-- REVISI HEADER: Rincian per line -->
+            <div class="summary-header">📋 Rincian per line</div>
+            
+            <div class="item-row">
+                <!-- REVISI LABEL: Jgr reguler ( Bardi-Cs ) -->
+                <span>Jgr reguler ( Bardi-Cs )</span> 
+                <span class="item-value" id="dash-jgr-reguler">0 PCS</span>
+            </div>
+            <div class="item-row">
+                <span>Jugrack 10 Liter</span> 
+                <span class="item-value" id="dash-jgr-10l">0 PCS</span>
+            </div>
+        </div>
+
+        <!-- Tombol -->
+        <div class="btn-wrapper" data-html2canvas-ignore="true">
+            <button class="btn-wa" onclick="exportToWhatsApp()" id="btn-export">📷 Ekspor ke WA</button>
+            <a href="index.html" class="btn-home">🏠 Kembali</a>
+        </div>
+        
+    </main>
+
+    <script>
+        function safeParseInt(val) {
+            const parsed = parseInt(val, 10);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        function updateDashboard() {
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            let tglStr = now.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+            let jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':');
+            
+            document.getElementById('timeInfo').innerText = `Update: ${tglStr} | ${jamStr} WIB`;
+
+            // Ambil data murni dari form Jugrack Kosong aja
+            let jgrReguler = safeParseInt(localStorage.getItem('jgr_kosong_brd') || localStorage.getItem('jgr_kosong'));
+            let jgr10L = safeParseInt(localStorage.getItem('jgr_kosong_10l'));
+            
+            let totalKosong = jgrReguler + jgr10L;
+
+            // Tampilkan ke layar
+            document.getElementById('dash-total-kosong').innerHTML = `${totalKosong.toLocaleString('id-ID')} <span class="kpi-unit">PCS</span>`;
+            document.getElementById('dash-jgr-reguler').innerText = `${jgrReguler.toLocaleString('id-ID')} PCS`;
+            document.getElementById('dash-jgr-10l').innerText = `${jgr10L.toLocaleString('id-ID')} PCS`;
+        }
+
+        function exportToWhatsApp() {
+            const btn = document.getElementById('btn-export');
+            btn.innerText = "Memproses...";
+            btn.disabled = true;
+
+            const container = document.getElementById('dashboard-area');
+
+            html2canvas(container, {
+                scale: 2, 
+                backgroundColor: "#e2e8f0", 
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const today = new Date().toISOString().split('T')[0];
+                
+                link.download = `Info_Jugrack_Produksi_${today}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.click();
+                
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                btn.innerText = "📷 Ekspor ke WA";
+                btn.disabled = false;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard(); 
+            setInterval(updateDashboard, 1000); 
+        });
+    </script>
+</body>
+</html>
